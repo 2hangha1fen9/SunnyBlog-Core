@@ -8,6 +8,7 @@ using UserService.App;
 using UserService.App.Interface;
 using Infrastructure.Auth;
 using Microsoft.IdentityModel.Tokens;
+using UserService.Rpc.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -49,6 +50,9 @@ builder.Services.AddAuthentication("Bearer")
     };
 });
 #endregion
+//gRPC×¢²á
+builder.Services.AddGrpc();
+
 
 var app = builder.Build();
 
@@ -81,5 +85,7 @@ var consulOption = new ConsulServiceOptions()
 app.UseConsul(consulOption);
 #endregion
 
+//×¢Èërpc·þÎñ
+app.MapGrpcService<GUserService>();
 
 app.Run();

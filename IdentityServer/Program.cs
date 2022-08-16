@@ -26,7 +26,6 @@ builder.Services.AddDbContext<AuthDBContext>(option =>
     option.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer"));
 });
 //添加服务
-builder.Services.AddScoped<IUserApp, UserApp>();
 builder.Services.AddScoped<IPermissionApp, PermissionApp>();
 
 //启用授权服务，并自定义令牌token

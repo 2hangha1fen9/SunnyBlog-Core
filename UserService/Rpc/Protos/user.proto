@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+option csharp_namespace = "UserService.Rpc.Protos";
+
+package sunnyblog;
+
+//定义服务
+service gUser{
+	rpc GetUserID(UserRequest) returns(UserResponse);
+}
+
+//定义请求对象
+message UserRequest{
+	string Username = 1;
+	string Password = 2;
+}
+
+//定义返回对象
+message UserResponse{
+	int32 Id=1;
+}

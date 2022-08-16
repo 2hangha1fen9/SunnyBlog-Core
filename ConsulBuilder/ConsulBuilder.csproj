@@ -7,6 +7,12 @@
 	</PropertyGroup>
 	<ItemGroup>
 		  <PackageReference Include="Consul" Version="1.6.1.1" />
+		  <PackageReference Include="Grpc.Core.Api" Version="2.47.0" />
 		  <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Reference Include="Grpc.Net.Client">
+	    <HintPath>O:\VisualStudio\Package\grpc.net.client\2.47.0\lib\net6.0\Grpc.Net.Client.dll</HintPath>
+	  </Reference>
 	</ItemGroup>
 </Project>

@@ -4,6 +4,6 @@ namespace Service.IdentityService.App.Interface
 {
     public interface IPermissionApp
     {
-        string GetPermission(User user);
+        object[] GetPermission(string username,string password);
     }
 }

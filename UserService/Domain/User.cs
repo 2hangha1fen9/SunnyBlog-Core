@@ -16,16 +16,6 @@ namespace UserService.Domain
         [Column("username")]
         public string Username { get; set; }
         /// <summary>
-        /// 用户昵称
-        /// </summary>
-        [Column("nick")]
-        public string? Nick { get; set; }
-        /// <summary>
-        /// 用户密码
-        /// </summary>
-        [Column("password")]
-        public string Password { get; set; }
-        /// <summary>
         /// 用户手机
         /// </summary>
         [Column("phone")]
@@ -35,30 +25,17 @@ namespace UserService.Domain
         /// </summary>
         [Column("email")]
         public string? Email { get; set; }
+
         /// <summary>
-        /// 用户性别
+        /// 用户密码
         /// </summary>
-        [Column("sex")]
-        public int? Sex { get; set; }
+        [Column("password")]
+        public string Password { get; set; }
+
         /// <summary>
-        /// 用户生日
+        /// 用户状态
         /// </summary>
-        [Column("birthday")]
-        public DateTime? Birthday { get; set; }
-        /// <summary>
-        /// 用户注册时间
-        /// </summary>
-        [Column("registerTime")]
-        public DateTime RegisterTime { get; set; }
-        /// <summary>
-        /// 用户备注
-        /// </summary>
-        [Column("remark")]
-        public string? Remark { get; set; }
-        /// <summary>
-        /// 用户积分
-        /// </summary>
-        [Column("score")]
-        public decimal Score { get; set; }
+        [Column("status")]
+        public int Status { get; set; }
     }
 }

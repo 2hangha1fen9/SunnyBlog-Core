@@ -25,7 +25,6 @@ namespace IdentityServer
                 new Client
                 {
                     ClientId = "vue",
-                    ClientName = "vue客户端",
                     AllowedGrantTypes = GrantTypes.Implicit,
                     AllowAccessTokensViaBrowser = true,
                     AccessTokenType = AccessTokenType.Jwt,
