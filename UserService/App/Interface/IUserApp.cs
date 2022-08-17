@@ -4,7 +4,7 @@ namespace UserService.App.Interface
 {
     public interface IUserApp
     {
-        UserView GetUserById(int id);
-        List<UserView> GetUsers();
+        Task<UserView> GetUserById(int id);
+        Task<List<UserView>> GetUsers();
     }
 }

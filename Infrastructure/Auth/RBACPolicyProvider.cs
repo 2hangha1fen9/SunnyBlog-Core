@@ -35,16 +35,17 @@ namespace Infrastructure.Auth
         }
 
         /// <summary>
-        /// 自定义Requirement
+        /// 获取策略
         /// </summary>
         /// <param name="policyName"></param>
         /// <returns></returns>
         public Task<AuthorizationPolicy> GetPolicyAsync(string policyName)
         {
+            //判断策略是否是RBAC
             if (policyName.StartsWith("RBAC", StringComparison.OrdinalIgnoreCase))
             {
                 var policys = new AuthorizationPolicyBuilder();
-                //这里使用自定义Requirement
+                //添加自定义Requirement
                 policys.AddRequirements(new RBACRequirement(policyName.Replace("RABC", "")));
                 return Task.FromResult(policys.Build());
             }

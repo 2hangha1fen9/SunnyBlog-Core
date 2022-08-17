@@ -21,12 +21,12 @@ namespace Service.IdentityService
             this.permissionApp = permissionApp;
         }
 
-        public Task ValidateAsync(ResourceOwnerPasswordValidationContext context)
+        public async Task ValidateAsync(ResourceOwnerPasswordValidationContext context)
         {
             if (!string.IsNullOrEmpty(context.UserName) && !string.IsNullOrEmpty(context.Password))
             {
                 //查询用户权限
-                var data = permissionApp.GetPermission(context.UserName, context.Password);
+                var data = await permissionApp.GetPermission(context.UserName, context.Password);
                 var id = data[0].ToString();
                 var permission = data[1] as Array;
                 if (!string.IsNullOrEmpty(id) && permission.Length > 0)
@@ -38,15 +38,12 @@ namespace Service.IdentityService
                             new Claim("user_id",id),
                             new Claim("permission",JsonConvert.SerializeObject(permission))
                         });
-                    
-                    return Task.CompletedTask;
                 }
                 else
                 {
                     context.Result = new GrantValidationResult(TokenRequestErrors.InvalidGrant, "认证失败");
                 }
             }
-            return Task.CompletedTask;
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Grpc.Core;
+using Microsoft.EntityFrameworkCore;
 using UserService.Rpc.Protos;
 
 namespace UserService.Rpc.Service
@@ -11,23 +12,26 @@ namespace UserService.Rpc.Service
         /// <summary>
         /// 依赖使用
         /// </summary>
-        private readonly UserDBContext dBContext;
-        public GUserService(UserDBContext dBContext)
+        private readonly IDbContextFactory<UserDBContext> contextFactory;
+        public GUserService(IDbContextFactory<UserDBContext> contextFactory)
         {
-            this.dBContext = dBContext;
+            this.contextFactory = contextFactory;
         }
 
-        public override Task<UserResponse> GetUserID(UserRequest request, ServerCallContext context)
+        public async override Task<UserResponse> GetUserID(UserRequest request, ServerCallContext context)
         {
-            //查询用户名密码，将结果存入gRPC载荷对象
-            var username = request.Username;
-            var password = request.Password;
-            var user = dBContext.Users.Where(u => u.Username == username && u.Password == password).FirstOrDefault();
-            var userResponse = new UserResponse()
+            using (var c= contextFactory.CreateDbContext())
             {
-                Id = user.Id,
-            };
-            return Task.FromResult(userResponse);
+                //查询用户名密码，将结果存入gRPC载荷对象
+                var username = request.Username;
+                var password = request.Password;
+                var user = await c.Users.Where(u => u.Username == username && u.Password == password).FirstOrDefaultAsync();
+                var userResponse = new UserResponse()
+                {
+                    Id = user.Id,
+                };
+                return userResponse;
+            }
         }
     }
 }

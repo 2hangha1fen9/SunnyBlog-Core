@@ -1,6 +1,7 @@
 ﻿using Infrastructure;
 using UserService.App.Interface;
 using UserService.Response;
+using Microsoft.EntityFrameworkCore;
 
 namespace UserService.App
 {
@@ -9,10 +10,10 @@ namespace UserService.App
         /// <summary>
         /// 数据库上下文
         /// </summary>
-        private readonly UserDBContext context;
-        public UserApp(UserDBContext context)
+        private readonly IDbContextFactory<UserDBContext> contextFactory;
+        public UserApp(IDbContextFactory<UserDBContext> context)
         {
-            this.context = context;
+            this.contextFactory = context;
         }
 
         /// <summary>
@@ -20,18 +21,24 @@ namespace UserService.App
         /// </summary>
         /// <param name="id">用户id</param>
         /// <returns>用户视图</returns>
-        public UserView GetUserById(int id)
+        public async Task<UserView> GetUserById(int id)
         {
-            var user = context.Users.Where(u => u.Id == id).FirstOrDefault();
-            var userView = user.MapTo<UserView>();
-            return userView;
+            using (var context = contextFactory.CreateDbContext())
+            {
+                var user = await context.Users.Where(u => u.Id == id).FirstOrDefaultAsync();
+                var userView = user.MapTo<UserView>();
+                return userView;
+            }
         }
 
-        public List<UserView> GetUsers()
+        public async Task<List<UserView>> GetUsers()
         {
-            var users = context.Users.ToList();
-            var usersView = users.MapToList<UserView>();
-            return usersView;
+            using (var context = contextFactory.CreateDbContext())
+            {
+                var users = await context.Users.ToListAsync();
+                var usersView = users.MapToList<UserView>();
+                return usersView;
+            }
         }
     }
 }

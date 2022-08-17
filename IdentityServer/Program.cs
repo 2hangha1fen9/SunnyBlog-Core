@@ -21,7 +21,7 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 //配置数据库
-builder.Services.AddDbContext<AuthDBContext>(option =>
+builder.Services.AddDbContextFactory<AuthDBContext>(option =>
 {
     option.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer"));
 });
@@ -36,7 +36,20 @@ builder.Services.AddIdentityServer()
     .AddProfileService<CustomProfileService>()
     .AddDeveloperSigningCredential();
 
-
+#region 获取consul配置
+//获取appsetings的consul配置
+var consulSection = builder.Configuration.GetSection("Consul");
+//创建consul配置对象
+var consulOption = new ConsulServiceOptions()
+{
+    ServiceName = consulSection["ServiceName"],
+    ServiceIP = consulSection["ServiceIP"],
+    ServicePort = Convert.ToInt32(consulSection["ServicePort"]),
+    ServiceHealthCheck = consulSection["ServiceHealthCheck"],
+    ConsulAddress = consulSection["ConsulAddress"]
+};
+builder.Services.Configure<dynamic>(consulSection);
+#endregion
 // Configure the HTTP request pipeline.
 var app = builder.Build();
 if (app.Environment.IsDevelopment())
@@ -54,18 +67,6 @@ app.MapControllers();
 //注入授权服务Ids4
 app.UseIdentityServer();
 
-#region consul注入
-//获取appsetings的consul配置
-var consulSection = builder.Configuration.GetSection("Consul");
-//创建consul配置对象
-var consulOption = new ConsulServiceOptions()
-{
-    ServiceName = consulSection["ServiceName"],
-    ServiceIP = consulSection["ServiceIP"],
-    ServicePort = Convert.ToInt32(consulSection["ServicePort"]),
-    ServiceHealthCheck = consulSection["ServiceHealthCheck"],
-    ConsulAddress = consulSection["ConsulAddress"]
-};
+//consul注入
 app.UseConsul(consulOption);
 app.Run();
-#endregion

@@ -15,7 +15,7 @@
       "RateLimitOptions": { //流量控制
         "ClientWhiteList": [ "dev" ], //白名单
         "EnableRateLimiting": true, //是否启用限流
-        "Period": "10s", //统计时间段：1s、5m、1h、1d
+        "Period": "1s", //统计时间段：1s、5m、1h、1d
         "PeriodTimespan": 15, //多少秒之后客户端可以重试
         "Limit": 100 // 在统计时间段内允许的最大请求数量
       },
@@ -25,7 +25,7 @@
         "TimeoutValue": 5000 //下游请求的处理时间超过多少则视为该请求超时
       },
       "FileCacheOptions": { //缓存配置
-        "TtlSeconds": 10,
+        "TtlSeconds": 10, //10秒内相同url请求直接返回缓存数据
         "Region": ""
       }
     },

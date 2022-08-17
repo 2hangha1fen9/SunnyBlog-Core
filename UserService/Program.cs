@@ -9,6 +9,7 @@ using UserService.App.Interface;
 using Infrastructure.Auth;
 using Microsoft.IdentityModel.Tokens;
 using UserService.Rpc.Service;
+using Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,8 +32,8 @@ builder.Services.AddSingleton<IAuthorizationPolicyProvider, RBACPolicyProvider>(
 builder.Services.AddSingleton<IAuthorizationHandler, RBACRequirementHandler>();
 #endregion
 
-#region 数据库注册
-builder.Services.AddDbContext<UserDBContext>(option =>
+#region 数据库连接池注册
+builder.Services.AddPooledDbContextFactory<UserDBContext>(option =>
 {
     option.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer"));
 });
@@ -50,6 +51,7 @@ builder.Services.AddAuthentication("Bearer")
     };
 });
 #endregion
+
 //gRPC注册
 builder.Services.AddGrpc();
 
