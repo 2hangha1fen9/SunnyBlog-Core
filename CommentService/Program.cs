@@ -1,8 +1,17 @@
-using ConsulBuilder;
+using Com.Ctrip.Framework.Apollo;
+using Com.Ctrip.Framework.Apollo.Enums;
+using Infrastructure.Consul;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
-
+//Apollo配置中心
+builder.Host.ConfigureAppConfiguration((context, builder) =>
+{
+    builder.AddApollo(builder.Build()
+            .GetSection("Apollo"))
+            .AddDefault()
+            .AddNamespace("CommentService", ConfigFileFormat.Json);
+});
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -30,19 +39,7 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-#region consul注入
-//获取appsetings的consul配置
-var consulSection = builder.Configuration.GetSection("Consul");
-//创建consul配置对象
-var consulOption = new ConsulServiceOptions()
-{
-    ServiceName = consulSection["ServiceName"],
-    ServiceIP = consulSection["ServiceIP"],
-    ServicePort = Convert.ToInt32(consulSection["ServicePort"]),
-    ServiceHealthCheck = consulSection["ServiceHealthCheck"],
-    ConsulAddress = consulSection["ConsulAddress"]
-};
-app.UseConsul(consulOption);
-#endregion
+// consul注入
+app.UseConsul(builder.Configuration.GetSection("Consul").Get<ConsulServiceOptions>());
 
 app.Run();

@@ -4,10 +4,20 @@ using Service.IdentityService.App.Interface;
 using Service.IdentityService.Custom;
 using Microsoft.EntityFrameworkCore;
 using IdentityServer;
-using ConsulBuilder;
+using Infrastructure.Consul;
 using System.Reflection;
+using Com.Ctrip.Framework.Apollo;
+using Com.Ctrip.Framework.Apollo.Enums;
 
 var builder = WebApplication.CreateBuilder(args);
+//Apollo配置中心
+builder.Host.ConfigureAppConfiguration((context, builder) =>
+{
+    builder.AddApollo(builder.Build()
+        .GetSection("Apollo"))
+        .AddDefault()
+        .AddNamespace("IdentityService", ConfigFileFormat.Json);
+});
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -23,7 +33,7 @@ builder.Services.AddSwaggerGen(options =>
 //配置数据库
 builder.Services.AddDbContextFactory<AuthDBContext>(option =>
 {
-    option.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer"));
+    option.UseSqlServer(builder.Configuration.GetValue<string>("SqlServer"));
 });
 //添加服务
 builder.Services.AddScoped<IPermissionApp, PermissionApp>();
@@ -36,20 +46,6 @@ builder.Services.AddIdentityServer()
     .AddProfileService<CustomProfileService>()
     .AddDeveloperSigningCredential();
 
-#region 获取consul配置
-//获取appsetings的consul配置
-var consulSection = builder.Configuration.GetSection("Consul");
-//创建consul配置对象
-var consulOption = new ConsulServiceOptions()
-{
-    ServiceName = consulSection["ServiceName"],
-    ServiceIP = consulSection["ServiceIP"],
-    ServicePort = Convert.ToInt32(consulSection["ServicePort"]),
-    ServiceHealthCheck = consulSection["ServiceHealthCheck"],
-    ConsulAddress = consulSection["ConsulAddress"]
-};
-builder.Services.Configure<dynamic>(consulSection);
-#endregion
 // Configure the HTTP request pipeline.
 var app = builder.Build();
 if (app.Environment.IsDevelopment())
@@ -68,5 +64,6 @@ app.MapControllers();
 app.UseIdentityServer();
 
 //consul注入
-app.UseConsul(consulOption);
+app.UseConsul(builder.Configuration.GetSection("Consul").Get<ConsulServiceOptions>());
+
 app.Run();

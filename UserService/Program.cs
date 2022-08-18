@@ -1,7 +1,6 @@
-using ConsulBuilder;
+using Infrastructure.Consul;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using System.Reflection;
 using UserService;
 using UserService.App;
@@ -9,9 +8,19 @@ using UserService.App.Interface;
 using Infrastructure.Auth;
 using Microsoft.IdentityModel.Tokens;
 using UserService.Rpc.Service;
+using Com.Ctrip.Framework.Apollo;
 using Infrastructure;
+using Com.Ctrip.Framework.Apollo.Enums;
 
 var builder = WebApplication.CreateBuilder(args);
+//Apollo配置中心
+builder.Host.ConfigureAppConfiguration((context,builder) =>
+{
+    builder.AddApollo(builder.Build()
+            .GetSection("Apollo"))
+            .AddDefault()
+            .AddNamespace("UserService",ConfigFileFormat.Json);
+});
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -26,35 +35,35 @@ builder.Services.AddSwaggerGen(options =>
 
 #region 服务注册
 builder.Services.AddScoped<IUserApp,UserApp>();
+//配置Redis连接
+builder.Services.AddSingleton(new RedisCache(builder.Configuration.GetValue<string>("RedisServer")));
 //RBAC授权服务
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddSingleton<IAuthorizationPolicyProvider, RBACPolicyProvider>();
 builder.Services.AddSingleton<IAuthorizationHandler, RBACRequirementHandler>();
 #endregion
 
-#region 数据库连接池注册
+// 数据库连接池注册
 builder.Services.AddPooledDbContextFactory<UserDBContext>(option =>
 {
-    option.UseSqlServer(builder.Configuration.GetConnectionString("SqlServer"));
+    option.UseSqlServer(builder.Configuration.GetValue<string>("SqlServer"));
 });
-#endregion
 
-#region 认证中心注册
+
+//认证中心注册
 builder.Services.AddAuthentication("Bearer")
 .AddJwtBearer("Bearer", options =>
 {
-    options.Authority = "https://localhost:8000";
-
+    options.Authority = ServiceUrl.GetServiceUrlByName("IdentityService",
+        builder.Configuration.GetSection("Consul").Get<ConsulServiceOptions>().ConsulAddress);
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateAudience = false
     };
 });
-#endregion
 
 //gRPC注册
 builder.Services.AddGrpc();
-
 
 var app = builder.Build();
 
@@ -72,20 +81,8 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-#region consul注入
-//获取appsetings的consul配置
-var consulSection = builder.Configuration.GetSection("Consul");
-//创建consul配置对象
-var consulOption = new ConsulServiceOptions()
-{
-    ServiceName = consulSection["ServiceName"],
-    ServiceIP = consulSection["ServiceIP"],
-    ServicePort = Convert.ToInt32(consulSection["ServicePort"]),
-    ServiceHealthCheck = consulSection["ServiceHealthCheck"],
-    ConsulAddress = consulSection["ConsulAddress"]
-};
-app.UseConsul(consulOption);
-#endregion
+//consul注入
+app.UseConsul(builder.Configuration.GetSection("Consul").Get<ConsulServiceOptions>());
 
 //注入rpc服务
 app.MapGrpcService<GUserService>();

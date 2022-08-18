@@ -1,0 +1,10 @@
+syntax = "proto3";
+
+option csharp_namespace = "UserService.Rpc.Protos";
+
+package sunnyblog;
+import "google/protobuf/empty.proto";
+
+service gEndpoint{
+	rpc GetEndpoint(google.protobuf.Empty) returns(EndpointList);
+}

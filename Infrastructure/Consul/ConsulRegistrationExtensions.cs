@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Builder;
 
 
-namespace ConsulBuilder
+namespace Infrastructure.Consul
 {
     //注册中心自动注册服务,中间件
     public static class ConsulRegistrationExtensions

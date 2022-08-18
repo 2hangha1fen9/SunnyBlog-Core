@@ -1,10 +1,19 @@
+using Com.Ctrip.Framework.Apollo;
+using Com.Ctrip.Framework.Apollo.Enums;
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
 using Ocelot.Provider.Consul;
 using Ocelot.Provider.Polly;
 
 var builder = WebApplication.CreateBuilder(args);
-
+//Apollo配置中心
+builder.Host.ConfigureAppConfiguration((context, builder) =>
+{
+    builder.AddApollo(builder.Build()
+            .GetSection("Apollo"))
+            .AddDefault()
+            .AddNamespace("ApiGateway", ConfigFileFormat.Json);
+});
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -12,9 +21,9 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-#region Ocelot配置
+
 //配置Ocelot网关地址 添加Ocelot配置文件
-builder.Configuration.AddJsonFile("Ocelot.json", optional: false, reloadOnChange: true);
+//builder.Configuration.AddJsonFile("Ocelot.json", optional: false, reloadOnChange: true);
 builder.WebHost.UseUrls("https://*:8888");
 //配置网关跨域
 builder.Services.AddCors(option =>
@@ -23,14 +32,14 @@ builder.Services.AddCors(option =>
     option.AddPolicy("default", policy =>
      {
          //前端地址
-         policy.WithOrigins("http://localhost:8080")
+         policy.WithOrigins(builder.Configuration.GetValue<string>("WebClient"))
          .AllowAnyHeader() //允许任意头部信息
          .AllowAnyMethod();//允许任意Http动词
      });
 });
 //注册服务.同时注册服务发现和流量控制
 builder.Services.AddOcelot(builder.Configuration).AddConsul().AddPolly();
-#endregion
+
 
 var app = builder.Build();
 
@@ -41,7 +50,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-#region consul注入
 app.UseRouting(); //使用路由
 app.UseCors("default"); //使用默认跨域配置
 app.UseOcelot().Wait(); //启用网关
@@ -49,7 +57,6 @@ app.UseEndpoints(endpoints => //映射控制器
 {
     endpoints.MapControllers();
 });
-#endregion
 
 app.UseHttpsRedirection();
 

@@ -1,4 +1,4 @@
-﻿namespace ConsulBuilder
+﻿namespace Infrastructure.Consul
 {
     public class ConsulServiceOptions
     {

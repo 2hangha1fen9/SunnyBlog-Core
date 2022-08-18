@@ -1,4 +1,5 @@
 ﻿
+using ConsulBuilder;
 using Grpc.Net.Client;
 using IdentityService.Rpc.Protos;
 using Infrastructure;
@@ -24,14 +25,15 @@ namespace Service.IdentityService.App
         }
 
         /// <summary>
-        /// 根据用户Id获取权限
+        /// 根据用户账号密码获取权限
         /// </summary>
         /// <param name="user"></param>
         /// <returns>第一个元素用户ID,第二元素权限列表</returns>
         public async Task<object[]> GetPermission(string username,string password)
         {
             //调用consul服务发现，获取rpc服务地址
-            var url = ServiceUrl.GetServiceUrlByName("UserService",config.GetSection("Consul")["ConsulAddress"]);
+            var url = ServiceUrl.GetServiceUrlByName("UserService",
+                        config.GetSection("Consul").Get<ConsulServiceOptions>().ConsulAddress);
             //创建通讯频道
             using var channel = GrpcChannel.ForAddress(url);
             //创建客户端

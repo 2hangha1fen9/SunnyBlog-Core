@@ -11,11 +11,13 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="Com.Ctrip.Framework.Apollo.Configuration" Version="2.7.0" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
 	</ItemGroup>
 
 	<ItemGroup>
 		<ProjectReference Include="..\ConsulBuilder\ConsulBuilder.csproj" />
+		<ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
 	</ItemGroup>
 
 	<ProjectExtensions>

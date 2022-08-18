@@ -14,11 +14,11 @@
 		<Folder Include="Controllers\" />
 	</ItemGroup>
 	<ItemGroup>
+		<PackageReference Include="Com.Ctrip.Framework.Apollo.Configuration" Version="2.7.0" />
 		<PackageReference Include="Ocelot" Version="17.0.0"></PackageReference>
 		<PackageReference Include="Ocelot.Cache.CacheManager" Version="17.0.0"></PackageReference>
 		<PackageReference Include="Ocelot.Provider.Consul" Version="17.0.0"></PackageReference>
 		<PackageReference Include="Ocelot.Provider.Polly" Version="17.0.0"></PackageReference>
-		
 	</ItemGroup>
 
 	<ProjectExtensions>

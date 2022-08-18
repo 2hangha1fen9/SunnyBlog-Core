@@ -11,8 +11,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ArticleService", "ArticleSe
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CommentService", "CommentService\CommentService.csproj", "{CCFA845A-D936-4CB7-BC22-AD1960326E09}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ConsulBuilder", "ConsulBuilder\ConsulBuilder.csproj", "{D31C3818-0890-442F-A350-914763ABCEBB}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApiGateway", "ApiGateway\ApiGateway.csproj", "{CFD245B7-751A-4EE6-83BD-BD934EB4AB55}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityService", "IdentityServer\IdentityService.csproj", "{6FB6AD36-EC1E-4FB9-A918-E09EFF1B76AB}"
@@ -37,10 +35,6 @@ Global
 		{CCFA845A-D936-4CB7-BC22-AD1960326E09}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CCFA845A-D936-4CB7-BC22-AD1960326E09}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CCFA845A-D936-4CB7-BC22-AD1960326E09}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D31C3818-0890-442F-A350-914763ABCEBB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D31C3818-0890-442F-A350-914763ABCEBB}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D31C3818-0890-442F-A350-914763ABCEBB}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D31C3818-0890-442F-A350-914763ABCEBB}.Release|Any CPU.Build.0 = Release|Any CPU
 		{CFD245B7-751A-4EE6-83BD-BD934EB4AB55}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{CFD245B7-751A-4EE6-83BD-BD934EB4AB55}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CFD245B7-751A-4EE6-83BD-BD934EB4AB55}.Release|Any CPU.ActiveCfg = Release|Any CPU

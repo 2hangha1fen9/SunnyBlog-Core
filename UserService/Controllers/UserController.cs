@@ -21,7 +21,7 @@ namespace UserService.Controllers
         /// 获取用户列表
         /// </summary>
         /// <returns>用户列表</returns>
-        [HttpGet][RedisCache]
+        [HttpGet][RedisCache(expiration:1000)]
         public async Task<Response<List<UserView>>> List()
         {
             var result = new Response<List<UserView>>();
