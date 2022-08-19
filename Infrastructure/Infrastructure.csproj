@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
@@ -8,12 +8,20 @@
 
   <ItemGroup>
     <PackageReference Include="AutoMapper" Version="11.0.1" />
+    <PackageReference Include="Google.Protobuf" Version="3.21.5" />
+    <PackageReference Include="Grpc.AspNetCore" Version="2.47.0" />
+    <PackageReference Include="Grpc.Net.Client" Version="2.47.0" />
+    <PackageReference Include="Grpc.Tools" Version="2.48.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
     <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="6.0.8" />
     <PackageReference Include="Microsoft.AspNetCore.Http" Version="2.2.2" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Formatters.Json" Version="2.2.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="6.0.0" />
+    <PackageReference Include="Namotion.Reflection" Version="2.0.10" />
     <PackageReference Include="StackExchange.Redis" Version="2.6.48" />
   </ItemGroup>
 
@@ -27,6 +35,13 @@
     <Reference Include="Microsoft.EntityFrameworkCore">
       <HintPath>O:\VisualStudio\Package\microsoft.entityframeworkcore\6.0.8\lib\net6.0\Microsoft.EntityFrameworkCore.dll</HintPath>
     </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Auth\Protos\endpoint.proto">
+      <GrpcServices>Client</GrpcServices>
+    </None>
+	 <Protobuf Include="Auth\Protos\endpoint.proto" GrpcServices="Client" />
   </ItemGroup>
 
 </Project>

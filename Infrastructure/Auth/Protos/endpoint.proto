@@ -1,0 +1,27 @@
+syntax = "proto3";
+
+option csharp_namespace = "Infrastructure.Auth.Protos";
+
+package sunnyblog;
+
+//导入类型
+import "google/protobuf/empty.proto";
+
+//定义服务
+service gEndpoint{
+	//注册节点列表
+	rpc RegisterEndpoint(Endpoints) returns(google.protobuf.Empty);
+}
+
+//节点列表
+message Endpoints{
+	repeated Endpoint Endpoint = 1;
+}
+
+//节点
+message Endpoint{
+	string Service = 1;
+	string Controller = 2;
+	string Action = 3;
+	string Description = 4; 
+}

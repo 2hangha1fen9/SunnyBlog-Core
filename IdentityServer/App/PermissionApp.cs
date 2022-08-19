@@ -1,8 +1,7 @@
-﻿
-using ConsulBuilder;
-using Grpc.Net.Client;
+﻿using Grpc.Net.Client;
 using IdentityService.Rpc.Protos;
 using Infrastructure;
+using Infrastructure.Consul;
 using Microsoft.EntityFrameworkCore;
 using Service.IdentityService.App.Interface;
 using Service.IdentityService.Domain;
@@ -16,6 +15,7 @@ namespace Service.IdentityService.App
         /// 数据库上下文
         /// </summary>
         private readonly IDbContextFactory<AuthDBContext> contextFactory;
+        //获取配置
         private readonly IConfiguration config;
 
         public PermissionApp(IDbContextFactory<AuthDBContext> contextFactory,IConfiguration config)

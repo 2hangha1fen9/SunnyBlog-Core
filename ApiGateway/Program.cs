@@ -1,5 +1,6 @@
 using Com.Ctrip.Framework.Apollo;
 using Com.Ctrip.Framework.Apollo.Enums;
+using Infrastructure.Consul;
 using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
 using Ocelot.Provider.Consul;
@@ -39,6 +40,7 @@ builder.Services.AddCors(option =>
 });
 //注册服务.同时注册服务发现和流量控制
 builder.Services.AddOcelot(builder.Configuration).AddConsul().AddPolly();
+
 
 
 var app = builder.Build();

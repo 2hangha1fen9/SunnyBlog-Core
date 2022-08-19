@@ -8,6 +8,9 @@ using Infrastructure.Consul;
 using System.Reflection;
 using Com.Ctrip.Framework.Apollo;
 using Com.Ctrip.Framework.Apollo.Enums;
+using IdentityService.Rpc.Service;
+using Microsoft.AspNetCore.Mvc;
+using Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 //Apollo配置中心
@@ -18,6 +21,7 @@ builder.Host.ConfigureAppConfiguration((context, builder) =>
         .AddDefault()
         .AddNamespace("IdentityService", ConfigFileFormat.Json);
 });
+
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -35,6 +39,10 @@ builder.Services.AddDbContextFactory<AuthDBContext>(option =>
 {
     option.UseSqlServer(builder.Configuration.GetValue<string>("SqlServer"));
 });
+
+//注册gRPC
+builder.Services.AddGrpc();
+
 //添加服务
 builder.Services.AddScoped<IPermissionApp, PermissionApp>();
 
@@ -48,22 +56,30 @@ builder.Services.AddIdentityServer()
 
 // Configure the HTTP request pipeline.
 var app = builder.Build();
+
+//consul注入
+app.UseConsul(builder.Configuration.GetSection("Consul").Get<ConsulServiceOptions>());
+
+//gRPC服务映射
+app.MapGrpcService<GEndpointService>();
+
+//注入授权服务Ids4
+app.UseIdentityServer();
+
+//节点注册
+app.UsePermissionRegistrar<Program>(builder.Configuration.GetSection("Consul").Get<ConsulServiceOptions>().ConsulAddress);
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
+
 app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
 app.MapControllers();
-
-//注入授权服务Ids4
-app.UseIdentityServer();
-
-//consul注入
-app.UseConsul(builder.Configuration.GetSection("Consul").Get<ConsulServiceOptions>());
 
 app.Run();

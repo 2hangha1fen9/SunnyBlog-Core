@@ -9,7 +9,10 @@ namespace Infrastructure
 {
     public class ServiceUrl
     {
+        //锁，保证线程安全
+        private static readonly object lockObj = new object();
         public static int number = 1;
+        
         
         //通过consul查询对应的服务地址，方便rpc调用
         public static string GetServiceUrlByName(string name,string consulAddress)
@@ -20,17 +23,27 @@ namespace Infrastructure
             var agent = consulClient.Agent.Services().Result.Response.Values.ToList();
             //查询对应服务地址
             var services = agent.Where(a => a.Service == name).ToList();
-            if (services != null)
+
+            //重试次数
+            int count = 10;
+            while (count > 0)
             {
-                //轮询获取地址
-                var index = number++ % services.Count;
-                var result = services[index];
-                return $"https://{result.Address}:{result.Port}";
+                if (services.Count != 0) {
+                    //轮询获取地址
+                    var index = number++ % services.Count;
+                    var result = services[index];
+                    return $"https://{result.Address}:{result.Port}";
+                }
+                else
+                {
+                    //重试获取服务地址
+                    count--;
+                    Thread.Sleep(2000);
+                    agent = consulClient.Agent.Services().Result.Response.Values.ToList();
+                    services = agent.Where(a => a.Service == name).ToList();
+                }
             }
-            else
-            {
-                throw new Exception("没有找到地址");
-            }
+            throw new Exception("没有找到地址");
         }
     }
 }

@@ -12,6 +12,12 @@ namespace Service.IdentityService.Domain
         public int Id { get; set; }
 
         /// <summary>
+        /// 服务名称
+        /// </summary>
+        [Column("service")]
+        public string Service { get; set; }
+
+        /// <summary>
         /// 控制器名称
         /// </summary>
         [Column("controller")]
@@ -30,9 +36,21 @@ namespace Service.IdentityService.Domain
         public string Description { get; set; }
 
         /// <summary>
+        /// 创建时间
+        /// </summary>
+        [Column("createTime")]
+        public DateTime CreateTime { get; set; } = DateTime.Now;
+
+        /// <summary>
+        /// 更新时间
+        /// </summary>
+        [Column("updateTime")]
+        public DateTime? UpdateTime { get; set; } = DateTime.Now;
+
+        /// <summary>
         /// 资源对象
         /// </summary>
         [Column("status")]
-        public int Status { get; set; }
+        public int Status { get; set; } = 1;
     }
 }

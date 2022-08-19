@@ -8,7 +8,7 @@ namespace CommentService.Controllers
     public class HealthCheckController : ControllerBase
     {
         /// <summary>
-        /// 健康检查地址
+        /// 健康检查
         /// </summary>
         /// <returns></returns>
         [HttpGet(Name ="GetHealthCheck")]

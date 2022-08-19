@@ -1,5 +1,6 @@
 using Com.Ctrip.Framework.Apollo;
 using Com.Ctrip.Framework.Apollo.Enums;
+using Infrastructure;
 using Infrastructure.Consul;
 using System.Reflection;
 
@@ -26,6 +27,12 @@ builder.Services.AddSwaggerGen(options =>
 
 var app = builder.Build();
 
+// consul注入
+app.UseConsul(builder.Configuration.GetSection("Consul").Get<ConsulServiceOptions>());
+
+//节点注册
+app.UsePermissionRegistrar<Program>(builder.Configuration.GetSection("Consul").Get<ConsulServiceOptions>().ConsulAddress);
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -38,9 +45,5 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapControllers();
-
-// consul注入
-app.UseConsul(builder.Configuration.GetSection("Consul").Get<ConsulServiceOptions>());
-
 
 app.Run();

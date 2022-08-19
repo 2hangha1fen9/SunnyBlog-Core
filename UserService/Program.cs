@@ -67,6 +67,15 @@ builder.Services.AddGrpc();
 
 var app = builder.Build();
 
+//consul服务注册注入
+app.UseConsul(builder.Configuration.GetSection("Consul").Get<ConsulServiceOptions>());
+
+//注入rpc服务
+app.MapGrpcService<GUserService>();
+
+//节点注册
+app.UsePermissionRegistrar<Program>(builder.Configuration.GetSection("Consul").Get<ConsulServiceOptions>().ConsulAddress);
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -81,10 +90,6 @@ app.UseAuthorization();
 
 app.MapControllers();
 
-//consul注入
-app.UseConsul(builder.Configuration.GetSection("Consul").Get<ConsulServiceOptions>());
 
-//注入rpc服务
-app.MapGrpcService<GUserService>();
 
 app.Run();

@@ -9,16 +9,18 @@
 	<ItemGroup>
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
 	</ItemGroup>
-
-	<ItemGroup>
-		<Folder Include="Controllers\" />
-	</ItemGroup>
 	<ItemGroup>
 		<PackageReference Include="Com.Ctrip.Framework.Apollo.Configuration" Version="2.7.0" />
 		<PackageReference Include="Ocelot" Version="17.0.0"></PackageReference>
 		<PackageReference Include="Ocelot.Cache.CacheManager" Version="17.0.0"></PackageReference>
 		<PackageReference Include="Ocelot.Provider.Consul" Version="17.0.0"></PackageReference>
 		<PackageReference Include="Ocelot.Provider.Polly" Version="17.0.0"></PackageReference>
+	</ItemGroup>
+	<ItemGroup>
+	  <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Folder Include="Controllers\" />
 	</ItemGroup>
 
 	<ProjectExtensions>

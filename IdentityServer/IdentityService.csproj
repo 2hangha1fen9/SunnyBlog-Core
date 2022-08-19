@@ -28,7 +28,7 @@
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 	</ItemGroup>
-	
+
 	<ItemGroup>
 		<ProjectReference Include="..\ConsulBuilder\ConsulBuilder.csproj" />
 		<ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
@@ -36,7 +36,7 @@
 
 	<ItemGroup>
 		<Reference Include="Com.Ctrip.Framework.Apollo">
-		  <HintPath>O:\VisualStudio\Package\com.ctrip.framework.apollo\2.7.0\lib\netstandard2.1\Com.Ctrip.Framework.Apollo.dll</HintPath>
+			<HintPath>O:\VisualStudio\Package\com.ctrip.framework.apollo\2.7.0\lib\netstandard2.1\Com.Ctrip.Framework.Apollo.dll</HintPath>
 		</Reference>
 		<Reference Include="Microsoft.EntityFrameworkCore">
 			<HintPath>O:\VisualStudio\Package\microsoft.entityframeworkcore\6.0.8\lib\net6.0\Microsoft.EntityFrameworkCore.dll</HintPath>
@@ -44,10 +44,14 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="Rpc\Protos\" />
-	<Protobuf Include="Rpc\Protos\user.proto" GrpcServices="Client" />
+		<Protobuf Include="Rpc\Protos\user.proto" GrpcServices="Client" />
+		<Protobuf Include="Rpc\Protos\endpoint.proto" GrpcServices="Server" />
 	</ItemGroup>
 
-	<ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
+	<ProjectExtensions>
+		<VisualStudio>
+			<UserProperties appsettings_1json__JsonSchema="" />
+		</VisualStudio>
+	</ProjectExtensions>
 
 </Project>

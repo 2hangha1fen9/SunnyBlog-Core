@@ -8,7 +8,7 @@ namespace ArticleService.Controllers
     public class HealthCheckController : ControllerBase
     {
         /// <summary>
-        /// 健康检查地址 /HealthCheck
+        /// 健康检查
         /// </summary>
         /// <returns></returns>
         [HttpGet(Name = "GetHealthCheck")]
