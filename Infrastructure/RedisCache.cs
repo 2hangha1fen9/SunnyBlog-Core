@@ -37,7 +37,7 @@ namespace Infrastructure
         public RedisCache(string address)
         {
             connection = ConnectionMultiplexer.Connect(address);
-            database = connection.GetDatabase();
+            database = connection.GetDatabase(1);
             SetJsonConfig();
         }
 

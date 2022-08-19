@@ -6,22 +6,21 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
 
-namespace IdentityService.Domain
+namespace UserService.Domain
 {
-    [Table("UserRoleRelation")]
-    [Index("RoleId", "UserId", Name = "IX_UserRoleRelation")]
-    public partial class UserRoleRelation
+    [Table("Watch")]
+    public partial class Watch
     {
         [Key]
         [Column("id")]
         public int Id { get; set; }
         [Column("userId")]
-        public int? UserId { get; set; }
-        [Column("roleId")]
-        public int? RoleId { get; set; }
+        public int UserId { get; set; }
+        [Column("watchId")]
+        public int WatchId { get; set; }
 
-        [ForeignKey("RoleId")]
-        [InverseProperty("UserRoleRelations")]
-        public virtual Role Role { get; set; }
+        [ForeignKey("UserId")]
+        [InverseProperty("Watches")]
+        public virtual User User { get; set; }
     }
 }

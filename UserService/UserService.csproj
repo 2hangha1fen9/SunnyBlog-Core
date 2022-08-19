@@ -26,6 +26,7 @@
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.8" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.8" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.8" />
+		<PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="6.0.8" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
 	</ItemGroup>
 	<ItemGroup>
@@ -33,7 +34,7 @@
 		<ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
 	</ItemGroup>
 	<ItemGroup>
-	  <Folder Include="Request\" />
+	  <Folder Include="Domain\" />
 	</ItemGroup>
 	<ItemGroup>
 	  <Protobuf Include="Rpc\Protos\user.proto" GrpcServices="Server" />

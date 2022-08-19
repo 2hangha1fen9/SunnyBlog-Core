@@ -89,7 +89,7 @@
     {
       "ServiceName": "IdentityService", //对应consul配置的ServiceName
       "DownstreamScheme": "https", //Uri方案
-      "DownstreamPathTemplate": "/api/{path}", //下游（服务提供方）服务路由模板
+      "DownstreamPathTemplate": "/{path}", //下游（服务提供方）服务路由模板
       "UpstreamPathTemplate": "/identity-service/{path}", //上游（客户端、服务消费方）请求路由模板
       "UpstreamHttpMethod": [ "Get", "Post", "Delete", "Put" ], //上游Http动词
       "LoadBalancerOptions": { //负载均衡配置

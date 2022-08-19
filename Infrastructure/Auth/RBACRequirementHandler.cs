@@ -31,20 +31,22 @@ namespace Infrastructure.Auth
         /// <exception cref="NotImplementedException"></exception>
         protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, RBACRequirement requirement)
         {
-            //获取token中的用户信息
-            var subid = context.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
             //获取router对象
             var router = _httpContextAccessor.HttpContext?.GetRouteData();
             //获取Controller、Action
-            var currentController = router?.Values["controller"]?.ToString()?.ToLower();
-            var currentAction = router?.Values["action"]?.ToString()?.ToLower();
-            //获取入口程序集，标识api
-            if (string.IsNullOrWhiteSpace(subid) == false && string.IsNullOrWhiteSpace(currentController) == false && string.IsNullOrWhiteSpace(currentAction) == false)
+            var currentController = router?.Values["controller"]?.ToString();
+            var currentAction = router?.Values["action"]?.ToString();
+            if (string.IsNullOrWhiteSpace(currentController) == false && string.IsNullOrWhiteSpace(currentAction) == false)
             {
                 //获取token权限信息
-                string permissions = context.User.Claims.FirstOrDefault(c => c.Type == "permission").Value;
+                var permissions = context.User.Claims.FirstOrDefault(c => c.Type == "permission").Value;
+                var userId = context.User.Claims.FirstOrDefault(c => c.Type == "user_id").Value;
                 List<Permission> permissionsList = JsonConvert.DeserializeObject<List<Permission>>(permissions);
-                if (permissionsList.Find(p => ((p.Controller == "*" || p.Controller == currentController) && (p.Action == "*" || p.Action == currentAction))) != null)
+
+                //查询当前请求的权限
+                var requestPermission = permissionsList.Find(p => (("*".Equals(p.Controller, StringComparison.InvariantCultureIgnoreCase) || currentController.Equals(p.Controller, StringComparison.OrdinalIgnoreCase)) &&
+                                                ("*".Equals(p.Action, StringComparison.OrdinalIgnoreCase) || currentAction.Equals(p.Action, StringComparison.OrdinalIgnoreCase))));
+                if (requestPermission != null) //查询到权限放行
                 {
                     context.Succeed(requirement); //放行请求
                 }

@@ -3,8 +3,8 @@ using Grpc.Core;
 using IdentityService.Rpc.Protos;
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
-using Service.IdentityService;
-using Service.IdentityService.Domain;
+using IdentityService;
+using IdentityService.Domain;
 
 namespace IdentityService.Rpc.Service
 {
@@ -45,6 +45,7 @@ namespace IdentityService.Rpc.Service
                         p.Service = pre.Service;
                         p.Controller = pre.Controller;
                         p.Action = pre.Action;
+                        p.Description = pre.Description;
                         p.UpdateTime = DateTime.Now;
                         dBContext.Entry(p).State = EntityState.Modified;
                     }

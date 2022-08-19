@@ -1,10 +1,12 @@
 ﻿using Grpc.Net.Client;
+using IdentityService;
+using IdentityService.Domain;
 using IdentityService.Rpc.Protos;
 using Infrastructure;
 using Infrastructure.Consul;
 using Microsoft.EntityFrameworkCore;
 using Service.IdentityService.App.Interface;
-using Service.IdentityService.Domain;
+
 
 
 namespace Service.IdentityService.App
@@ -47,13 +49,13 @@ namespace Service.IdentityService.App
             //查询用户权限
             using (var context = contextFactory.CreateDbContext())
             {
-                var permissions = context.Set<Permission>().FromSqlRaw($"select * from Permission as p where p.id in(select permissionId from RolePermissionRelation as rp where rp.roleId in(select roleId from UserRoleRelation as ur,Role r where ur.roleId = r.id and ur.userId = {user.Id} and r.status = 1)) and status = 1")
+                var permissions = await context.Set<Permission>().FromSqlRaw($"select * from Permission as p where p.id in(select permissionId from RolePermissionRelation as rp where rp.roleId in(select roleId from UserRoleRelation as ur,Role r where ur.roleId = r.id and ur.userId = {user.Id} and r.status = 1)) and status = 1")
                             .Select(r => new
                             {
                                 r.Controller,
                                 r.Action
                             }).ToArrayAsync();
-                return new object[] { user.Id, permissions.Result };
+                return new object[] { user.Id, permissions};
             }
         }
     }

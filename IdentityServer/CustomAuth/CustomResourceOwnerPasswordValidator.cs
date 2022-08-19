@@ -4,7 +4,6 @@ using IdentityServer4.Models;
 using IdentityServer4.Validation;
 using System.Security.Claims;
 using Newtonsoft.Json;
-using Service.IdentityService.Domain;
 using System.Collections;
 
 namespace Service.IdentityService
@@ -41,7 +40,7 @@ namespace Service.IdentityService
                 }
                 else
                 {
-                    context.Result = new GrantValidationResult(TokenRequestErrors.InvalidGrant, "认证失败");
+                    context.Result = new GrantValidationResult(TokenRequestErrors.InvalidGrant, "鉴权失败");
                 }
             }
         }

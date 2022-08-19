@@ -9,8 +9,8 @@ using System.Reflection;
 using Com.Ctrip.Framework.Apollo;
 using Com.Ctrip.Framework.Apollo.Enums;
 using IdentityService.Rpc.Service;
-using Microsoft.AspNetCore.Mvc;
 using Infrastructure;
+using IdentityService;
 
 var builder = WebApplication.CreateBuilder(args);
 //Apollo≈‰÷√÷––ƒ

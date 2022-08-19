@@ -11,6 +11,8 @@ using UserService.Rpc.Service;
 using Com.Ctrip.Framework.Apollo;
 using Infrastructure;
 using Com.Ctrip.Framework.Apollo.Enums;
+using StackExchange.Redis;
+using Microsoft.Extensions.Caching.Distributed;
 
 var builder = WebApplication.CreateBuilder(args);
 //Apollo配置中心
@@ -49,6 +51,12 @@ builder.Services.AddPooledDbContextFactory<UserDBContext>(option =>
     option.UseSqlServer(builder.Configuration.GetValue<string>("SqlServer"));
 });
 
+//Redis客户端注册
+builder.Services.AddStackExchangeRedisCache(option =>
+{
+    option.InstanceName = "UserService";
+    option.Configuration = builder.Configuration.GetValue<string>("RedisServer");
+});
 
 //认证中心注册
 builder.Services.AddAuthentication("Bearer")
@@ -59,6 +67,7 @@ builder.Services.AddAuthentication("Bearer")
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateAudience = false
+
     };
 });
 
@@ -66,6 +75,7 @@ builder.Services.AddAuthentication("Bearer")
 builder.Services.AddGrpc();
 
 var app = builder.Build();
+
 
 //consul服务注册注入
 app.UseConsul(builder.Configuration.GetSection("Consul").Get<ConsulServiceOptions>());

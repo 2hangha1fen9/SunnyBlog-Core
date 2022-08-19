@@ -6,6 +6,7 @@ using Infrastructure.Auth.Protos;
 using Microsoft.Extensions.Configuration;
 using Grpc.Net.Client;
 using Google.Protobuf.Collections;
+using Infrastructure.Auth;
 
 namespace Infrastructure
 {
@@ -48,9 +49,9 @@ namespace Infrastructure
                 foreach (MethodInfo method in methods) 
                 {
                     Endpoint endpoint = new Endpoint();
-                    endpoint.Service = type.Assembly.GetName().Name.ToLower(); //获取当前程序集名称
-                    endpoint.Controller = type.Name.Replace("Controller","").ToLower(); //获取当前控制器名称
-                    endpoint.Action = method.Name.ToLower(); //获取当前操作方法
+                    endpoint.Service = type.Assembly.GetName().Name; //获取当前程序集名称
+                    endpoint.Controller = type.Name.Replace("Controller",""); //获取当前控制器名称
+                    endpoint.Action = method.Name; //获取当前操作方法
                     endpoint.Description = method.GetXmlDocsSummary(); //获取控制器上的注释
                     endpoints.Endpoint.Add(endpoint); //添加消息对象
                 }

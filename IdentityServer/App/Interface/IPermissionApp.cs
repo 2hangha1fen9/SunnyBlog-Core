@@ -1,4 +1,4 @@
-﻿using Service.IdentityService.Domain;
+﻿using IdentityService.Domain;
 
 namespace Service.IdentityService.App.Interface
 {
