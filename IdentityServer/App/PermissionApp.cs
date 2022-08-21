@@ -49,13 +49,29 @@ namespace Service.IdentityService.App
             //查询用户权限
             using (var context = contextFactory.CreateDbContext())
             {
-                var permissions = await context.Set<Permission>().FromSqlRaw($"select * from Permission as p where p.id in(select permissionId from RolePermissionRelation as rp where rp.roleId in(select roleId from UserRoleRelation as ur,Role r where ur.roleId = r.id and ur.userId = {user.Id} and r.status = 1)) and status = 1")
+                var permissions = await context.Set<Permission>().FromSqlRaw($"select * from Permission as p where p.id in(select permissionId from RolePermissionRelation as rp where rp.roleId in(select roleId from UserRoleRelation as ur,Role r where ur.roleId = r.id and ur.userId = {user.Id} and exists(select * from [User] u where id = ur.userId and u.status = 1) and r.status = 1)) and status = 1")
                             .Select(r => new
                             {
                                 r.Controller,
                                 r.Action
                             }).ToArrayAsync();
                 return new object[] { user.Id, permissions};
+            }
+        }
+
+        /// <summary>
+        /// 根据用户Id获取权限
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task<List<Permission>> GetPermissionsById(int id)
+        {
+            //查询用户权限
+            using (var context = contextFactory.CreateDbContext())
+            {
+                var permissions = await context.Set<Permission>().FromSqlRaw("select * from Permission as p where p.id in(select permissionId from RolePermissionRelation as rp where rp.roleId in(select roleId from UserRoleRelation as ur,Role r where ur.roleId = r.id and ur.userId = {user.Id} and exists(select * from [User] u where id = ur.userId and u.status = 1) and r.status = 1)) and status = 1")
+                            .ToArrayAsync();
+                return permissions.MapToList<Permission>();
             }
         }
     }

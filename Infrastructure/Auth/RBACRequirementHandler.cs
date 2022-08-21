@@ -1,6 +1,11 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using Google.Protobuf.WellKnownTypes;
+using Grpc.Net.Client;
+using Infrastructure.Auth.Protos;
+using Infrastructure.Consul;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -16,10 +21,19 @@ namespace Infrastructure.Auth
     /// </summary>
     public class RBACRequirementHandler : AuthorizationHandler<RBACRequirement>
     {
+        /// <summary>
+        /// Http上下文
+        /// </summary>
         private readonly IHttpContextAccessor _httpContextAccessor;
-        public RBACRequirementHandler(IHttpContextAccessor httpContextAccessor)
+        /// <summary>
+        /// 获取配置文件
+        /// </summary>
+        private readonly IConfiguration config;
+
+        public RBACRequirementHandler(IHttpContextAccessor httpContextAccessor, IConfiguration config)
         {
-            _httpContextAccessor = httpContextAccessor;
+            this._httpContextAccessor = httpContextAccessor;
+            this.config = config;
         }
 
         /// <summary>
@@ -29,7 +43,7 @@ namespace Infrastructure.Auth
         /// <param name="requirement"></param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, RBACRequirement requirement)
+        protected async override Task HandleRequirementAsync(AuthorizationHandlerContext context, RBACRequirement requirement)
         {
             //获取router对象
             var router = _httpContextAccessor.HttpContext?.GetRouteData();
@@ -41,27 +55,38 @@ namespace Infrastructure.Auth
                 //获取token权限信息
                 var permissions = context.User?.Claims?.FirstOrDefault(c => c.Type == "permission")?.Value;
                 var userId = context.User?.Claims?.FirstOrDefault(c => c.Type == "user_id")?.Value;
-                if (!string.IsNullOrWhiteSpace(permissions))
+                List<Permission> permissionsList;
+                try
                 {
-                    List<Permission> permissionsList = JsonConvert.DeserializeObject<List<Permission>>(permissions);
-                    //查询当前请求的权限
-                    var requestPermission = permissionsList.Find(p => (("*".Equals(p.Controller, StringComparison.InvariantCultureIgnoreCase) || currentController.Equals(p.Controller, StringComparison.OrdinalIgnoreCase)) &&
-                                                    ("*".Equals(p.Action, StringComparison.OrdinalIgnoreCase) || currentAction.Equals(p.Action, StringComparison.OrdinalIgnoreCase))));
-                    if (requestPermission != null) //查询到权限放行
-                    {
-                        context.Succeed(requirement); //放行请求
-                    }
-                    else
-                    {
-                        context.Fail(); //拒绝请求
-                    }
+                    permissionsList = JsonConvert.DeserializeObject<List<Permission>>(permissions);
+                }
+                catch (Exception)
+                {
+                    //尝试查询公共权限
+                    //调用consul服务发现，获取rpc服务地址
+                    var url = ServiceUrl.GetServiceUrlByName("IdentityService",
+                                config.GetSection("Consul").Get<ConsulServiceOptions>().ConsulAddress);
+                    //创建通讯频道
+                    using var channel = GrpcChannel.ForAddress(url);
+                    //创建客户端
+                    var client = new gEndpoint.gEndpointClient(channel);
+                    //远程调用
+                    var publicPermission = await client.GetPublicEndpointAsync(new Empty());
+                    //映射结果
+                    permissionsList = publicPermission.Endpoint.MapToList<Permission>();
+                }
+                //查询当前请求的权限
+                var requestPermission = permissionsList.Find(p => (("*".Equals(p.Controller, StringComparison.InvariantCultureIgnoreCase) || currentController.Equals(p.Controller, StringComparison.OrdinalIgnoreCase)) &&
+                                                ("*".Equals(p.Action, StringComparison.OrdinalIgnoreCase) || currentAction.Equals(p.Action, StringComparison.OrdinalIgnoreCase))));
+                if (requestPermission != null) //查询到权限放行
+                {
+                    context.Succeed(requirement); //放行请求
                 }
                 else
                 {
-                    context.Fail();//拒绝请求
+                    context.Fail(); //拒绝请求
                 }
             }
-            return Task.CompletedTask;
         }
     }
 }

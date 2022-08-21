@@ -44,6 +44,8 @@ namespace IdentityService.Domain
         /// </summary>
         [Column("status")]
         public int Status { get; set; }
+        [Column("isPublic")]
+        public int IsPublic { get; set; }
 
         [InverseProperty("Permission")]
         public virtual ICollection<RolePermissionRelation> RolePermissionRelations { get; set; }

@@ -3,7 +3,6 @@ using Grpc.Core;
 using IdentityService.Rpc.Protos;
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
-using IdentityService;
 using IdentityService.Domain;
 
 namespace IdentityService.Rpc.Service
@@ -13,8 +12,6 @@ namespace IdentityService.Rpc.Service
     /// </summary>
     public class GEndpointService:gEndpoint.gEndpointBase
     {
-        //锁，保证线程安全
-        private static readonly object lockObj = new object();
         //数据库上下文
         private readonly IDbContextFactory<AuthDBContext> contextFactory;
 
@@ -47,12 +44,31 @@ namespace IdentityService.Rpc.Service
                         p.Action = pre.Action;
                         p.Description = pre.Description;
                         p.UpdateTime = DateTime.Now;
+                        p.IsPublic = pre.IsPublic;
                         dBContext.Entry(p).State = EntityState.Modified;
                     }
                 }
                 await dBContext.SaveChangesAsync();
             }
             return new Empty();
+        }
+
+        public async override Task<Endpoints> GetPublicEndpoint(Empty request, ServerCallContext context)
+        {
+            using (AuthDBContext dBContext = contextFactory.CreateDbContext())
+            {
+                //查询所有公共权限
+                var publicPermission = await dBContext.Permissions.Where(p => p.IsPublic == 1).ToListAsync();
+                //构造返回体
+                Endpoints endpoints = new Endpoints();
+                foreach (var permission in publicPermission)
+                {
+                    //添加对象到返回体
+                    Protos.Endpoint endpoint = permission.MapTo<Protos.Endpoint>();
+                    endpoints.Endpoint.Add(endpoint);
+                }
+                return endpoints;
+            }
         }
     }
 }

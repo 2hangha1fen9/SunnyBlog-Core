@@ -26,6 +26,7 @@ namespace UserService.Controllers
         /// </summary>
         /// <returns>用户列表</returns>
         [HttpGet]
+        [RBAC(IsPublic = 1)]
         public async Task<Response<List<UserView>>> List([FromQuery] int? pageIndex = 1, [FromQuery] int? pageSize = 10, [FromBody] SearchCondition[]? condidtion = null)
         {
             var result = new Response<List<UserView>>();
@@ -68,6 +69,7 @@ namespace UserService.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost]
+        [RBAC(IsPublic = 1)]
         public async Task<Response<string>> Register(UserRegisterReq request)
         {
             var result = new Response<string>();
@@ -88,6 +90,7 @@ namespace UserService.Controllers
         /// </summary>
         /// <returns></returns>
         [HttpPost]
+        [RBAC(IsPublic = 1)]
         public async Task<Response<string>> ForgetPassword(ForgetPasswordReq request)
         {
             var result = new Response<string>();

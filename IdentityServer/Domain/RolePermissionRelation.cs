@@ -16,9 +16,9 @@ namespace IdentityService.Domain
         [Column("id")]
         public int Id { get; set; }
         [Column("roleId")]
-        public int? RoleId { get; set; }
+        public int RoleId { get; set; }
         [Column("permissionId")]
-        public int? PermissionId { get; set; }
+        public int PermissionId { get; set; }
 
         [ForeignKey("PermissionId")]
         [InverseProperty("RolePermissionRelations")]

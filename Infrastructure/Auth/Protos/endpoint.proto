@@ -11,6 +11,8 @@ import "google/protobuf/empty.proto";
 service gEndpoint{
 	//注册节点列表
 	rpc RegisterEndpoint(Endpoints) returns(google.protobuf.Empty);
+	//获取公共节点
+	rpc GetPublicEndpoint(google.protobuf.Empty) returns(Endpoints);
 }
 
 //节点列表
@@ -23,5 +25,6 @@ message Endpoint{
 	string Service = 1;
 	string Controller = 2;
 	string Action = 3;
-	string Description = 4; 
+	string Description = 4;
+	int32 IsPublic = 6;
 }

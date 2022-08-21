@@ -32,6 +32,7 @@ namespace Service.IdentityService
                 if (!string.IsNullOrEmpty(id) && permission.Length > 0)
                 {
                     //自定义令牌信息，将用户id和权限表存入token
+                    
                     context.Result = new GrantValidationResult(context.UserName,
                         OidcConstants.AuthenticationMethods.Password,
                         new Claim[] {

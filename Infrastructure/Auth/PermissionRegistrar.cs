@@ -53,7 +53,12 @@ namespace Infrastructure
                     endpoint.Controller = type.Name.Replace("Controller",""); //获取当前控制器名称
                     endpoint.Action = method.Name; //获取当前操作方法
                     endpoint.Description = method.GetXmlDocsSummary(); //获取控制器上的注释
-                    endpoints.Endpoint.Add(endpoint); //添加消息对象
+                    RBAC rbac = method.GetCustomAttribute<RBAC>(); //获取注解对象，获取api状态
+                    if (rbac != null)
+                    {
+                        endpoint.IsPublic = rbac.IsPublic;
+                    }
+                    endpoints.Endpoint.Add(endpoint); //添加对象
                 }
             }
  

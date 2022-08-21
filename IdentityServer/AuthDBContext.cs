@@ -45,13 +45,11 @@ namespace IdentityService
                 entity.HasOne(d => d.Permission)
                     .WithMany(p => p.RolePermissionRelations)
                     .HasForeignKey(d => d.PermissionId)
-                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_RolePermissionRelation_Permission");
 
                 entity.HasOne(d => d.Role)
                     .WithMany(p => p.RolePermissionRelations)
                     .HasForeignKey(d => d.RoleId)
-                    .OnDelete(DeleteBehavior.Cascade)
                     .HasConstraintName("FK_RolePermissionRelation_Role");
             });
 
