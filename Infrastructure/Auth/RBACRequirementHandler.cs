@@ -36,23 +36,29 @@ namespace Infrastructure.Auth
             //获取Controller、Action
             var currentController = router?.Values["controller"]?.ToString();
             var currentAction = router?.Values["action"]?.ToString();
-            if (string.IsNullOrWhiteSpace(currentController) == false && string.IsNullOrWhiteSpace(currentAction) == false)
+            if (!string.IsNullOrWhiteSpace(currentController) && !string.IsNullOrWhiteSpace(currentAction))
             {
                 //获取token权限信息
-                var permissions = context.User.Claims.FirstOrDefault(c => c.Type == "permission").Value;
-                var userId = context.User.Claims.FirstOrDefault(c => c.Type == "user_id").Value;
-                List<Permission> permissionsList = JsonConvert.DeserializeObject<List<Permission>>(permissions);
-
-                //查询当前请求的权限
-                var requestPermission = permissionsList.Find(p => (("*".Equals(p.Controller, StringComparison.InvariantCultureIgnoreCase) || currentController.Equals(p.Controller, StringComparison.OrdinalIgnoreCase)) &&
-                                                ("*".Equals(p.Action, StringComparison.OrdinalIgnoreCase) || currentAction.Equals(p.Action, StringComparison.OrdinalIgnoreCase))));
-                if (requestPermission != null) //查询到权限放行
+                var permissions = context.User?.Claims?.FirstOrDefault(c => c.Type == "permission")?.Value;
+                var userId = context.User?.Claims?.FirstOrDefault(c => c.Type == "user_id")?.Value;
+                if (!string.IsNullOrWhiteSpace(permissions))
                 {
-                    context.Succeed(requirement); //放行请求
+                    List<Permission> permissionsList = JsonConvert.DeserializeObject<List<Permission>>(permissions);
+                    //查询当前请求的权限
+                    var requestPermission = permissionsList.Find(p => (("*".Equals(p.Controller, StringComparison.InvariantCultureIgnoreCase) || currentController.Equals(p.Controller, StringComparison.OrdinalIgnoreCase)) &&
+                                                    ("*".Equals(p.Action, StringComparison.OrdinalIgnoreCase) || currentAction.Equals(p.Action, StringComparison.OrdinalIgnoreCase))));
+                    if (requestPermission != null) //查询到权限放行
+                    {
+                        context.Succeed(requirement); //放行请求
+                    }
+                    else
+                    {
+                        context.Fail(); //拒绝请求
+                    }
                 }
                 else
                 {
-                    context.Fail(); //拒绝请求
+                    context.Fail();//拒绝请求
                 }
             }
             return Task.CompletedTask;

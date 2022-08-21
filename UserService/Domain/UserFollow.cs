@@ -8,22 +8,23 @@ using Microsoft.EntityFrameworkCore;
 
 namespace UserService.Domain
 {
-    [Table("Score")]
-    public partial class Score
+    [Table("UserFollow")]
+    [Index("UserId", "WatchId", Name = "IX_UserFollow", IsUnique = true)]
+    public partial class UserFollow
     {
         [Key]
         [Column("id")]
         public int Id { get; set; }
-        [Column("reason")]
-        [StringLength(50)]
-        public string Reason { get; set; }
-        [Column("value")]
-        public double Value { get; set; }
         [Column("userId")]
         public int UserId { get; set; }
+        [Column("watchId")]
+        public int WatchId { get; set; }
 
         [ForeignKey("UserId")]
-        [InverseProperty("Scores")]
+        [InverseProperty("UserFollowUsers")]
         public virtual User User { get; set; }
+        [ForeignKey("WatchId")]
+        [InverseProperty("UserFollowWatches")]
+        public virtual User Watch { get; set; }
     }
 }

@@ -14,8 +14,9 @@ namespace UserService.Domain
     {
         public User()
         {
-            Scores = new HashSet<Score>();
-            Watches = new HashSet<Watch>();
+            UserFollowUsers = new HashSet<UserFollow>();
+            UserFollowWatches = new HashSet<UserFollow>();
+            UserScores = new HashSet<UserScore>();
         }
 
         [Key]
@@ -25,16 +26,15 @@ namespace UserService.Domain
         [Column("username")]
         [StringLength(20)]
         public string Username { get; set; }
-        [Required]
         [Column("phone")]
         [StringLength(11)]
         public string Phone { get; set; }
         [Column("email")]
-        [StringLength(50)]
+        [StringLength(100)]
         public string Email { get; set; }
         [Required]
         [Column("password")]
-        [StringLength(20)]
+        [StringLength(200)]
         public string Password { get; set; }
         /// <summary>
         /// 1启用0禁用
@@ -48,8 +48,10 @@ namespace UserService.Domain
         [InverseProperty("User")]
         public virtual UserDetail UserDetail { get; set; }
         [InverseProperty("User")]
-        public virtual ICollection<Score> Scores { get; set; }
+        public virtual ICollection<UserFollow> UserFollowUsers { get; set; }
+        [InverseProperty("Watch")]
+        public virtual ICollection<UserFollow> UserFollowWatches { get; set; }
         [InverseProperty("User")]
-        public virtual ICollection<Watch> Watches { get; set; }
+        public virtual ICollection<UserScore> UserScores { get; set; }
     }
 }

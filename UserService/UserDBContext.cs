@@ -15,24 +15,14 @@ namespace UserService
         {
         }
 
-        public virtual DbSet<Score> Scores { get; set; }
+        public virtual DbSet<ScoreUnit> ScoreUnits { get; set; }
         public virtual DbSet<User> Users { get; set; }
         public virtual DbSet<UserDetail> UserDetails { get; set; }
-        public virtual DbSet<Watch> Watches { get; set; }
+        public virtual DbSet<UserFollow> UserFollows { get; set; }
+        public virtual DbSet<UserScore> UserScores { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Score>(entity =>
-            {
-                entity.Property(e => e.Id).ValueGeneratedNever();
-
-                entity.HasOne(d => d.User)
-                    .WithMany(p => p.Scores)
-                    .HasForeignKey(d => d.UserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Score_User");
-            });
-
             modelBuilder.Entity<User>(entity =>
             {
                 entity.Property(e => e.Status)
@@ -49,17 +39,33 @@ namespace UserService
                 entity.HasOne(d => d.User)
                     .WithOne(p => p.UserDetail)
                     .HasForeignKey<UserDetail>(d => d.UserId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_Table_1_User");
             });
 
-            modelBuilder.Entity<Watch>(entity =>
+            modelBuilder.Entity<UserFollow>(entity =>
             {
                 entity.HasOne(d => d.User)
-                    .WithMany(p => p.Watches)
+                    .WithMany(p => p.UserFollowUsers)
                     .HasForeignKey(d => d.UserId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_Watch_User");
+                    .HasConstraintName("FK_UserFollow_User1");
+
+                entity.HasOne(d => d.Watch)
+                    .WithMany(p => p.UserFollowWatches)
+                    .HasForeignKey(d => d.WatchId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_UserFollow_User2");
+            });
+
+            modelBuilder.Entity<UserScore>(entity =>
+            {
+                entity.Property(e => e.Time).HasDefaultValueSql("(getdate())");
+
+                entity.HasOne(d => d.User)
+                    .WithMany(p => p.UserScores)
+                    .HasForeignKey(d => d.UserId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
+                    .HasConstraintName("FK_Score_User");
             });
 
             OnModelCreatingPartial(modelBuilder);

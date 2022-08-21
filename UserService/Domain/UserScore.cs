@@ -8,19 +8,25 @@ using Microsoft.EntityFrameworkCore;
 
 namespace UserService.Domain
 {
-    [Table("Watch")]
-    public partial class Watch
+    [Table("UserScore")]
+    public partial class UserScore
     {
         [Key]
         [Column("id")]
         public int Id { get; set; }
+        [Required]
+        [Column("reason")]
+        [StringLength(50)]
+        public string Reason { get; set; }
+        [Column("value", TypeName = "decimal(18, 2)")]
+        public decimal Value { get; set; }
         [Column("userId")]
         public int UserId { get; set; }
-        [Column("watchId")]
-        public int WatchId { get; set; }
+        [Column(TypeName = "datetime")]
+        public DateTime Time { get; set; }
 
         [ForeignKey("UserId")]
-        [InverseProperty("Watches")]
+        [InverseProperty("UserScores")]
         public virtual User User { get; set; }
     }
 }

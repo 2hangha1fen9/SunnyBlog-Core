@@ -1,4 +1,5 @@
 ﻿using Grpc.Core;
+using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using UserService.Rpc.Protos;
 
@@ -24,12 +25,13 @@ namespace UserService.Rpc.Service
             {
                 //查询用户名密码，将结果存入gRPC载荷对象
                 var username = request.Username;
-                var password = request.Password;
+                var password = request.Password.ShaEncrypt();
                 var user = await c.Users.Where(u => u.Username == username && u.Password == password).FirstOrDefaultAsync();
-                var userResponse = new UserResponse()
+                var userResponse = new UserResponse();
+                if (user != null)
                 {
-                    Id = user.Id,
-                };
+                    userResponse.Id = user.Id;
+                }
                 return userResponse;
             }
         }

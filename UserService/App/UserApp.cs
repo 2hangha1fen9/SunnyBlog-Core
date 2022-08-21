@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using UserService.Request;
 using Microsoft.Extensions.Caching.Distributed;
 using UserService.Domain;
+using System.Text.RegularExpressions;
 
 namespace UserService.App
 {
@@ -18,6 +19,7 @@ namespace UserService.App
         /// Redis缓存客户端
         /// </summary>
         private readonly IDistributedCache cache;
+
         public UserApp(IDbContextFactory<UserDBContext> context, IDistributedCache cache)
         {
             this.contextFactory = context;
@@ -35,10 +37,8 @@ namespace UserService.App
             {
                 var user = await context.Users.Where(u => u.Id == id).Select(u => new
                 {
-                    Id = u.Id,
-                    Username = u.Username,
                     Nick = u.UserDetail.Nick,
-                    Email = u.Email,
+                    Remark = u.UserDetail.Remark,
                     Photo = u.Photo,
                 }).FirstOrDefaultAsync();
                 var userView = user.MapTo<UserView>();
@@ -46,81 +46,33 @@ namespace UserService.App
             }
         }
 
-        /// <summary>
-        /// 获取用户列表
-        /// </summary>
-        /// <returns></returns>
-        public async Task<List<UserView>> GetUsers()
-        {
-            using (var context = contextFactory.CreateDbContext())
-            {
-                var users = await context.Users.Select(u => new
-                {
-                    Id = u.Id,
-                    Username = u.Username,
-                    Nick = u.UserDetail.Nick,
-                    Email = u.Email,
-                    Photo = u.Photo,
-                }).ToListAsync();
-                var usersView = users.MapToList<UserView>();
-                return usersView;
-            }
-        }
 
         /// <summary>
-        /// 获取用户详细列表
+        /// 获取用户列表,分页+条件
         /// </summary>
         /// <returns></returns>
-        public async Task<List<UserDetailView>> GetUserDetails()
+        public async Task<List<UserView>> GetUsers(int pageIndex, int pageSize, SearchCondition[] condition)
         {
             using (var context = contextFactory.CreateDbContext())
             {
-                var users = await context.UserDetails.Select(u => new
+                var users = context.Users.Select(u => new
                 {
-                    UserId = u.UserId,
-                    Username = u.User.Username,
-                    Nick = u.Nick,
-                    Phone = u.User.Phone,
-                    Email = u.User.Email,
-                    Sex = u.Sex,
-                    Birthday = u.Birthday,
-                    RegisterTime = u.RegisterTime,
-                    Remark = u.Remark,
-                    Score = u.Score,
-                    Photo = u.User.Photo,
-                    Status = u.User.Status
-                }).ToListAsync();
-                var usersView = users.MapToList<UserDetailView>();
+                    Nick = u.UserDetail.Nick,
+                    Remark = u.UserDetail.Remark,
+                    Photo = u.Photo,
+                });
+                //判断是否有条件
+                if (condition.Length > 0)
+                {
+                    foreach (var con in condition)
+                    {
+                        users = "nick".Equals(con.Key,StringComparison.OrdinalIgnoreCase) ? users.Where(u => u.Nick.Contains(con.Value)) : users;
+                        users = "remark".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? users.Where(u => u.Remark.Contains(con.Value)) : users;
+                    }
+                }
+                var result = await users.Skip(pageSize * (pageIndex - 1)).Take(pageSize).ToListAsync();
+                var usersView = result.MapToList<UserView>();
                 return usersView;
-            }
-        }
-        
-        /// <summary>
-        /// 根据用户ID获取用户详情
-        /// </summary>
-        /// <param name="id">用户ID</param>
-        /// <returns></returns>
-        public async Task<UserDetailView> GetUserDetailById(int id)
-        {
-            using (var context = contextFactory.CreateDbContext())
-            {
-                var user = await context.UserDetails.Where(u => u.UserId == u.UserId).Select(u => new
-                {
-                    UserId = u.UserId,
-                    Username = u.User.Username,
-                    Nick = u.Nick,
-                    Phone = u.User.Phone,
-                    Email = u.User.Email,
-                    Sex = u.Sex,
-                    Birthday = u.Birthday,
-                    RegisterTime = u.RegisterTime,
-                    Remark = u.Remark,
-                    Score = u.Score,
-                    Photo = u.User.Photo,
-                    Status = u.User.Status
-                }).FirstOrDefaultAsync();
-                var userView = user.MapTo<UserDetailView>();
-                return userView;
             }
         }
 
@@ -134,38 +86,213 @@ namespace UserService.App
             using (var dbContext = contextFactory.CreateDbContext())
             {
                 //查询用户是否存在
-                if(await dbContext.Users.FirstOrDefaultAsync(u => u.Username == request.Username || u.Phone == request.Phone) != null)
+                if (await dbContext.Users.FirstOrDefaultAsync(u => u.Username == request.Username ||
+                                                                   u.Phone == request.Phone ||
+                                                                   u.Email == request.Email) != null)
                 {
-                    return "用户已存在";
+                    throw new Exception("用户已存在");
                 }
 
-                if (cache.GetString(request.Phone) == request.VerificationCode)
+                //验证验证码
+                if ((request.Phone != null && await cache.GetStringAsync(request.Phone) == request.VerificationCode) ||
+                    (request.Email != null && await cache.GetStringAsync(request.Email) == request.VerificationCode))
                 {
-                    if (dbContext.Add(request.MapTo<User>()) != null)
+                    //验证有效性
+                    User user = request.MapTo<User>();
+                    //密码加密
+                    user.Password = user.Password.ShaEncrypt();
+                    dbContext.Add(user);
+                    if (await dbContext.SaveChangesAsync() > 0)
                     {
+                        //查询用户ID
+                        var u = await dbContext.Users.FirstOrDefaultAsync(u => u.Username == user.Username);
+                        //添加用户详情
+                        dbContext.UserDetails.Add(new UserDetail()
+                        {
+                            Nick = $"用户{user.Username}",
+                            UserId = u.Id,
+                            Sex = -1,
+                            RegisterTime = DateTime.Now
+                        });
+                        await dbContext.SaveChangesAsync();
                         return "注册成功";
                     }
                     else
                     {
-                        return "注册失败";
+                        throw new Exception("注册失败");
                     }
                 }
                 else
                 {
-                    return "验证码错误";
+                    throw new Exception("验证码错误");
                 }
             }
         }
 
         /// <summary>
-        /// 发送短信
+        /// 修改用户密码
         /// </summary>
-        /// <param name="phone"></param>
+        /// <param name="request">忘记密码请求</param>
+        public async Task<string> ChangePassword(ForgetPasswordReq request)
+        {
+            using (var dbContext = contextFactory.CreateDbContext())
+            {
+                //查询用户
+                var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Username == request.Username);
+                if (user != null)
+                {
+                    //检查验证码
+                    var phone = await cache.GetStringAsync(user?.Phone ?? "");
+                    var email = await cache.GetStringAsync(user?.Email ?? "");
+                    //验证有效性
+                    if (phone == request.VerificationCode || email == request.VerificationCode)
+                    {
+                        user.Password = request.NewPassword.ShaEncrypt();
+                        dbContext.Update(user);
+                        if (await dbContext.SaveChangesAsync() > 0)
+                        {
+                            return "修改密码成功";
+                        }
+                        else
+                        {
+                            throw new Exception("修改密码失败");
+                        }
+                    }
+                    else
+                    {
+                        throw new Exception("验证码错误");
+                    }
+                }
+                else
+                {
+                    throw new Exception("用户信息错误");
+                }
+            }
+        }
+
+        /// <summary>
+        /// 修改用户信息
+        /// </summary>
+        /// <param name="request"></param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        public Task<string> SendMessage(string phone)
+        public async Task<string> ChangeUser(UpdateUserReq request, int id)
         {
-            throw new NotImplementedException();
+            using (var dbContext = contextFactory.CreateDbContext())
+            {
+                //查询用户
+                var userDetail = await dbContext.UserDetails.FirstOrDefaultAsync(u => u.UserId == id);
+                if (userDetail != null)
+                {
+                    userDetail.Nick = request.Nick ?? userDetail.Nick;
+                    userDetail.Remark = request.Remark ?? userDetail.Remark;
+                    userDetail.Sex = request.Sex ?? userDetail.Sex;
+                    userDetail.Birthday = string.IsNullOrWhiteSpace(request.Birthday) ? Convert.ToDateTime(request.Birthday) : Convert.ToDateTime(userDetail.Birthday);
+                    if (await dbContext.SaveChangesAsync() > 0)
+                    {
+                        return "更新成功";
+                    }
+                    else
+                    {
+                        throw new Exception("更新失败");
+                    }
+                }
+                else
+                {
+                    throw new Exception("用户信息异常");
+                }
+            }
+        }
+
+        /// <summary>
+        /// 账号绑定
+        /// </summary>
+        /// <param name="requests"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public async Task<string> BindAccount(BindAccountReq requests, int id)
+        {
+            using (var dbContext = contextFactory.CreateDbContext())
+            {
+                var user = dbContext.Users.FirstOrDefault(u => u.Id == id && u.Password == requests.Password.ShaEncrypt());
+                if (user != null)
+                {
+                    //查询验证码
+                    if (await cache.GetStringAsync(requests.Bind) != requests.VerificationCode)
+                    {
+                        throw new Exception("验证码错误");
+                    }
+                    //判断绑定类型
+                    if (requests.Type == "phone")
+                    {
+                        user.Phone = requests.Bind;
+                    }
+                    else if (requests.Type == "email")
+                    {
+
+                        user.Email = requests.Bind;
+                    }
+                    else
+                    {
+                        throw new Exception("绑定渠道错误:必须为phone、email");
+                    }
+                    //保存修改
+                    if (await dbContext.SaveChangesAsync() > 0)
+                    {
+                        return "绑定成功";
+                    }
+                    else
+                    {
+                        throw new Exception("绑定失败");
+                    }
+                }
+                else
+                {
+                    throw new Exception("用户信息错误");
+                }
+            }
+        }
+
+        /// <summary>
+        /// 账号解绑
+        /// </summary>
+        /// <param name="requests"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public async Task<string> UbindAccount(UbindAccountReq requests, int id)
+        {
+            using (var dbContext = contextFactory.CreateDbContext())
+            {
+                var user = dbContext.Users.FirstOrDefault(u => u.Id == id && u.Password == requests.Password.ShaEncrypt());
+                if (user != null)
+                {
+                    if (requests.Type == "phone")
+                    {
+                        user.Phone = string.Empty;
+                    }
+                    else if (requests.Type == "email")
+                    {
+                        user.Email = string.Empty;
+                    }
+                    else
+                    {
+                        throw new Exception("绑定渠道错误:必须为phone、email");
+                    }
+                    //保存修改
+                    if (await dbContext.SaveChangesAsync() > 0)
+                    {
+                        return "解绑成功";
+                    }
+                    else
+                    {
+                        throw new Exception("解绑成功");
+                    }
+                }
+                else
+                {
+                    throw new Exception("用户信息错误");
+                }
+            }
         }
     }
 }

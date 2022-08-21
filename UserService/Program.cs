@@ -13,6 +13,10 @@ using Infrastructure;
 using Com.Ctrip.Framework.Apollo.Enums;
 using StackExchange.Redis;
 using Microsoft.Extensions.Caching.Distributed;
+using UserService.Domain;
+using Microsoft.Extensions.FileProviders;
+using Microsoft.AspNetCore.Http.Features;
+using UserService.Domain.config;
 
 var builder = WebApplication.CreateBuilder(args);
 //Apollo配置中心
@@ -36,7 +40,19 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 #region 服务注册
+//邮件配置注册
+builder.Services.AddSingleton<MailConfig>(builder.Configuration.GetSection("MailConfig").Get<MailConfig>());
+builder.Services.AddSingleton<MailTemplate>(builder.Configuration.GetSection("MailTemplate").Get<MailTemplate>());
+//短信配置注册
+builder.Services.AddSingleton<MessageConfig>(builder.Configuration.GetSection("MessageConfig").Get<MessageConfig>());
+//服务注册
 builder.Services.AddScoped<IUserApp,UserApp>();
+builder.Services.AddScoped<IAdminApp, AdminApp>();
+builder.Services.AddScoped<IMailApp, MailApp>();
+builder.Services.AddScoped<IMessageApp, MessageApp>();
+builder.Services.AddScoped<IPhotoApp, PhotoApp>();
+builder.Services.AddScoped<IFollowApp, FollowApp>();
+builder.Services.AddScoped<IScoreApp, ScoreApp>();
 //配置Redis连接
 builder.Services.AddSingleton(new RedisCache(builder.Configuration.GetValue<string>("RedisServer")));
 //RBAC授权服务
@@ -76,7 +92,6 @@ builder.Services.AddGrpc();
 
 var app = builder.Build();
 
-
 //consul服务注册注入
 app.UseConsul(builder.Configuration.GetSection("Consul").Get<ConsulServiceOptions>());
 
@@ -84,7 +99,15 @@ app.UseConsul(builder.Configuration.GetSection("Consul").Get<ConsulServiceOption
 app.MapGrpcService<GUserService>();
 
 //节点注册
-app.UsePermissionRegistrar<Program>(builder.Configuration.GetSection("Consul").Get<ConsulServiceOptions>().ConsulAddress);
+app.UsePermissionRegistrar<Program>(builder.Configuration.GetSection("Consul").Get<ConsulServiceOptions>().ConsulAddress).Wait();
+
+
+//开启静态文件访问
+app.UseStaticFiles(new StaticFileOptions()
+{
+    FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "static","avatar")),
+    RequestPath = "/api/avatar"
+});
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -99,7 +122,5 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
-
-
 
 app.Run();

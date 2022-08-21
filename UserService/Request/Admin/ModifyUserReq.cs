@@ -1,57 +1,60 @@
-﻿namespace UserService.Response
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace UserService.Request.Admin
 {
     /// <summary>
-    /// 用户详情响应视图
+    /// 修改用户信息请求
     /// </summary>
-    public class UserDetailView
+    public class ModifyUserReq
     {
         /// <summary>
         /// 用户ID
         /// </summary>
-        public int UserId { get; set; }
+        [Required(ErrorMessage = "ID不能为空")]
+        public int Id { get; set; }
         /// <summary>
         /// 登录名
         /// </summary>
-        public string Username { get; set; }
+        public string? Username { get; set; }
         /// <summary>
         /// 用户昵称
         /// </summary>
-        public string Nick { get; set; }
+        public string? Nick { get; set; }
         /// <summary>
         /// 手机号
         /// </summary>
-        public string Phone { get; set; }
+        public string? Phone { get; set; }
         /// <summary>
         /// 邮箱
         /// </summary>
-        public string Email { get; set; }
+        public string? Email { get; set; }
         /// <summary>
         /// 性别
         /// </summary>
-        public int Sex { get; set; }
+        public int? Sex { get; set; }
         /// <summary>
         /// 生日
         /// </summary>
-        public DateTime Birthday { get; set; }
+        public string? Birthday { get; set; }
         /// <summary>
         /// 注册时间
         /// </summary>
-        public DateTime RegisterTime { get; set; }
+        public string? RegisterTime { get; set; }
         /// <summary>
         /// 备注
         /// </summary>
-        public string Remark { get; set; }
+        public string? Remark { get; set; }
         /// <summary>
         /// 积分
         /// </summary>
-        public decimal Score { get; set; }
+        public decimal? Score { get; set; }
         /// <summary>
         /// 头像
         /// </summary>
-        public string Photo { get; set; }
+        public string? Photo { get; set; }
         /// <summary>
         /// 状态
         /// </summary>
-        public int Status { get; set; }
+        public int? Status { get; set; }
     }
 }

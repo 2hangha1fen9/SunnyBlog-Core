@@ -5,6 +5,7 @@ using IdentityServer4.Validation;
 using System.Security.Claims;
 using Newtonsoft.Json;
 using System.Collections;
+using Infrastructure;
 
 namespace Service.IdentityService
 {

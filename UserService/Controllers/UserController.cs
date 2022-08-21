@@ -1,6 +1,7 @@
 ﻿using Infrastructure;
 using Infrastructure.Auth;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using UserService.App.Interface;
 using UserService.Request;
 using UserService.Response;
@@ -12,9 +13,12 @@ namespace UserService.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserApp userApp;
-        public UserController(IUserApp userApp)
+        private readonly IAdminApp adminApp;
+
+        public UserController(IUserApp userApp,IAdminApp adminApp)
         {
             this.userApp = userApp;
+            this.adminApp = adminApp;
         }
 
         /// <summary>
@@ -22,97 +26,16 @@ namespace UserService.Controllers
         /// </summary>
         /// <returns>用户列表</returns>
         [HttpGet]
-        [RedisCache(expiration: 1000)]
-        public async Task<Response<List<UserView>>> List()
+        public async Task<Response<List<UserView>>> List([FromQuery] int? pageIndex = 1, [FromQuery] int? pageSize = 10, [FromBody] SearchCondition[]? condidtion = null)
         {
             var result = new Response<List<UserView>>();
             try
             {
-                result.Result = await userApp.GetUsers();
+                result.Result = await userApp.GetUsers(pageIndex.Value,pageSize.Value,condidtion);
             }
             catch (Exception ex)
             {
-                result.Code = 500;
-                result.Message = ex.InnerException?.Message ?? ex.Message;
-            }
-            return result;
-        }
-
-        /// <summary>
-        /// 获取用户详情列表
-        /// </summary>
-        /// <returns></returns>
-        [RBAC]
-        [HttpGet]
-        [RedisCache(expiration: 1000)]
-        public async Task<Response<List<UserDetailView>>> Details()
-        {
-            var result = new Response<List<UserDetailView>>();
-            try
-            {
-                result.Result = await userApp.GetUserDetails();
-                
-            }
-            catch (Exception ex)
-            {
-                result.Code = 500;
-                result.Message = ex.InnerException?.Message ?? ex.Message;
-            }
-            return result;
-        }
-
-        /// <summary>
-        /// 根据ID查询用户
-        /// </summary>
-        /// <param name="id">用户Id</param>
-        /// <returns>用户信息</returns>
-
-        [HttpGet]
-        [RedisCache(expiration: 1000)]
-        public async Task<Response<UserView>> GetUser(int id)
-        {
-            var result = new Response<UserView>();
-            try
-            {
-                result.Result = await userApp.GetUserById(id);
-            }
-            catch (Exception ex)
-            {
-                result.Code = 500;
-                result.Message = ex.InnerException?.Message ?? ex.Message;
-            }
-            return result;
-        }
-
-        /// <summary>
-        /// 获取当前用户
-        /// </summary>
-        /// <returns></returns>
-        [RBAC]
-        [HttpGet]
-        public async Task<Response<UserView>> GetMyUser()
-        {
-            var userId = HttpContext.User.Claims?.FirstOrDefault(c => c.Type == "user_id")?.Value;
-            return await GetUser(Convert.ToInt32(userId));
-        }
-
-        /// <summary>
-        /// 根据ID查询用户详情
-        /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        [RBAC]
-        [HttpGet]
-        public async Task<Response<UserDetailView>> GetUserDetail(int id)
-        {
-            var result = new Response<UserDetailView>();
-            try
-            {
-                result.Result = await userApp.GetUserDetailById(id);
-            }
-            catch (Exception ex)
-            {
-                result.Code = 500;
+                result.Status = 500;
                 result.Message = ex.InnerException?.Message ?? ex.Message;
             }
             return result;
@@ -124,10 +47,20 @@ namespace UserService.Controllers
         /// <returns></returns>
         [RBAC]
         [HttpGet]
-        public async Task<Response<UserDetailView>> GetMyUserDetail()
+        public async Task<Response<UserDetailView>> LoginInfo()
         {
-            var userId = HttpContext.User.Claims?.FirstOrDefault(c => c.Type == "user_id")?.Value;
-            return await GetUserDetail(Convert.ToInt32(userId));
+            var result = new Response<UserDetailView>();
+            try
+            {
+                var userId = HttpContext.User.Claims?.FirstOrDefault(c => c.Type == "user_id")?.Value;
+                result.Result = await adminApp.GetUserDetailById(Convert.ToInt32(userId));
+            }
+            catch (Exception ex)
+            {
+                result.Status = 500;
+                result.Message = ex.InnerException?.Message ?? ex.Message;
+            }
+            return result;
         }
 
         /// <summary>
@@ -144,7 +77,94 @@ namespace UserService.Controllers
             }
             catch (Exception ex)
             {
-                result.Code = 500;
+                result.Status = 500;
+                result.Message = ex.InnerException?.Message ?? ex.Message;
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// 找回密码
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public async Task<Response<string>> ForgetPassword(ForgetPasswordReq request)
+        {
+            var result = new Response<string>();
+            try
+            {
+                result.Result = await userApp.ChangePassword(request);
+            }
+            catch (Exception ex)
+            {
+                result.Status = 500;
+                result.Message = ex.InnerException?.Message ?? ex.Message;
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// 修改用户信息
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [RBAC]
+        [HttpPut]
+        public async Task<Response<string>> UpdateInfo(UpdateUserReq request)
+        {
+            var result = new Response<string>();
+            try
+            {
+                var userId = HttpContext.User.Claims?.FirstOrDefault(c => c.Type == "user_id")?.Value;
+                result.Result = await userApp.ChangeUser(request, Convert.ToInt32(userId));
+            }
+            catch (Exception ex)
+            {
+                result.Status = 500;
+                result.Message = ex.InnerException?.Message ?? ex.Message;
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// 账号绑定
+        /// </summary>
+        /// <returns></returns>
+        [RBAC]
+        [HttpPut]
+        public async Task<Response<string>> BindAccount(BindAccountReq request)
+        {
+            var result = new Response<string>();
+            try
+            {
+                var userId = HttpContext.User.Claims?.FirstOrDefault(c => c.Type == "user_id")?.Value;
+                result.Result = await userApp.BindAccount(request, Convert.ToInt32(userId));
+            }
+            catch (Exception ex)
+            {
+                result.Status = 500;
+                result.Message = ex.InnerException?.Message ?? ex.Message;
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// 账号解绑
+        /// </summary>
+        /// <returns></returns>
+        [RBAC]
+        [HttpPut]
+        public async Task<Response<string>> UbindAccount(UbindAccountReq request)
+        {
+            var result = new Response<string>();
+            try
+            {
+                var userId = HttpContext.User.Claims?.FirstOrDefault(c => c.Type == "user_id")?.Value;
+                result.Result = await userApp.UbindAccount(request, Convert.ToInt32(userId));
+            }
+            catch (Exception ex)
+            {
+                result.Status = 500;
                 result.Message = ex.InnerException?.Message ?? ex.Message;
             }
             return result;

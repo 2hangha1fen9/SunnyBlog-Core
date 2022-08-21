@@ -14,7 +14,7 @@
    "SelectedToBeGenerated": 0,
    "Tables": [
       {
-         "Name": "[dbo].[Score]",
+         "Name": "[dbo].[ScoreUnit]",
          "ObjectType": 0
       },
       {
@@ -26,7 +26,11 @@
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[Watch]",
+         "Name": "[dbo].[UserFollow]",
+         "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[UserScore]",
          "ObjectType": 0
       }
    ],
