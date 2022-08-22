@@ -11,6 +11,9 @@ using Com.Ctrip.Framework.Apollo.Enums;
 using IdentityService.Rpc.Service;
 using Infrastructure;
 using IdentityService;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authorization;
+using Infrastructure.Auth;
 
 var builder = WebApplication.CreateBuilder(args);
 //Apollo配置中心
@@ -45,6 +48,10 @@ builder.Services.AddGrpc();
 
 //添加服务
 builder.Services.AddScoped<IPermissionApp, PermissionApp>();
+//RBAC授权服务
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+builder.Services.AddSingleton<IAuthorizationPolicyProvider, RBACPolicyProvider>();
+builder.Services.AddSingleton<IAuthorizationHandler, RBACRequirementHandler>();
 
 //启用授权服务，并自定义令牌token
 builder.Services.AddIdentityServer()
@@ -53,6 +60,18 @@ builder.Services.AddIdentityServer()
     .AddResourceOwnerValidator<CustomResourceOwnerPasswordValidator>()
     .AddProfileService<CustomProfileService>()
     .AddDeveloperSigningCredential();
+
+//认证中心注册
+builder.Services.AddAuthentication("Bearer")
+.AddJwtBearer("Bearer", options =>
+{
+    options.Authority = ServiceUrl.GetServiceUrlByName("IdentityService",
+        builder.Configuration.GetSection("Consul").Get<ConsulServiceOptions>().ConsulAddress);
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateAudience = false
+    };
+});
 
 // Configure the HTTP request pipeline.
 var app = builder.Build();
@@ -77,6 +96,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+//启用授权鉴权
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

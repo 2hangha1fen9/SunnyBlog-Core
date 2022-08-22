@@ -51,7 +51,7 @@ namespace UserService.App
         /// 获取用户列表,分页+条件
         /// </summary>
         /// <returns></returns>
-        public async Task<List<UserView>> GetUsers(int pageIndex, int pageSize, SearchCondition[] condition)
+        public async Task<List<UserView>> GetUsers(SearchCondition[] condition)
         {
             using (var context = contextFactory.CreateDbContext())
             {
@@ -70,7 +70,7 @@ namespace UserService.App
                         users = "remark".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? users.Where(u => u.Remark.Contains(con.Value)) : users;
                     }
                 }
-                var result = await users.Skip(pageSize * (pageIndex - 1)).Take(pageSize).ToListAsync();
+                var result = await users.ToListAsync();
                 var usersView = result.MapToList<UserView>();
                 return usersView;
             }

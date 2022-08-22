@@ -83,7 +83,6 @@ builder.Services.AddAuthentication("Bearer")
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateAudience = false
-
     };
 });
 
@@ -118,6 +117,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+//∆Ù”√ ⁄»®º¯»®
 app.UseAuthentication();
 app.UseAuthorization();
 

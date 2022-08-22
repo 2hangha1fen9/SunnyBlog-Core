@@ -58,7 +58,7 @@ namespace IdentityService.Rpc.Service
             using (AuthDBContext dBContext = contextFactory.CreateDbContext())
             {
                 //查询所有公共权限
-                var publicPermission = await dBContext.Permissions.Where(p => p.IsPublic == 1).ToListAsync();
+                var publicPermission = await dBContext.Permissions.Where(p => p.IsPublic == 1 && p.Status == 1).ToListAsync();
                 //构造返回体
                 Endpoints endpoints = new Endpoints();
                 foreach (var permission in publicPermission)

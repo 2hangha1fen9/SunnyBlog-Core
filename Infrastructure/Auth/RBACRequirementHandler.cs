@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
+using StackExchange.Redis;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,11 +30,18 @@ namespace Infrastructure.Auth
         /// 获取配置文件
         /// </summary>
         private readonly IConfiguration config;
+        /// <summary>
+        /// Redis连接
+        /// </summary>
+        private readonly IConnectionMultiplexer connection;
+        private readonly IDatabase database;
 
         public RBACRequirementHandler(IHttpContextAccessor httpContextAccessor, IConfiguration config)
         {
             this._httpContextAccessor = httpContextAccessor;
             this.config = config;
+            this.connection = ConnectionMultiplexer.Connect(config.GetValue<string>("RedisServer"));
+            this.database = this.connection.GetDatabase(2);
         }
 
         /// <summary>
@@ -60,20 +68,30 @@ namespace Infrastructure.Auth
                 {
                     permissionsList = JsonConvert.DeserializeObject<List<Permission>>(permissions);
                 }
-                catch (Exception)
+                catch (Exception)//尝试查询公共权限
                 {
-                    //尝试查询公共权限
-                    //调用consul服务发现，获取rpc服务地址
-                    var url = ServiceUrl.GetServiceUrlByName("IdentityService",
-                                config.GetSection("Consul").Get<ConsulServiceOptions>().ConsulAddress);
-                    //创建通讯频道
-                    using var channel = GrpcChannel.ForAddress(url);
-                    //创建客户端
-                    var client = new gEndpoint.gEndpointClient(channel);
-                    //远程调用
-                    var publicPermission = await client.GetPublicEndpointAsync(new Empty());
-                    //映射结果
-                    permissionsList = publicPermission.Endpoint.MapToList<Permission>();
+                    //尝试调用Redis获取公共权限
+                    var cache = await database.StringGetAsync("publicPermission");
+                    if (cache.HasValue)
+                    {
+                        permissionsList = JsonConvert.DeserializeObject<List<Permission>>(cache);
+                    }
+                    else //未命中缓存调用RPC查询
+                    {
+                        //调用consul服务发现，获取rpc服务地址
+                        var url = ServiceUrl.GetServiceUrlByName("IdentityService",
+                                    config.GetSection("Consul").Get<ConsulServiceOptions>().ConsulAddress);
+                        //创建通讯频道
+                        using var channel = GrpcChannel.ForAddress(url);
+                        //创建客户端
+                        var client = new gEndpoint.gEndpointClient(channel);
+                        //远程调用
+                        var publicPermission = await client.GetPublicEndpointAsync(new Empty());
+                        //映射结果
+                        permissionsList = publicPermission.Endpoint.MapToList<Permission>();
+                        //将结果存入缓存
+                        await database.StringSetAsync("publicPermission", JsonConvert.SerializeObject(permissionsList));
+                    }
                 }
                 //查询当前请求的权限
                 var requestPermission = permissionsList.Find(p => (("*".Equals(p.Controller, StringComparison.InvariantCultureIgnoreCase) || currentController.Equals(p.Controller, StringComparison.OrdinalIgnoreCase)) &&
@@ -86,6 +104,10 @@ namespace Infrastructure.Auth
                 {
                     context.Fail(); //拒绝请求
                 }
+            }
+            else
+            {
+                context.Fail(); //拒绝请求
             }
         }
     }

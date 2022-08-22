@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using UserService.App.Interface;
 using UserService.Domain;
-using UserService.Request;
 using UserService.Request.Admin;
 using UserService.Request.Request.Admin;
 using UserService.Response;
@@ -30,11 +29,8 @@ namespace UserService.App
         /// <summary>
         /// 获取用户列表
         /// </summary>
-        /// <param name="pageIndex"></param>
-        /// <param name="pageSize"></param>
-        /// <param name="request"></param>
         /// <returns></returns>
-        public async Task<List<UserDetailView>> GetUserDetails(int pageIndex,int pageSize,SearchCondition[] condition)
+        public async Task<List<UserDetailView>> GetUserDetails(SearchCondition[] condition)
         {
             using (var context = contextFactory.CreateDbContext())
             {
@@ -68,7 +64,7 @@ namespace UserService.App
                         users = "Status".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? users.Where(u => u.Status == Convert.ToInt32(con.Value)): users;
                     }
                 }
-                var result = await users.Skip(pageSize* (pageIndex - 1)).Take(pageSize).ToListAsync();
+                var result = await users.ToListAsync();
                 var usersView = result.MapToList<UserDetailView>();
                 return usersView;
             }
@@ -121,7 +117,7 @@ namespace UserService.App
                     Email = request.Email,
                     Status = request.Status ?? 0
                 };
-                var a = dbContext.Users.Add(user);
+                dbContext.Users.Add(user);
                 if (await dbContext.SaveChangesAsync() < 0)
                 {
                     throw new Exception("添加失败");

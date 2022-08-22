@@ -27,12 +27,14 @@ namespace UserService.Controllers
         /// <returns>用户列表</returns>
         [HttpGet]
         [RBAC(IsPublic = 1)]
-        public async Task<Response<List<UserView>>> List([FromQuery] int? pageIndex = 1, [FromQuery] int? pageSize = 10, [FromBody] SearchCondition[]? condidtion = null)
+        public async Task<PResponse<UserView>> List([FromQuery] int? pageIndex =1 , [FromQuery] int? pageSize = 10, [FromBody] SearchCondition[]? condidtion = null)
         {
-            var result = new Response<List<UserView>>();
+            var result = new PResponse<UserView>();
             try
             {
-                result.Result = await userApp.GetUsers(pageIndex.Value,pageSize.Value,condidtion);
+                var users = await userApp.GetUsers(condidtion);
+                //分页
+                result.Pagination(pageIndex.Value, pageSize.Value, users);
             }
             catch (Exception ex)
             {

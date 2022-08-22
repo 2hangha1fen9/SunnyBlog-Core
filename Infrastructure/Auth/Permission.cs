@@ -28,11 +28,10 @@ namespace Infrastructure.Auth
         /// </summary>
         [Column("description")]
         public string Description { get; set; }
-
         /// <summary>
-        /// 资源对象
+        /// 是否为公共对象
         /// </summary>
-        [Column("status")]
-        public int Status { get; set; }
+        [Column("isPublic")]
+        public int IsPublic { get; set; }
     }
 }

@@ -16,6 +16,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<ProjectReference Include="..\ArticleService\ArticleService.csproj" />
 		<ProjectReference Include="..\ConsulBuilder\ConsulBuilder.csproj" />
 		<ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
 	</ItemGroup>
