@@ -38,6 +38,11 @@ namespace Service.IdentityService.App
         {
             using (var dbContext = contextFactory.CreateDbContext())
             {
+                if (await dbContext.Permissions.FirstOrDefaultAsync(p => p.Service == request.Service && p.Controller == request.Controller && p.Action == request.Action) != null)
+                {
+                    throw new Exception("权限已存在");
+                }
+
                 var permission = new Permission()
                 {
                     Service = request.Service,
@@ -47,7 +52,7 @@ namespace Service.IdentityService.App
                     Status = request.Status.Value,
                     IsPublic = request.IsPublic,
                 };
-                dbContext.Permissions.Add(permission);
+                await dbContext.Permissions.AddAsync(permission);
                 if (await dbContext.SaveChangesAsync() < 0)
                 {
                     throw new Exception("添加失败");
@@ -175,8 +180,19 @@ namespace Service.IdentityService.App
             //查询用户权限
             using (var context = contextFactory.CreateDbContext())
             {
-                var permissions = await context.Set<Permission>().FromSqlRaw($"select * from Permission as p where p.id in(select permissionId from RolePermissionRelation as rp where rp.roleId in(select roleId from UserRoleRelation as ur,Role r where ur.roleId = {id} and r.status = 1)) and status = 1")
-                           .ToListAsync();
+                /*var permissions = await context.Set<Permission>().FromSqlRaw($"select * from Permission as p where p.id in(select permissionId from RolePermissionRelation as rp where rp.roleId in(select roleId from UserRoleRelation as ur,Role r where ur.roleId = {id} and r.status = 1)) and status = 1")
+                           .ToListAsync();*/
+                var permissions = await context.RolePermissionRelations.Where(rpr => rpr.RoleId == id).Select(p => new Permission
+                {
+                    Id = p.PermissionId,
+                    Service = p.Permission.Service,
+                    Controller = p.Permission.Controller,
+                    Action = p.Permission.Action,
+                    UpdateTime = p.Permission.UpdateTime,
+                    CreateTime = p.Permission.CreateTime,
+                    Status = p.Permission.Status,
+                    IsPublic = p.Permission.IsPublic
+                }).ToListAsync();
                 return permissions.MapToList<PermissionView>();
             }
         }

@@ -14,6 +14,8 @@ using IdentityService;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authorization;
 using Infrastructure.Auth;
+using IdentityService.App.Interface;
+using IdentityService.App;
 
 var builder = WebApplication.CreateBuilder(args);
 //Apollo配置中心
@@ -48,6 +50,9 @@ builder.Services.AddGrpc();
 
 //添加服务
 builder.Services.AddScoped<IPermissionApp, PermissionApp>();
+builder.Services.AddScoped<IRoleApp,RoleApp>();
+builder.Services.AddScoped<IRelationApp,RelationApp>();
+
 //RBAC授权服务
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddSingleton<IAuthorizationPolicyProvider, RBACPolicyProvider>();

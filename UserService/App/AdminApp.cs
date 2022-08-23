@@ -109,6 +109,13 @@ namespace UserService.App
         {
             using (var dbContext = contextFactory.CreateDbContext())
             {
+                //查询用户是否存在
+                if (await dbContext.Users.FirstOrDefaultAsync(u => u.Username == request.Username ||
+                                                                   u.Phone == request.Phone ||
+                                                                   u.Email == request.Email) != null)
+                {
+                    throw new Exception("用户已存在");
+                }
                 var user = new User()
                 {
                     Username = request.Username,
@@ -117,7 +124,7 @@ namespace UserService.App
                     Email = request.Email,
                     Status = request.Status ?? 0
                 };
-                dbContext.Users.Add(user);
+                await dbContext.Users.AddAsync(user);
                 if (await dbContext.SaveChangesAsync() < 0)
                 {
                     throw new Exception("添加失败");
@@ -133,7 +140,7 @@ namespace UserService.App
                     Remark = request.Remark,
                     Score = request.Score ?? 0
                 };
-                dbContext.UserDetails.Add(userDetail);
+                await dbContext.UserDetails.AddAsync(userDetail);
                 if (await dbContext.SaveChangesAsync() < 0)
                 {
                     throw new Exception("添加失败");

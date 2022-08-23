@@ -101,7 +101,7 @@ namespace UserService.App
                     User user = request.MapTo<User>();
                     //密码加密
                     user.Password = user.Password.ShaEncrypt();
-                    dbContext.Add(user);
+                    await dbContext.AddAsync(user);
                     if (await dbContext.SaveChangesAsync() > 0)
                     {
                         //查询用户ID

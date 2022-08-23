@@ -97,7 +97,7 @@ namespace UserService.App
                         UserId = id,
                         WatchId = sbId,
                     };
-                    dbContext.Add(follow);
+                    await dbContext.AddAsync(follow);
                     if (await dbContext.SaveChangesAsync() > 0)
                     {
                         return "关注成功";

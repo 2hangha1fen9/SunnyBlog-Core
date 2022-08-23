@@ -31,7 +31,7 @@ namespace IdentityService.Domain
         [Column("status")]
         public int Status { get; set; }
         [Column("createTime", TypeName = "datetime")]
-        public DateTime? CreateTime { get; set; }
+        public DateTime CreateTime { get; set; }
         [Column("updateTime", TypeName = "datetime")]
         public DateTime? UpdateTime { get; set; }
 
