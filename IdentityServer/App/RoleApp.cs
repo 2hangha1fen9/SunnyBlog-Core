@@ -117,19 +117,22 @@ namespace IdentityService.App
         /// <param name="id"></param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        public async Task<List<RoleView>> GetRoleByPermissionId(int id)
+        public async Task<PageList<RoleView>> GetRoleByPermissionId(int id, int pageIndex, int pageSize)
         {
             using (var context = contextFactory.CreateDbContext())
             {
-                var roles = await context.RolePermissionRelations.Where(rpr => rpr.PermissionId == id).Select(r => new Role()
+                var roles = context.RolePermissionRelations.Where(rpr => rpr.PermissionId == id).Select(r => new Role()
                 {
                     Id = r.RoleId,
                     Name = r.Role.Name,
                     Status = r.Role.Status,
                     CreateTime = r.Role.CreateTime,
                     UpdateTime = r.Role.UpdateTime,
-                }).ToListAsync();
-                return roles.MapToList<RoleView>();
+                });
+                var rolePage = new PageList<RoleView>();
+                roles = rolePage.Pagination(pageIndex, pageSize, roles);
+                rolePage.Page = (await roles.ToListAsync()).MapToList<RoleView>();
+                return rolePage;
             }
         }
 
@@ -138,19 +141,22 @@ namespace IdentityService.App
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<List<RoleView>> GetRoleByUserId(int id)
+        public async Task<PageList<RoleView>> GetRoleByUserId(int id, int pageIndex, int pageSize)
         {
             using (var context = contextFactory.CreateDbContext())
             {
-                var roles = await context.UserRoleRelations.Where(urr => urr.UserId == id).Select(r => new Role()
+                var roles = context.UserRoleRelations.Where(urr => urr.UserId == id).Select(r => new Role()
                 {
                     Id = r.Id,
                     Name = r.Role.Name,
-                    Status= r.Role.Status,
+                    Status = r.Role.Status,
                     UpdateTime = r.Role.UpdateTime,
                     CreateTime = r.Role.CreateTime
-                }).ToListAsync();
-                return roles.MapToList<RoleView>();
+                });
+                var rolePage = new PageList<RoleView>();
+                roles = rolePage.Pagination(pageIndex, pageSize, roles);
+                rolePage.Page = (await roles.ToListAsync()).MapToList<RoleView>();
+                return rolePage;
             }
         }
 
@@ -159,12 +165,12 @@ namespace IdentityService.App
         /// </summary>
         /// <param name="condidtion"></param>
         /// <returns></returns>
-        public async Task<List<RoleView>> ListRole(SearchCondition[] condidtion)
+        public async Task<PageList<RoleView>> ListRole(List<SearchCondition> condidtion, int pageIndex, int pageSize)
         {
             using (var dbContext = contextFactory.CreateDbContext())
             {
                 var roles = dbContext.Roles.AsQueryable();
-                if (condidtion.Length > 0)
+                if (condidtion.Count > 0)
                 {
                     foreach (var con in condidtion)
                     {
@@ -173,9 +179,10 @@ namespace IdentityService.App
                         roles = "Status".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? roles.Where(r => r.Status == Convert.ToInt32(con.Value)) : roles;
                     }
                 }
-                var result = await roles.ToListAsync();
-                var roleView = roles.MapToList<RoleView>();
-                return roleView;
+                var rolePage = new PageList<RoleView>();
+                roles = rolePage.Pagination(pageIndex, pageSize, roles);
+                rolePage.Page = (await roles.ToListAsync()).MapToList<RoleView>();
+                return rolePage;
             }
         }
     }

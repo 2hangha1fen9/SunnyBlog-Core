@@ -1,4 +1,4 @@
-﻿namespace UserService.Request.Request.Admin
+﻿namespace UserService.Request.Request
 {
     /// <summary>
     /// 删除用户请求

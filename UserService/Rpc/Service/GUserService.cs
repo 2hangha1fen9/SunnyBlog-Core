@@ -35,5 +35,21 @@ namespace UserService.Rpc.Service
                 return userResponse;
             }
         }
+
+        public async override Task<UserInfoResponse> GetUserByID(UserInfoRequest request, ServerCallContext context)
+        {
+            using (var c = contextFactory.CreateDbContext())
+            {
+                var user = await c.Users.Select(u => new
+                {
+                    Id = u.Id,
+                    Username = u.Username,
+                    Nick = u.UserDetail.Nick,
+                    Photo = u.Photo
+                }).FirstOrDefaultAsync(u => u.Id == request.Id);
+                var userInfo = user.MapTo<UserInfoResponse>();
+                return userInfo;
+            }
+        }
     }
 }

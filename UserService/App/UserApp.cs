@@ -5,7 +5,8 @@ using Microsoft.EntityFrameworkCore;
 using UserService.Request;
 using Microsoft.Extensions.Caching.Distributed;
 using UserService.Domain;
-using System.Text.RegularExpressions;
+using UserService.Request.Request;
+using System.Linq;
 
 namespace UserService.App
 {
@@ -51,7 +52,7 @@ namespace UserService.App
         /// 获取用户列表,分页+条件
         /// </summary>
         /// <returns></returns>
-        public async Task<List<UserView>> GetUsers(SearchCondition[] condition)
+        public async Task<PageList<UserView>> GetUsers(List<SearchCondition> condition, int pageIndex, int pageSize)
         {
             using (var context = contextFactory.CreateDbContext())
             {
@@ -62,7 +63,7 @@ namespace UserService.App
                     Photo = u.Photo,
                 });
                 //判断是否有条件
-                if (condition.Length > 0)
+                if (condition.Count > 0)
                 {
                     foreach (var con in condition)
                     {
@@ -70,9 +71,86 @@ namespace UserService.App
                         users = "remark".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? users.Where(u => u.Remark.Contains(con.Value)) : users;
                     }
                 }
-                var result = await users.ToListAsync();
-                var usersView = result.MapToList<UserView>();
-                return usersView;
+                //对结果进行分页
+                var userPage = new PageList<UserView>();
+                users = userPage.Pagination(pageIndex,pageSize,users); //添加分页表表达式
+                userPage.Page = (await users.ToListAsync()).MapToList<UserView>(); //获取分页结果
+                return userPage;
+            }
+        }
+
+        /// <summary>
+        /// 获取用户列表
+        /// </summary>
+        /// <returns></returns>
+        public async Task<PageList<UserDetailView>> GetUserDetails(List<SearchCondition> condition, int pageIndex, int pageSize)
+        {
+            using (var context = contextFactory.CreateDbContext())
+            {
+                var users = context.UserDetails.Select(u => new
+                {
+                    UserId = u.UserId,
+                    Username = u.User.Username,
+                    Nick = u.Nick,
+                    Phone = u.User.Phone,
+                    Email = u.User.Email,
+                    Sex = u.Sex,
+                    Birthday = u.Birthday,
+                    RegisterTime = u.RegisterTime,
+                    Remark = u.Remark,
+                    Score = u.Score,
+                    Photo = u.User.Photo,
+                    Status = u.User.Status
+                });
+                //判断是否有条件
+                if (condition.Count > 0)
+                {
+                    foreach (var con in condition)
+                    {
+                        users = "UserId".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? users.Where(u => u.UserId == Convert.ToInt32(con.Value)) : users;
+                        users = "Username".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? users.Where(u => u.Username.Contains(con.Value)) : users;
+                        users = "Nick".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? users.Where(u => u.Nick.Contains(con.Value)) : users;
+                        users = "Phone".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? users.Where(u => u.Phone.Contains(con.Value)) : users;
+                        users = "Email".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? users.Where(u => u.Email.Contains(con.Value)) : users;
+                        users = "Sex".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? users.Where(u => u.Sex == Convert.ToInt32(con.Value)) : users;
+                        users = "Remark".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? users.Where(u => u.Remark.Contains(con.Value)) : users;
+                        users = "Status".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? users.Where(u => u.Status == Convert.ToInt32(con.Value)) : users;
+                    }
+                }
+                //对结果进行分页
+                var userPage = new PageList<UserDetailView>();
+                users = userPage.Pagination(pageIndex, pageSize, users); //添加分页表表达式
+                userPage.Page = (await users.ToListAsync()).MapToList<UserDetailView>(); //获取分页结果
+                return userPage;
+            }
+        }
+
+        /// <summary>
+        /// 根据用户ID获取用户详情
+        /// </summary>
+        /// <param name="id">用户ID</param>
+        /// <returns></returns>
+        public async Task<UserDetailView> GetUserDetailById(int id)
+        {
+            using (var context = contextFactory.CreateDbContext())
+            {
+                var user = await context.UserDetails.Where(u => u.UserId == id).Select(u => new
+                {
+                    UserId = u.UserId,
+                    Username = u.User.Username,
+                    Nick = u.Nick,
+                    Phone = u.User.Phone,
+                    Email = u.User.Email,
+                    Sex = u.Sex,
+                    Birthday = u.Birthday,
+                    RegisterTime = u.RegisterTime,
+                    Remark = u.Remark,
+                    Score = u.Score,
+                    Photo = u.User.Photo,
+                    Status = u.User.Status
+                }).FirstOrDefaultAsync();
+                var userView = user.MapTo<UserDetailView>();
+                return userView;
             }
         }
 
@@ -104,13 +182,11 @@ namespace UserService.App
                     await dbContext.AddAsync(user);
                     if (await dbContext.SaveChangesAsync() > 0)
                     {
-                        //查询用户ID
-                        var u = await dbContext.Users.FirstOrDefaultAsync(u => u.Username == user.Username);
                         //添加用户详情
                         dbContext.UserDetails.Add(new UserDetail()
                         {
                             Nick = $"用户{user.Username}",
-                            UserId = u.Id,
+                            UserId = user.Id,
                             Sex = -1,
                             RegisterTime = DateTime.Now
                         });
@@ -176,7 +252,7 @@ namespace UserService.App
         /// <param name="request"></param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        public async Task<string> ChangeUser(UpdateUserReq request, int id)
+        public async Task<string> ChangeUser(ChangeUserReq request, int id)
         {
             using (var dbContext = contextFactory.CreateDbContext())
             {
@@ -291,6 +367,122 @@ namespace UserService.App
                 else
                 {
                     throw new Exception("用户信息错误");
+                }
+            }
+        }
+
+        /// <summary>
+        /// 添加用户
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public async Task<string> AddUser(AddUserReq request)
+        {
+            using (var dbContext = contextFactory.CreateDbContext())
+            {
+                //查询用户是否存在
+                if (await dbContext.Users.FirstOrDefaultAsync(u => u.Username == request.Username ||
+                                                                   u.Phone == request.Phone ||
+                                                                   u.Email == request.Email) != null)
+                {
+                    throw new Exception("用户已存在");
+                }
+                var user = new User()
+                {
+                    Username = request.Username,
+                    Password = request.Password.ShaEncrypt(),
+                    Phone = request.Phone,
+                    Email = request.Email,
+                    Status = request.Status ?? 0
+                };
+                await dbContext.Users.AddAsync(user);
+                if (await dbContext.SaveChangesAsync() < 0)
+                {
+                    throw new Exception("添加失败");
+                }
+
+                var userDetail = new UserDetail()
+                {
+                    UserId = user.Id,
+                    Nick = request.Nick,
+                    Sex = request.Sex,
+                    Birthday = Convert.ToDateTime(request.Birthday),
+                    RegisterTime = DateTime.Now,
+                    Remark = request.Remark,
+                    Score = request.Score ?? 0
+                };
+                await dbContext.UserDetails.AddAsync(userDetail);
+                if (await dbContext.SaveChangesAsync() < 0)
+                {
+                    throw new Exception("添加失败");
+                }
+                return "添加成功";
+            }
+        }
+
+        /// <summary>
+        /// 删除用户
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public async Task<string> DelUser(List<DelUserReq> requests)
+        {
+            using (var dbContext = contextFactory.CreateDbContext())
+            {
+                var users = requests.MapToList<User>();
+                dbContext.Users.RemoveRange(users);
+                if (await dbContext.SaveChangesAsync() > 0)
+                {
+                    return "删除成功";
+                }
+                else
+                {
+                    throw new Exception("删除失败");
+                }
+            }
+        }
+
+        /// <summary>
+        /// 修改用户详情信息
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public async Task<string> UpdateUserDetail(UpdateUserReq request)
+        {
+            using (var dbContext = contextFactory.CreateDbContext())
+            {
+                //查询用户
+                var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Id == request.Id);
+                var userDetail = await dbContext.UserDetails.FirstOrDefaultAsync(u => u.UserId == request.Id);
+                if (user != null && userDetail != null)
+                {
+                    user.Username = request.Username ?? user.Username;
+                    user.Phone = request.Phone ?? user.Phone;
+                    user.Email = request.Email ?? user.Email;
+                    user.Status = request.Status ?? user.Status;
+                    user.Phone = request.Phone ?? user.Phone;
+                    userDetail.Nick = request.Nick ?? userDetail.Nick;
+                    userDetail.Sex = request.Sex ?? userDetail.Sex;
+                    userDetail.Birthday = Convert.ToDateTime(request.Birthday ?? userDetail.Birthday.ToString());
+                    userDetail.RegisterTime = Convert.ToDateTime(request.RegisterTime ?? userDetail.RegisterTime.ToString());
+                    userDetail.Remark = request.Remark ?? userDetail.Remark;
+                    userDetail.Score = request.Score ?? userDetail.Score;
+
+                    if (await dbContext.SaveChangesAsync() > 0)
+                    {
+                        return "修改成功";
+                    }
+                    else
+                    {
+                        throw new Exception("修改失败");
+                    }
+                }
+                else
+                {
+                    throw new Exception("用户信息异常");
                 }
             }
         }

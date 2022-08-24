@@ -15,10 +15,25 @@ namespace UserService
         {
         }
 
+        /// <summary>
+        /// 积分单位
+        /// </summary>
         public virtual DbSet<ScoreUnit> ScoreUnits { get; set; }
+        /// <summary>
+        /// 用户
+        /// </summary>
         public virtual DbSet<User> Users { get; set; }
+        /// <summary>
+        /// 用户详情
+        /// </summary>
         public virtual DbSet<UserDetail> UserDetails { get; set; }
+        /// <summary>
+        /// 用户关注
+        /// </summary>
         public virtual DbSet<UserFollow> UserFollows { get; set; }
+        /// <summary>
+        /// 用户积分
+        /// </summary>
         public virtual DbSet<UserScore> UserScores { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

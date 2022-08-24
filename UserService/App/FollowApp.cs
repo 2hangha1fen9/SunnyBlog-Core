@@ -61,18 +61,31 @@ namespace UserService.App
         /// </summary>
         /// <param name="id">用户ID</param>
         /// <returns></returns>
-        public async Task<List<FollowView>> FollowList(int id)
+        public async Task<PageList<FollowView>> FollowList(List<SearchCondition> condidtion, int id, int pageIndex, int pageSize)
         {
             using (var dbContext = contextFactory.CreateDbContext())
             {
-                var follows = await dbContext.UserFollows.Where(f => f.UserId == id).Select(f => new
+                var follows = dbContext.UserFollows.Where(f => f.UserId == id).Select(f => new
                 {
                     Id = f.UserId,
                     Nick = f.Watch.UserDetail.Nick,
                     Remark = f.Watch.UserDetail.Remark,
                     Photo = f.Watch.Photo
-                }).ToListAsync();
-                return follows.MapToList<FollowView>();
+                });
+                //筛选条件
+                if (condidtion.Count > 0)
+                {
+                    foreach (var con in condidtion)
+                    {
+                        follows = "Nick".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? follows.Where(f => f.Nick.Contains(con.Value)) : follows;
+                        follows = "Remark".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? follows.Where(f => f.Remark.Contains(con.Value)) : follows;
+                    }
+                }
+                //对结果进行分页
+                var followsPage = new PageList<FollowView>();
+                follows = followsPage.Pagination(pageIndex, pageSize, follows); //添加分页表表达式
+                followsPage.Page = (await follows.ToListAsync()).MapToList<FollowView>(); //获取分页结果
+                return followsPage;
             }
         }
         

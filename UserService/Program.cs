@@ -11,11 +11,7 @@ using UserService.Rpc.Service;
 using Com.Ctrip.Framework.Apollo;
 using Infrastructure;
 using Com.Ctrip.Framework.Apollo.Enums;
-using StackExchange.Redis;
-using Microsoft.Extensions.Caching.Distributed;
-using UserService.Domain;
 using Microsoft.Extensions.FileProviders;
-using Microsoft.AspNetCore.Http.Features;
 using UserService.Domain.config;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -47,7 +43,6 @@ builder.Services.AddSingleton<MailTemplate>(builder.Configuration.GetSection("Ma
 builder.Services.AddSingleton<MessageConfig>(builder.Configuration.GetSection("MessageConfig").Get<MessageConfig>());
 //ЗўЮёзЂВс
 builder.Services.AddScoped<IUserApp,UserApp>();
-builder.Services.AddScoped<IAdminApp, AdminApp>();
 builder.Services.AddScoped<IMailApp, MailApp>();
 builder.Services.AddScoped<IMessageApp, MessageApp>();
 builder.Services.AddScoped<IPhotoApp, PhotoApp>();

@@ -29,13 +29,14 @@ namespace IdentityService.Controllers
         /// <returns></returns>
         [RBAC]
         [HttpGet]
-        public async Task<PResponse<RoleView>> List([FromQuery] int? pageIndex = 1, [FromQuery] int? pageSize = 10, [FromBody] SearchCondition[]? condition = null)
+        public async Task<Response<PageList<RoleView>>> List([FromQuery] int? pageIndex = 1, [FromQuery] int? pageSize = 10, [FromBody] List<SearchCondition>? condition = null)
         {
-            var result = new PResponse<RoleView>();
+            var result = new Response<PageList<RoleView>>();
             try
             {
-                var roles = await roleApp.ListRole(condition);
-                result.Pagination(pageIndex.Value, pageSize.Value, roles);
+                var roles = await roleApp.ListRole(condition,pageIndex.Value,pageSize.Value);
+                result.Result = roles;
+                return result;
             }
             catch (Exception ex)
             {
@@ -76,13 +77,14 @@ namespace IdentityService.Controllers
         /// <returns></returns>
         [RBAC]
         [HttpGet]
-        public async Task<PResponse<RoleView>> GetByUser(int id, [FromQuery] int? pageIndex = 1, [FromQuery] int? pageSize = 10)
+        public async Task<Response<PageList<RoleView>>> GetByUser(int id, [FromQuery] int? pageIndex = 1, [FromQuery] int? pageSize = 10)
         {
-            var result = new PResponse<RoleView>();
+            var result = new Response<PageList<RoleView>>();
             try
             {
-                var roles = await roleApp.GetRoleByUserId(id);
-                result.Pagination(pageIndex.Value, pageSize.Value, roles);
+                var roles = await roleApp.GetRoleByUserId(id,pageIndex.Value,pageSize.Value);
+                result.Result = roles;
+                return result;
             }
             catch (Exception ex)
             {
@@ -101,13 +103,14 @@ namespace IdentityService.Controllers
         /// <returns></returns>
         [RBAC]
         [HttpGet]
-        public async Task<PResponse<RoleView>> GetByPermission(int id, [FromQuery] int? pageIndex = 1, [FromQuery] int? pageSize = 10)
+        public async Task<Response<PageList<RoleView>>> GetByPermission(int id, [FromQuery] int? pageIndex = 1, [FromQuery] int? pageSize = 10)
         {
-            var result = new PResponse<RoleView>();
+            var result = new Response<PageList<RoleView>>();
             try
             {
-                var roles = await roleApp.GetRoleByPermissionId(id);
-                result.Pagination(pageIndex.Value, pageSize.Value, roles);
+                var roles = await roleApp.GetRoleByPermissionId(id, pageIndex.Value, pageSize.Value);
+                result.Result = roles;
+                return result;
             }
             catch (Exception ex)
             {

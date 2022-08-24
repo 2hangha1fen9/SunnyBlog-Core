@@ -13,12 +13,10 @@ namespace UserService.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserApp userApp;
-        private readonly IAdminApp adminApp;
 
-        public UserController(IUserApp userApp,IAdminApp adminApp)
+        public UserController(IUserApp userApp)
         {
             this.userApp = userApp;
-            this.adminApp = adminApp;
         }
 
         /// <summary>
@@ -27,14 +25,13 @@ namespace UserService.Controllers
         /// <returns>用户列表</returns>
         [HttpGet]
         [RBAC(IsPublic = 1)]
-        public async Task<PResponse<UserView>> List([FromQuery] int? pageIndex =1 , [FromQuery] int? pageSize = 10, [FromBody] SearchCondition[]? condidtion = null)
+        public async Task<Response<PageList<UserView>>> List([FromQuery] int? pageIndex = 1 , [FromQuery] int? pageSize = 10, [FromBody] List<SearchCondition>? condidtion = null)
         {
-            var result = new PResponse<UserView>();
+            var result = new Response<PageList<UserView>>();
             try
             {
-                var users = await userApp.GetUsers(condidtion);
-                //分页
-                result.Pagination(pageIndex.Value, pageSize.Value, users);
+                var users = await userApp.GetUsers(condidtion,pageIndex.Value,pageSize.Value);
+                result.Result = users;
             }
             catch (Exception ex)
             {
@@ -56,7 +53,7 @@ namespace UserService.Controllers
             try
             {
                 var userId = HttpContext.User.Claims?.FirstOrDefault(c => c.Type == "user_id")?.Value;
-                result.Result = await adminApp.GetUserDetailById(Convert.ToInt32(userId));
+                result.Result = await userApp.GetUserDetailById(Convert.ToInt32(userId));
             }
             catch (Exception ex)
             {
@@ -115,7 +112,7 @@ namespace UserService.Controllers
         /// <returns></returns>
         [RBAC]
         [HttpPut]
-        public async Task<Response<string>> UpdateInfo(UpdateUserReq request)
+        public async Task<Response<string>> UpdateInfo(ChangeUserReq request)
         {
             var result = new Response<string>();
             try

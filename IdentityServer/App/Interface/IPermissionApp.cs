@@ -9,9 +9,9 @@ namespace Service.IdentityService.App.Interface
     {
         Task<object[]> GetPermission(string username,string password);
         Task<PermissionView> GetPermissionById(int id);
-        Task<List<PermissionView>> GetPermissionsByUserId(int id);
-        Task<List<PermissionView>> GetPermissionsByRoleId(int id);
-        Task<List<PermissionView>> ListPermission(SearchCondition[] condidtion);
+        Task<PageList<PermissionView>> GetPermissionsByUserId(int id,int pageIndex, int pageSize);
+        Task<PageList<PermissionView>> GetPermissionsByRoleId(int id,int pageIndex, int pageSize);
+        Task<PageList<PermissionView>> ListPermission(List<SearchCondition> condidtion,int pageIndex, int pageSize);
         Task<string> ChangePermission(ModifyPermissionReq request);
         Task<string> AddPermission(AddPermissionReq request);
         Task<string> DelPermission(List<DelPermissionReq> request);

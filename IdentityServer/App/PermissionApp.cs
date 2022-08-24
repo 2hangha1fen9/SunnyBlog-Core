@@ -173,16 +173,14 @@ namespace Service.IdentityService.App
         /// <summary>
         /// 根据角色查询权限信息
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
-        public async Task<List<PermissionView>> GetPermissionsByRoleId(int id)
+        public async Task<PageList<PermissionView>> GetPermissionsByRoleId(int id,int pageIndex, int pageSize)
         {
             //查询用户权限
             using (var context = contextFactory.CreateDbContext())
             {
                 /*var permissions = await context.Set<Permission>().FromSqlRaw($"select * from Permission as p where p.id in(select permissionId from RolePermissionRelation as rp where rp.roleId in(select roleId from UserRoleRelation as ur,Role r where ur.roleId = {id} and r.status = 1)) and status = 1")
                            .ToListAsync();*/
-                var permissions = await context.RolePermissionRelations.Where(rpr => rpr.RoleId == id).Select(p => new Permission
+                var permissions = context.RolePermissionRelations.Where(rpr => rpr.RoleId == id).Select(p => new Permission
                 {
                     Id = p.PermissionId,
                     Service = p.Permission.Service,
@@ -192,8 +190,12 @@ namespace Service.IdentityService.App
                     CreateTime = p.Permission.CreateTime,
                     Status = p.Permission.Status,
                     IsPublic = p.Permission.IsPublic
-                }).ToListAsync();
-                return permissions.MapToList<PermissionView>();
+                });
+                //对结果分页
+                var permissionPage = new PageList<PermissionView>();
+                permissions = permissionPage.Pagination(pageIndex, pageSize, permissions);
+                permissionPage.Page = (await permissions.ToListAsync()).MapToList<PermissionView>();
+                return permissionPage;
             }
         }
 
@@ -202,14 +204,17 @@ namespace Service.IdentityService.App
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public async Task<List<PermissionView>> GetPermissionsByUserId(int id)
+        public async Task<PageList<PermissionView>> GetPermissionsByUserId(int id, int pageIndex, int pageSize)
         {
             //查询用户权限
             using (var context = contextFactory.CreateDbContext())
             {
-                var permissions = await context.Set<Permission>().FromSqlRaw($"select * from Permission as p where p.id in(select permissionId from RolePermissionRelation as rp where rp.roleId in(select roleId from UserRoleRelation as ur,Role r where ur.roleId = r.id and ur.userId = {id} and exists(select * from [User] u where id = ur.userId and u.status = 1) and r.status = 1)) and status = 1")
-                            .ToListAsync();
-                return permissions.MapToList<PermissionView>();
+                var permissions = context.Set<Permission>().FromSqlRaw($"select * from Permission as p where p.id in(select permissionId from RolePermissionRelation as rp where rp.roleId in(select roleId from UserRoleRelation as ur,Role r where ur.roleId = r.id and ur.userId = {id} and exists(select * from [User] u where id = ur.userId and u.status = 1) and r.status = 1)) and status = 1");
+                //对结果分页
+                var permissionPage = new PageList<PermissionView>();
+                permissions = permissionPage.Pagination(pageIndex, pageSize, permissions);
+                permissionPage.Page = (await permissions.ToListAsync()).MapToList<PermissionView>();
+                return permissionPage;
             }
         }
 
@@ -218,12 +223,12 @@ namespace Service.IdentityService.App
         /// </summary>
         /// <param name="condidtion"></param>
         /// <returns></returns>
-        public async Task<List<PermissionView>> ListPermission(SearchCondition[] condidtion)
+        public async Task<PageList<PermissionView>> ListPermission(List<SearchCondition> condidtion, int pageIndex, int pageSize)
         {
             using (var dbContext = contextFactory.CreateDbContext())
             {
                 var permissions = dbContext.Permissions.AsQueryable();
-                if (condidtion.Length > 0)
+                if (condidtion.Count > 0)
                 {
                     foreach (var con in condidtion)
                     {
@@ -236,9 +241,11 @@ namespace Service.IdentityService.App
                         permissions = "IsPublic".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? permissions.Where(p => p.IsPublic == Convert.ToInt32(con.Value)) : permissions;
                     }
                 }
-                var result = await permissions.ToListAsync();
-                var permissionView = result.MapToList<PermissionView>();
-                return permissionView;
+                //对结果分页
+                var permissionPage = new PageList<PermissionView>();
+                permissions = permissionPage.Pagination(pageIndex, pageSize, permissions);
+                permissionPage.Page = (await permissions.ToListAsync()).MapToList<PermissionView>();
+                return permissionPage;
             }
         }
     }

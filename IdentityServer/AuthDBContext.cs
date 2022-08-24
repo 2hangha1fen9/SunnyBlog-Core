@@ -15,9 +15,21 @@ namespace IdentityService
         {
         }
 
+        /// <summary>
+        /// 权限表
+        /// </summary>
         public virtual DbSet<Permission> Permissions { get; set; }
+        /// <summary>
+        /// 角色表
+        /// </summary>
         public virtual DbSet<Role> Roles { get; set; }
+        /// <summary>
+        /// 角色权限表
+        /// </summary>
         public virtual DbSet<RolePermissionRelation> RolePermissionRelations { get; set; }
+        /// <summary>
+        /// 用户角色表
+        /// </summary>
         public virtual DbSet<UserRoleRelation> UserRoleRelations { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

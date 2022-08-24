@@ -68,15 +68,13 @@ namespace UserService.Controllers
         /// <summary>
         /// 查看用户的关注列表
         /// </summary>
-        /// <param name="id"></param>
-        /// <returns></returns>
         [HttpGet]
-        public async Task<Response<List<FollowView>>> List(int id)
+        public async Task<Response<PageList<FollowView>>> List(int id, [FromBody]List<SearchCondition>? condidtion = null, int? pageIndex = 1, int? pageSize = 10)
         {
-            var result = new Response<List<FollowView>>();
+            var result = new Response<PageList<FollowView>>();
             try
             {
-                result.Result = await followApp.FollowList(id);
+                result.Result = await followApp.FollowList(condidtion,id,pageIndex.Value,pageSize.Value);
             }
             catch (Exception ex)
             {

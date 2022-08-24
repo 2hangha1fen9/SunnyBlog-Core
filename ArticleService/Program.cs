@@ -1,7 +1,14 @@
+using ArticleService;
+using ArticleService.App;
+using ArticleService.App.Interface;
 using Com.Ctrip.Framework.Apollo;
 using Com.Ctrip.Framework.Apollo.Enums;
 using Infrastructure;
+using Infrastructure.Auth;
 using Infrastructure.Consul;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -25,6 +32,39 @@ builder.Services.AddSwaggerGen(options =>
     options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
 });
 
+//服务注册
+builder.Services.AddScoped<IArticleApp,ArticleApp>();
+builder.Services.AddScoped<IArticleCategoryApp,ArticleCategoryApp>();
+builder.Services.AddScoped<IArticleTagApp,ArticleTagApp>();
+//配置Redis连接
+builder.Services.AddSingleton(new RedisCache(builder.Configuration.GetValue<string>("RedisServer")));
+//RBAC授权服务
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+builder.Services.AddSingleton<IAuthorizationPolicyProvider, RBACPolicyProvider>();
+builder.Services.AddSingleton<IAuthorizationHandler, RBACRequirementHandler>();
+// 数据库连接池注册
+builder.Services.AddPooledDbContextFactory<ArticleDBContext>(option =>
+{
+    option.UseSqlServer(builder.Configuration.GetValue<string>("SqlServer"));
+});
+//Redis客户端注册
+object p = builder.Services.AddStackExchangeRedisCache(option =>
+{
+    option.InstanceName = "ArticleService";
+    option.Configuration = builder.Configuration.GetValue<string>("RedisServer");
+});
+//认证中心注册
+builder.Services.AddAuthentication("Bearer")
+.AddJwtBearer("Bearer", options =>
+{
+    options.Authority = ServiceUrl.GetServiceUrlByName("IdentityService",
+        builder.Configuration.GetSection("Consul").Get<ConsulServiceOptions>().ConsulAddress);
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateAudience = false
+    };
+});
+
 var app = builder.Build();
 
 // consul注入
@@ -42,6 +82,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+//启用授权鉴权
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

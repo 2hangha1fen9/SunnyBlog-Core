@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace UserService.Request.Admin
+namespace UserService.Request
 {
     public class AddUserReq
     {
