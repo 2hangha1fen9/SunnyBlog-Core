@@ -1,6 +1,6 @@
 ﻿namespace ArticleService.Request
 {
-    public class DeleteCategoryReq
+    public class DelCategoryReq
     {
         /// <summary>
         /// 分类ID

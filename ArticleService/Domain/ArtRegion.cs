@@ -15,6 +15,7 @@ namespace ArticleService.Domain
         public ArtRegion()
         {
             Articles = new HashSet<Article>();
+            InverseParent = new HashSet<ArtRegion>();
         }
 
         [Key]
@@ -34,7 +35,12 @@ namespace ArticleService.Domain
         [Column("status")]
         public int Status { get; set; }
 
+        [ForeignKey("ParentId")]
+        [InverseProperty("InverseParent")]
+        public virtual ArtRegion Parent { get; set; }
         [InverseProperty("Region")]
         public virtual ICollection<Article> Articles { get; set; }
+        [InverseProperty("Parent")]
+        public virtual ICollection<ArtRegion> InverseParent { get; set; }
     }
 }

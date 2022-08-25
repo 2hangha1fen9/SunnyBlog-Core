@@ -9,6 +9,7 @@ using Infrastructure.Consul;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -22,7 +23,11 @@ builder.Host.ConfigureAppConfiguration((context, builder) =>
 });
 // Add services to the container.
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddNewtonsoftJson(option =>
+{
+    //忽略序列化循环引用
+    option.SerializerSettings.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
+});
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
@@ -35,6 +40,7 @@ builder.Services.AddSwaggerGen(options =>
 //服务注册
 builder.Services.AddScoped<IArticleApp,ArticleApp>();
 builder.Services.AddScoped<IArticleCategoryApp,ArticleCategoryApp>();
+builder.Services.AddScoped<IArticleRegionApp,ArticleRegionApp>();
 builder.Services.AddScoped<IArticleTagApp,ArticleTagApp>();
 //配置Redis连接
 builder.Services.AddSingleton(new RedisCache(builder.Configuration.GetValue<string>("RedisServer")));

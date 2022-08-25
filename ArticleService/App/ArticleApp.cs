@@ -133,20 +133,13 @@ namespace ArticleService.App
                     Title = a.Title,
                     Content = a.Content.Substring(0, 400),
                     Photo = a.Photo,
-                    Tags = a.ArticleTags.Select(at => new
+                    Tags = a.ArticleTags.Where(at => at.Tag.IsPrivate == 0).Select(at => new TagView()
                     {
                         Id = at.Id,
                         UserId = at.Tag.UserId,
                         Name = at.Tag.Name,
                         Color = at.Tag.Color
-                    }).MapToList<TagView>(),
-                    Category = a.ArtCategories.Select(c => new
-                    {
-                        Id = c.Id,
-                        Name = c.Category.Name,
-                        UserId = c.Category.UserId,
-                        ParentId = c.Category.ParentId ?? 0
-                    }).MapToList<CategoryView>(),
+                    }),
                     RegionName = a.Region.Name,
                     RegionId = a.Region.Id,
                     CreateTime = a.CreateTime,
@@ -201,20 +194,13 @@ namespace ArticleService.App
                     Title = a.Title,
                     Content = a.Content.Substring(0, 100),
                     Photo = a.Photo,
-                    Tags = a.ArticleTags.Select(at => new
+                    Tags = a.ArticleTags.Where(at => at.Tag.IsPrivate == 0).Select(at => new TagView()
                     {
                         Id = at.Id,
                         UserId = at.Tag.UserId,
                         Name = at.Tag.Name,
                         Color = at.Tag.Color
-                    }).MapToList<TagView>(),
-                    Category = a.ArtCategories.Select(c => new
-                    {
-                        Id = c.Id,
-                        Name = c.Category.Name,
-                        UserId = c.Category.UserId,
-                        ParentId = c.Category.ParentId ?? 0
-                    }).MapToList<CategoryView>(),
+                    }),
                     RegionName = a.Region.Name,
                     RegionId = a.Region.Id,
                     CreateTime = a.CreateTime,
@@ -232,8 +218,7 @@ namespace ArticleService.App
                     {
                         article = "Title".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? article.Where(a => a.Title.Contains(con.Value)) : article;
                         article = "Content".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? article.Where(a => a.Content.Contains(con.Value)) : article;
-                        article = "Tags".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? article.Where(a => a.Tags.Where(t => t.Name.Contains(con.Value)).Count() > 0) : article;
-                        article = "Category".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? article.Where(a => a.Category.Where(c => c.Name.Contains(con.Value)).Count() > 0) : article;
+                        article = "Tag".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? article.Where(a => a.Tags.Where(t => t.Name.Contains(con.Value) || t.Id == Convert.ToInt32(con.Value)).Count() > 0) : article;
                         article = "Region".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? article.Where(a => a.RegionName.Contains(con.Value) || a.RegionId == Convert.ToInt32(con.Value)) : article;
                     }
                 }
@@ -341,13 +326,14 @@ namespace ArticleService.App
                     Title = a.Title,
                     RegionName = a.Region.Name,
                     RegionId = a.Region.Id,
-                    Category = a.ArtCategories.Select(c => new
+                    Category = a.ArtCategories.Select(c => new CategoryView()
                     {
                         Id = c.Id,
                         Name = c.Category.Name,
                         UserId = c.Category.UserId,
-                        ParentId = c.Category.ParentId ?? 0
-                    }).MapToList<CategoryView>(),
+                        ParentId = c.Category.ParentId ?? 0,
+                        InverseParent = null
+                    }),
                     Username = "",
                     Status = a.Status,
                     CommentStatus = a.CommentStatus,
@@ -365,7 +351,7 @@ namespace ArticleService.App
                         article = "Status".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? article.Where(a => a.Status == Convert.ToInt32(con.Value)) : article;
                         article = "IsLock".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? article.Where(a => a.IsLock == Convert.ToInt32(con.Value)) : article;
                         article = "CommentStatus".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? article.Where(a => a.CommentStatus == Convert.ToInt32(con.Value)) : article;
-                        article = "Category".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? article.Where(a => a.Category.Where(c => c.Name.Contains(con.Value)).Count() > 0) : article;
+                        article = "Category".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? article.Where(a => a.Category.Where(c => c.Name.Contains(con.Value) || c.Id == Convert.ToInt32(con.Value)).Count() > 0) : article;
                     }
                 }
                 //分页条件

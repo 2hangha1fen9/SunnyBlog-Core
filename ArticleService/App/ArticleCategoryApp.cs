@@ -79,10 +79,7 @@ namespace ArticleService.App
                     }
                 }
                 //保存修改
-                if (await dbContext.SaveChangesAsync() > 0)
-                {
-                    throw new Exception("更新文章分类失败");
-                }
+                await dbContext.SaveChangesAsync();
             }
         }
 
@@ -97,13 +94,21 @@ namespace ArticleService.App
         {
             using (var dbContext = contextFactory.CreateDbContext())
             {
-                var category = dbContext.Categories.FirstOrDefault(t => t.UserId == uid && t.Id == request.Id);
-                dbContext.Categories.Update(category);
-                if (await dbContext.SaveChangesAsync() < 0)
+                try
                 {
-                    throw new Exception("添加失败");
+                    var category = dbContext.Categories.FirstOrDefault(t => t.UserId == uid && t.Id == request.Id);
+                    if (category != null)
+                    {
+                        category.Name = request.Name ?? category.Name;
+                        category.ParentId = request.ParentId;
+                        await dbContext.SaveChangesAsync();
+                    }
+                    return "修改成功";
                 }
-                return "添加成功";
+                catch (Exception)
+                {
+                    throw new Exception("修改失败");
+                }
             }
         }
 
@@ -132,7 +137,7 @@ namespace ArticleService.App
         /// </summary>
         /// <param name="request"></param>
         /// <param name="uid"></param>
-        public async Task<string> DeletelCategory(List<DeleteCategoryReq> request, int uid)
+        public async Task<string> DeletelCategory(List<DelCategoryReq> request, int uid)
         {
             using (var dbContext = contextFactory.CreateDbContext())
             {
@@ -160,9 +165,13 @@ namespace ArticleService.App
         /// <param name="uid"></param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        public Task<List<CategoryView>> GetUserCategory(int uid)
+        public async Task<List<CategoryView>> GetUserCategory(int uid)
         {
-            throw new NotImplementedException();
+            using (var dbContext = contextFactory.CreateDbContext())
+            {
+                var category = await dbContext.Categories.Where(c => c.UserId == uid).ToListAsync();
+                return category.MapToList<CategoryView>();
+            }
         }
 
     }

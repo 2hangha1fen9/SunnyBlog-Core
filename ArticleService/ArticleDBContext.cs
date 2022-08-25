@@ -43,6 +43,11 @@ namespace ArticleService
                 entity.Property(e => e.Status)
                     .HasDefaultValueSql("((1))")
                     .HasComment("1启用0禁用");
+
+                entity.HasOne(d => d.Parent)
+                    .WithMany(p => p.InverseParent)
+                    .HasForeignKey(d => d.ParentId)
+                    .HasConstraintName("FK_ArtRegion_ArtRegion");
             });
 
             modelBuilder.Entity<Article>(entity =>
@@ -77,6 +82,14 @@ namespace ArticleService
                     .HasForeignKey(d => d.TagId)
                     .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_ArticleTag_Tags");
+            });
+
+            modelBuilder.Entity<Category>(entity =>
+            {
+                entity.HasOne(d => d.Parent)
+                    .WithMany(p => p.InverseParent)
+                    .HasForeignKey(d => d.ParentId)
+                    .HasConstraintName("FK_Category_Category");
             });
 
             OnModelCreatingPartial(modelBuilder);

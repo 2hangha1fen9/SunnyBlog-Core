@@ -67,6 +67,7 @@ builder.Services.AddStackExchangeRedisCache(option =>
 {
     option.InstanceName = "UserService";
     option.Configuration = builder.Configuration.GetValue<string>("RedisServer");
+    option.ConfigurationOptions.DefaultDatabase = 0;
 });
 
 //认证中心注册

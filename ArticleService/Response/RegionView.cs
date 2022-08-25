@@ -21,5 +21,9 @@
         /// 父级ID
         /// </summary>
         public int ParentId { get; set; }
+        /// <summary>
+        /// 子级分类
+        /// </summary>
+        public List<RegionView> InverseParent { get; set; }
     }
 }

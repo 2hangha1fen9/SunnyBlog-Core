@@ -10,7 +10,7 @@ namespace ArticleService.App.Interface
         public void UpdateArticleCategory(int uid, int articleId, List<int> categoryIds);
         public Task<List<CategoryView>> GetUserCategory(int uid);
         public Task<string> UpdateCategory(UpdateCategoryReq request,int uid);
-        public Task<string> DeletelCategory(List<DeleteCategoryReq> request,int uid);
+        public Task<string> DeletelCategory(List<DelCategoryReq> request,int uid);
         public Task<string> AddCategory(AddCategoryReq request,int uid);
     }
 }

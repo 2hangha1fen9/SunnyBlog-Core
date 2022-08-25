@@ -21,6 +21,6 @@
         /// <summary>
         /// 子级分类
         /// </summary>
-        public CategoryView ChlidCategory { get; set; }
+        public List<CategoryView> InverseParent { get; set; }
     }
 }

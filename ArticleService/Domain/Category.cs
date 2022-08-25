@@ -9,13 +9,14 @@ using Microsoft.EntityFrameworkCore;
 namespace ArticleService.Domain
 {
     [Table("Category")]
-    [Index("Name", Name = "IX_ArtCategory", IsUnique = true)]
+    [Index("Name", "UserId", Name = "IX_ArtCategory", IsUnique = true)]
     [Index("Id", "ParentId", Name = "IX_Category", IsUnique = true)]
     public partial class Category
     {
         public Category()
         {
             ArtCategories = new HashSet<ArtCategory>();
+            InverseParent = new HashSet<Category>();
         }
 
         [Key]
@@ -30,7 +31,12 @@ namespace ArticleService.Domain
         [Column("parentId")]
         public int? ParentId { get; set; }
 
+        [ForeignKey("ParentId")]
+        [InverseProperty("InverseParent")]
+        public virtual Category Parent { get; set; }
         [InverseProperty("Category")]
         public virtual ICollection<ArtCategory> ArtCategories { get; set; }
+        [InverseProperty("Parent")]
+        public virtual ICollection<Category> InverseParent { get; set; }
     }
 }

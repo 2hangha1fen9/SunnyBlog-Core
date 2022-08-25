@@ -8,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace ArticleService.Domain
 {
+    [Index("Name", Name = "IX_Tags", IsUnique = true)]
     public partial class Tag
     {
         public Tag()
@@ -27,6 +28,8 @@ namespace ArticleService.Domain
         [Column("color")]
         [StringLength(50)]
         public string Color { get; set; }
+        [Column("isPrivate")]
+        public int IsPrivate { get; set; }
 
         [InverseProperty("Tag")]
         public virtual ICollection<ArticleTag> ArticleTags { get; set; }

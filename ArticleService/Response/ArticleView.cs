@@ -34,10 +34,6 @@
         /// </summary>
         public List<TagView> Tags { get; set; }
         /// <summary>
-        /// 文章分类
-        /// </summary>
-        public List<CategoryView> Category { get; set; }
-        /// <summary>
         /// 文章分区名
         /// </summary>
         public string RegionName { get; set; }

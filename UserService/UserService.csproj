@@ -32,7 +32,6 @@
 		<PackageReference Include="TencentCloudSDK.Sms" Version="3.0.582" />
 	</ItemGroup>
 	<ItemGroup>
-		<ProjectReference Include="..\ConsulBuilder\ConsulBuilder.csproj" />
 		<ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
 	</ItemGroup>
 	<ItemGroup>
@@ -46,5 +45,5 @@
 	    <HintPath>O:\VisualStudio\Package\system.drawing.common\5.0.0\ref\netcoreapp3.0\System.Drawing.Common.dll</HintPath>
 	  </Reference>
 	</ItemGroup>
-	<ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
+	<ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" properties_4launchsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
 </Project>
