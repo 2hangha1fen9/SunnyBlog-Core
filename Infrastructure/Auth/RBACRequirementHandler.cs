@@ -5,6 +5,7 @@ using Infrastructure.Consul;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using StackExchange.Redis;
@@ -25,7 +26,7 @@ namespace Infrastructure.Auth
         /// <summary>
         /// Http上下文
         /// </summary>
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IHttpContextAccessor httpContextAccessor;
         /// <summary>
         /// 获取配置文件
         /// </summary>
@@ -33,15 +34,13 @@ namespace Infrastructure.Auth
         /// <summary>
         /// Redis连接
         /// </summary>
-        private readonly IConnectionMultiplexer connection;
-        private readonly IDatabase database;
+        private readonly IDatabase database1;
 
-        public RBACRequirementHandler(IHttpContextAccessor httpContextAccessor, IConfiguration config)
+        public RBACRequirementHandler(IHttpContextAccessor httpContextAccessor, IConnectionMultiplexer cache, IConfiguration config)
         {
-            this._httpContextAccessor = httpContextAccessor;
+            this.httpContextAccessor = httpContextAccessor;
             this.config = config;
-            this.connection = ConnectionMultiplexer.Connect(config.GetValue<string>("RedisServer"));
-            this.database = this.connection.GetDatabase(2);
+            this.database1 = cache.GetDatabase(0);
         }
 
         /// <summary>
@@ -54,7 +53,7 @@ namespace Infrastructure.Auth
         protected async override Task HandleRequirementAsync(AuthorizationHandlerContext context, RBACRequirement requirement)
         {
             //获取router对象
-            var router = _httpContextAccessor.HttpContext?.GetRouteData();
+            var router = httpContextAccessor.HttpContext?.GetRouteData();
             //获取Controller、Action
             var currentController = router?.Values["controller"]?.ToString();
             var currentAction = router?.Values["action"]?.ToString();
@@ -71,10 +70,10 @@ namespace Infrastructure.Auth
                 catch (Exception)//尝试查询公共权限
                 {
                     //尝试调用Redis获取公共权限
-                    var cache = await database.StringGetAsync("publicPermission");
-                    if (cache.HasValue)
+                    var value = await database1.StringGetAsync("publicPermission");
+                    if (!string.IsNullOrEmpty(value))
                     {
-                        permissionsList = JsonConvert.DeserializeObject<List<Permission>>(cache);
+                        permissionsList = JsonConvert.DeserializeObject<List<Permission>>(value);
                     }
                     else //未命中缓存调用RPC查询
                     {
@@ -90,7 +89,7 @@ namespace Infrastructure.Auth
                         //映射结果
                         permissionsList = publicPermission.Endpoint.MapToList<Permission>();
                         //将结果存入缓存
-                        await database.StringSetAsync("publicPermission", JsonConvert.SerializeObject(permissionsList));
+                        await database1.StringSetAsync("publicPermission", JsonConvert.SerializeObject(permissionsList));
                     }
                 }
                 //查询当前请求的权限

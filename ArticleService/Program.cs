@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
+using StackExchange.Redis;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -42,8 +43,12 @@ builder.Services.AddScoped<IArticleApp,ArticleApp>();
 builder.Services.AddScoped<IArticleCategoryApp,ArticleCategoryApp>();
 builder.Services.AddScoped<IArticleRegionApp,ArticleRegionApp>();
 builder.Services.AddScoped<IArticleTagApp,ArticleTagApp>();
-//配置Redis连接
-builder.Services.AddSingleton(new RedisCache(builder.Configuration.GetValue<string>("RedisServer")));
+//Redis客户端注册
+builder.Services.AddSingleton<IConnectionMultiplexer>(cm =>
+{
+    var conStr = builder.Configuration.GetValue<string>("RedisServer");
+    return ConnectionMultiplexer.Connect(conStr);
+});
 //RBAC授权服务
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddSingleton<IAuthorizationPolicyProvider, RBACPolicyProvider>();
@@ -53,12 +58,7 @@ builder.Services.AddPooledDbContextFactory<ArticleDBContext>(option =>
 {
     option.UseSqlServer(builder.Configuration.GetValue<string>("SqlServer"));
 });
-//Redis客户端注册
-object p = builder.Services.AddStackExchangeRedisCache(option =>
-{
-    option.InstanceName = "ArticleService";
-    option.Configuration = builder.Configuration.GetValue<string>("RedisServer");
-});
+
 //认证中心注册
 builder.Services.AddAuthentication("Bearer")
 .AddJwtBearer("Bearer", options =>

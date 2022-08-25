@@ -1,7 +1,11 @@
 using Com.Ctrip.Framework.Apollo;
 using Com.Ctrip.Framework.Apollo.Enums;
 using Infrastructure;
+using Infrastructure.Auth;
 using Infrastructure.Consul;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.IdentityModel.Tokens;
+using StackExchange.Redis;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,7 +28,32 @@ builder.Services.AddSwaggerGen(options =>
     var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
 });
-
+/*//配置数据库
+builder.Services.AddDbContextFactory<AuthDBContext>(option =>
+{
+    option.UseSqlServer(builder.Configuration.GetValue<string>("SqlServer"));
+});*/
+//Redis客户端注册
+builder.Services.AddSingleton<IConnectionMultiplexer>(cm =>
+{
+    var conStr = builder.Configuration.GetValue<string>("RedisServer");
+    return ConnectionMultiplexer.Connect(conStr);
+});
+//RBAC授权服务
+builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+builder.Services.AddSingleton<IAuthorizationPolicyProvider, RBACPolicyProvider>();
+builder.Services.AddSingleton<IAuthorizationHandler, RBACRequirementHandler>();
+//认证中心注册
+builder.Services.AddAuthentication("Bearer")
+.AddJwtBearer("Bearer", options =>
+{
+    options.Authority = ServiceUrl.GetServiceUrlByName("IdentityService",
+        builder.Configuration.GetSection("Consul").Get<ConsulServiceOptions>().ConsulAddress);
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateAudience = false
+    };
+});
 var app = builder.Build();
 
 // consul注入
@@ -42,6 +71,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+//启用授权鉴权
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

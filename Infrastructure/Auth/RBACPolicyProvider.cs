@@ -35,7 +35,7 @@ namespace Infrastructure.Auth
         }
 
         /// <summary>
-        /// 获取策略
+        /// 添加自定义策略
         /// </summary>
         /// <param name="policyName"></param>
         /// <returns></returns>

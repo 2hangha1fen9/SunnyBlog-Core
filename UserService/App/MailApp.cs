@@ -6,6 +6,7 @@ using UserService.Domain;
 using MailKit.Security;
 using UserService.App.Interface;
 using UserService.Domain.config;
+using StackExchange.Redis;
 
 namespace Infrastructure
 {
@@ -20,15 +21,15 @@ namespace Infrastructure
         /// </summary>
         private readonly MailTemplate template;
         /// <summary>
-        /// Redis缓存客户端
+        /// Redis客户端,依赖注入
         /// </summary>
-        private readonly IDistributedCache cache;
+        private readonly IDatabase database;
 
-        public MailApp(MailConfig config,MailTemplate template,IDistributedCache cache)
+        public MailApp(MailConfig config,MailTemplate template, IConnectionMultiplexer connection)
         {
             this.config = config;
             this.template = template;
-            this.cache = cache;
+            this.database = connection.GetDatabase();
         }
 
         public async Task<string> SendEmailCode(string email)
@@ -58,11 +59,8 @@ namespace Infrastructure
                 //发送邮件
                 await smtp.SendAsync(mime);
             }
-            //设置验证码有效期
-            var option = new DistributedCacheEntryOptions();
-            option.SetAbsoluteExpiration(TimeSpan.FromSeconds(180));
             //存入redis中
-            await cache.SetStringAsync(email, vcode, option);
+            await database.StringSetAsync(email, vcode, TimeSpan.FromSeconds(180));
             return "发送成功";
         }
     }

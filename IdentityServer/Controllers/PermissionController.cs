@@ -126,6 +126,7 @@ namespace IdentityService.Controllers
         /// <returns></returns>
         [RBAC]
         [HttpPost]
+        [TypeFilter(typeof(RedisFlush), Arguments = new object[] { "publicPermission", 0 })]
         public async Task<Response<string>> Add(AddPermissionReq request)
         {
             var result = new Response<string>();
@@ -148,6 +149,7 @@ namespace IdentityService.Controllers
         /// <returns></returns>
         [RBAC]
         [HttpDelete]
+        [TypeFilter(typeof(RedisFlush), Arguments = new object[] { "publicPermission", 0 })]
         public async Task<Response<string>> Del(List<DelPermissionReq> request)
         {
             var result = new Response<string>();
@@ -170,6 +172,7 @@ namespace IdentityService.Controllers
         /// <returns></returns>
         [RBAC]
         [HttpPut]
+        [TypeFilter(typeof(RedisFlush), Arguments = new object[] { "publicPermission", 0 })]
         public async Task<Response<string>> Modify(ModifyPermissionReq request)
         {
             var result = new Response<string>();

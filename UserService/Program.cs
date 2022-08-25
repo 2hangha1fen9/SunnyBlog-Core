@@ -13,6 +13,7 @@ using Infrastructure;
 using Com.Ctrip.Framework.Apollo.Enums;
 using Microsoft.Extensions.FileProviders;
 using UserService.Domain.config;
+using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
 //Apollo配置中心
@@ -35,7 +36,6 @@ builder.Services.AddSwaggerGen(options =>
     options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
 });
 
-#region 服务注册
 //邮件配置注册
 builder.Services.AddSingleton<MailConfig>(builder.Configuration.GetSection("MailConfig").Get<MailConfig>());
 builder.Services.AddSingleton<MailTemplate>(builder.Configuration.GetSection("MailTemplate").Get<MailTemplate>());
@@ -48,26 +48,21 @@ builder.Services.AddScoped<IMessageApp, MessageApp>();
 builder.Services.AddScoped<IPhotoApp, PhotoApp>();
 builder.Services.AddScoped<IFollowApp, FollowApp>();
 builder.Services.AddScoped<IScoreApp, ScoreApp>();
-//配置Redis连接
-builder.Services.AddSingleton(new RedisCache(builder.Configuration.GetValue<string>("RedisServer")));
+//Redis客户端注册
+builder.Services.AddSingleton<IConnectionMultiplexer>(cm =>
+{
+    var conStr = builder.Configuration.GetValue<string>("RedisServer");
+    return ConnectionMultiplexer.Connect(conStr);
+});
 //RBAC授权服务
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 builder.Services.AddSingleton<IAuthorizationPolicyProvider, RBACPolicyProvider>();
 builder.Services.AddSingleton<IAuthorizationHandler, RBACRequirementHandler>();
-#endregion
 
 // 数据库连接池注册
 builder.Services.AddPooledDbContextFactory<UserDBContext>(option =>
 {
     option.UseSqlServer(builder.Configuration.GetValue<string>("SqlServer"));
-});
-
-//Redis客户端注册
-builder.Services.AddStackExchangeRedisCache(option =>
-{
-    option.InstanceName = "UserService";
-    option.Configuration = builder.Configuration.GetValue<string>("RedisServer");
-    option.ConfigurationOptions.DefaultDatabase = 0;
 });
 
 //认证中心注册

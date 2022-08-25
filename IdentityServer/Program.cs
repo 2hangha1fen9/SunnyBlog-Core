@@ -16,6 +16,7 @@ using Microsoft.AspNetCore.Authorization;
 using Infrastructure.Auth;
 using IdentityService.App.Interface;
 using IdentityService.App;
+using StackExchange.Redis;
 
 var builder = WebApplication.CreateBuilder(args);
 //ApolloÅäÖÃÖÐÐÄ
@@ -43,6 +44,12 @@ builder.Services.AddSwaggerGen(options =>
 builder.Services.AddDbContextFactory<AuthDBContext>(option =>
 {
     option.UseSqlServer(builder.Configuration.GetValue<string>("SqlServer"));
+});
+//Redis¿Í»§¶Ë×¢²á
+builder.Services.AddSingleton<IConnectionMultiplexer>(cm =>
+{
+    var conStr = builder.Configuration.GetValue<string>("RedisServer");
+    return ConnectionMultiplexer.Connect(conStr);
 });
 
 //×¢²ágRPC

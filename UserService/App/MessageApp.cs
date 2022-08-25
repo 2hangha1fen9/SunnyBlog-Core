@@ -1,4 +1,5 @@
 ﻿using Microsoft.Extensions.Caching.Distributed;
+using StackExchange.Redis;
 using System.Text.RegularExpressions;
 using TencentCloud.Common;
 using TencentCloud.Sms.V20190711;
@@ -13,17 +14,17 @@ namespace Infrastructure
     {
 
         /// <summary>
-        /// Redis缓存客户端
+        /// Redis客户端,依赖注入
         /// </summary>
-        private readonly IDistributedCache cache;
+        private readonly IDatabase database;
         /// <summary>
         /// 短信配置
         /// </summary>
         private readonly MessageConfig config;
 
-        public MessageApp(IDistributedCache cache,MessageConfig config)
+        public MessageApp(IConnectionMultiplexer connection, MessageConfig config)
         {
-            this.cache = cache;
+            this.database = connection.GetDatabase();
             this.config = config;
         }
 
@@ -60,7 +61,7 @@ namespace Infrastructure
                 var option = new DistributedCacheEntryOptions();
                 option.SetAbsoluteExpiration(TimeSpan.FromSeconds(120));
                 //存入redis中
-                await cache.SetStringAsync(phone, EncryptionHelper.GetRandomSequnce(6), option);
+                await database.StringSetAsync(phone, EncryptionHelper.GetRandomSequnce(6), TimeSpan.FromSeconds(180));
                 return "发送成功";
             }
             throw new Exception("发送失败");

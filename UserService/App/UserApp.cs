@@ -7,6 +7,7 @@ using Microsoft.Extensions.Caching.Distributed;
 using UserService.Domain;
 using UserService.Request.Request;
 using System.Linq;
+using StackExchange.Redis;
 
 namespace UserService.App
 {
@@ -17,14 +18,14 @@ namespace UserService.App
         /// </summary>
         private readonly IDbContextFactory<UserDBContext> contextFactory;
         /// <summary>
-        /// Redis缓存客户端
+        /// Redis客户端,依赖注入
         /// </summary>
-        private readonly IDistributedCache cache;
+        private readonly IDatabase database;
 
-        public UserApp(IDbContextFactory<UserDBContext> context, IDistributedCache cache)
+        public UserApp(IDbContextFactory<UserDBContext> context, IConnectionMultiplexer connection)
         {
             this.contextFactory = context;
-            this.cache = cache;
+            this.database = connection.GetDatabase();
         }
 
         /// <summary>
@@ -172,8 +173,8 @@ namespace UserService.App
                 }
 
                 //验证验证码
-                if ((request.Phone != null && await cache.GetStringAsync(request.Phone) == request.VerificationCode) ||
-                    (request.Email != null && await cache.GetStringAsync(request.Email) == request.VerificationCode))
+                if ((request.Phone != null && await database.StringGetAsync(request.Phone) == request.VerificationCode) ||
+                    (request.Email != null && await database.StringGetAsync(request.Email) == request.VerificationCode))
                 {
                     //验证有效性
                     User user = request.MapTo<User>();
@@ -218,8 +219,8 @@ namespace UserService.App
                 if (user != null)
                 {
                     //检查验证码
-                    var phone = await cache.GetStringAsync(user?.Phone ?? "");
-                    var email = await cache.GetStringAsync(user?.Email ?? "");
+                    var phone = await database.StringGetAsync(user?.Phone ?? "");
+                    var email = await database.StringGetAsync(user?.Email ?? "");
                     //验证有效性
                     if (phone == request.VerificationCode || email == request.VerificationCode)
                     {
@@ -294,7 +295,7 @@ namespace UserService.App
                 if (user != null)
                 {
                     //查询验证码
-                    if (await cache.GetStringAsync(requests.Bind) != requests.VerificationCode)
+                    if (await database.StringGetAsync(requests.Bind) != requests.VerificationCode)
                     {
                         throw new Exception("验证码错误");
                     }
