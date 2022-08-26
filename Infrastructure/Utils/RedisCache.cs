@@ -54,7 +54,8 @@ namespace Infrastructure
                 //获取body Hash
                 context.HttpContext.Request.EnableBuffering(); //让body可以被重复读取
                 using var bodyStream = new StreamReader(context.HttpContext.Request.Body);
-                var body = (await bodyStream.ReadToEndAsync()).ShaEncrypt(); //获取bodyhash摘要
+                var body = await bodyStream.ReadToEndAsync();
+                body = string.IsNullOrWhiteSpace(body) ? null : body.ShaEncrypt();
                 context.HttpContext.Request.Body.Seek(0, SeekOrigin.Begin);//重置流偏移量 
                 
                 //获取缓存键,默认按api路径缓存

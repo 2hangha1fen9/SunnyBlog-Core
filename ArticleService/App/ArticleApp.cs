@@ -145,9 +145,6 @@ namespace ArticleService.App
                     RegionName = a.Region.Name,
                     RegionId = a.Region.Id,
                     CreateTime = a.CreateTime,
-                    ViewsCount = a.ViewsCount,
-                    LikeCount = a.LikeCount,
-                    CommentCount = a.CommentCount,
                     Status = a.Status,
                     CommentStatus = a.CommentStatus,
                     IsLock = a.IsLock
@@ -206,9 +203,6 @@ namespace ArticleService.App
                     RegionName = a.Region.Name,
                     RegionId = a.Region.Id,
                     CreateTime = a.CreateTime,
-                    ViewsCount = a.ViewsCount,
-                    LikeCount = a.LikeCount,
-                    CommentCount = a.CommentCount,
                     Status = a.Status,
                     CommentStatus = a.CommentStatus,
                     IsLock = a.IsLock

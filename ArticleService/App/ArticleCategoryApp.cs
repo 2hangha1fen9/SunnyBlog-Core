@@ -171,7 +171,7 @@ namespace ArticleService.App
             using (var dbContext = contextFactory.CreateDbContext())
             {
                 var category = await dbContext.Categories.Where(c => c.UserId == uid).ToListAsync();
-                return category.MapToList<CategoryView>();
+                return category.Where(c => c.ParentId == null).MapToList<CategoryView>();
             }
         }
 

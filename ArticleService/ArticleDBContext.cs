@@ -10,6 +10,7 @@ namespace ArticleService
 {
     public partial class ArticleDBContext : DbContext
     {
+
         public ArticleDBContext(DbContextOptions<ArticleDBContext> options)
             : base(options)
         {
@@ -80,7 +81,6 @@ namespace ArticleService
                 entity.HasOne(d => d.Tag)
                     .WithMany(p => p.ArticleTags)
                     .HasForeignKey(d => d.TagId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_ArticleTag_Tags");
             });
 

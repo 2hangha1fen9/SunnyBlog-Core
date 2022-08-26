@@ -44,14 +44,6 @@ namespace ArticleService.Domain
         /// </summary>
         [Column("commentStatus")]
         public int CommentStatus { get; set; }
-        [Column("likeCount")]
-        public int LikeCount { get; set; }
-        [Column("viewsCount")]
-        public int ViewsCount { get; set; }
-        [Column("commentCount")]
-        public int CommentCount { get; set; }
-        [Column("collectionCount")]
-        public int CollectionCount { get; set; }
         [Column("createTime", TypeName = "datetime")]
         public DateTime CreateTime { get; set; }
         [Column("updateTime", TypeName = "datetime")]

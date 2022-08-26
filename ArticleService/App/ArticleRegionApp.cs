@@ -65,7 +65,7 @@ namespace ArticleService.App
             using (var dbContext = contextFactory.CreateDbContext())
             {
                 var regions = await dbContext.ArtRegions.ToListAsync();
-                return regions.MapToList<RegionView>();
+                return regions.Where(c => c.ParentId == null).MapToList<RegionView>();
             }
         }
 
