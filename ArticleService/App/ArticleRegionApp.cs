@@ -70,7 +70,7 @@ namespace ArticleService.App
         }
 
         /// <summary>
-        /// 
+        /// 更新分区
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
@@ -87,6 +87,7 @@ namespace ArticleService.App
                     region.ParentId = request.ParentId ?? region.ParentId;
                     region.Status = request.Status ?? region.Status;
                     //保存修改
+                    dbContext.Entry(region).State = EntityState.Modified;
                     if (await dbContext.SaveChangesAsync() < 0)
                     {
                         throw new Exception("更新失败");

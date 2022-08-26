@@ -34,13 +34,13 @@ namespace Infrastructure.Auth
         /// <summary>
         /// Redis连接
         /// </summary>
-        private readonly IDatabase database1;
+        private readonly IDatabase database;
 
         public RBACRequirementHandler(IHttpContextAccessor httpContextAccessor, IConnectionMultiplexer cache, IConfiguration config)
         {
             this.httpContextAccessor = httpContextAccessor;
             this.config = config;
-            this.database1 = cache.GetDatabase(0);
+            this.database = cache.GetDatabase(1);
         }
 
         /// <summary>
@@ -70,7 +70,7 @@ namespace Infrastructure.Auth
                 catch (Exception)//尝试查询公共权限
                 {
                     //尝试调用Redis获取公共权限
-                    var value = await database1.StringGetAsync("publicPermission");
+                    var value = await database.StringGetAsync("publicPermission");
                     if (!string.IsNullOrEmpty(value))
                     {
                         permissionsList = JsonConvert.DeserializeObject<List<Permission>>(value);
@@ -89,7 +89,7 @@ namespace Infrastructure.Auth
                         //映射结果
                         permissionsList = publicPermission.Endpoint.MapToList<Permission>();
                         //将结果存入缓存
-                        await database1.StringSetAsync("publicPermission", JsonConvert.SerializeObject(permissionsList));
+                        await database.StringSetAsync("publicPermission", JsonConvert.SerializeObject(permissionsList));
                     }
                 }
                 //查询当前请求的权限

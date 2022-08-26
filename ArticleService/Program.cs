@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using StackExchange.Redis;
+using Microsoft.AspNetCore.Http;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -39,10 +40,10 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 //服务注册
-builder.Services.AddScoped<IArticleApp,ArticleApp>();
-builder.Services.AddScoped<IArticleCategoryApp,ArticleCategoryApp>();
-builder.Services.AddScoped<IArticleRegionApp,ArticleRegionApp>();
-builder.Services.AddScoped<IArticleTagApp,ArticleTagApp>();
+builder.Services.AddScoped<IArticleApp, ArticleApp>();
+builder.Services.AddScoped<IArticleCategoryApp, ArticleCategoryApp>();
+builder.Services.AddScoped<IArticleRegionApp, ArticleRegionApp>();
+builder.Services.AddScoped<IArticleTagApp, ArticleTagApp>();
 //Redis客户端注册
 builder.Services.AddSingleton<IConnectionMultiplexer>(cm =>
 {

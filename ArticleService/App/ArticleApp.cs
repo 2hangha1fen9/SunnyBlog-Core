@@ -49,6 +49,7 @@ namespace ArticleService.App
                     article.UpdateTime = DateTime.Now;
                     article.IsLock = request.isLock ?? article.IsLock;
                     //保存修改
+                    dbContext.Entry(article).State = EntityState.Modified;
                     if (await dbContext.SaveChangesAsync() < 0)
                     {
                         throw new Exception("更新失败");
@@ -99,6 +100,7 @@ namespace ArticleService.App
                         articleCategoryApp.UpdateArticleCategory(uid, article.Id, request.Categorys);
                     }
                     //保存修改
+                    dbContext.Entry(article).State = EntityState.Modified;
                     if (await dbContext.SaveChangesAsync() < 0)
                     {
                         throw new Exception("更新失败");

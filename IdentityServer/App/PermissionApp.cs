@@ -84,6 +84,7 @@ namespace Service.IdentityService.App
                     permission.Status = request.Status ?? permission.Status;
                     permission.IsPublic = request.IsPublic ?? permission.IsPublic;
                     permission.UpdateTime = DateTime.Now;
+                    dbContext.Entry(permission).State = EntityState.Modified;
                     if (await dbContext.SaveChangesAsync() > 0)
                     {
                         return "修改成功";

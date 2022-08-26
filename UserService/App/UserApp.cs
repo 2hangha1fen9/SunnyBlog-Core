@@ -173,8 +173,8 @@ namespace UserService.App
                 }
 
                 //验证验证码
-                if ((request.Phone != null && await database.StringGetAsync(request.Phone) == request.VerificationCode) ||
-                    (request.Email != null && await database.StringGetAsync(request.Email) == request.VerificationCode))
+                if ((request.Phone != null && await database.StringGetAsync($"VCode:{request.Phone}") == request.VerificationCode) ||
+                    (request.Email != null && await database.StringGetAsync($"VCode:{request.Email}") == request.VerificationCode))
                 {
                     //验证有效性
                     User user = request.MapTo<User>();
@@ -192,6 +192,9 @@ namespace UserService.App
                             RegisterTime = DateTime.Now
                         });
                         await dbContext.SaveChangesAsync();
+                        //移除键
+                        await database.KeyDeleteAsync($"VCode:{request.Phone}");
+                        await database.KeyDeleteAsync($"VCode:{request.Email}");
                         return "注册成功";
                     }
                     else
@@ -218,9 +221,8 @@ namespace UserService.App
                 var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Username == request.Username);
                 if (user != null)
                 {
-                    //检查验证码
-                    var phone = await database.StringGetAsync(user?.Phone ?? "");
-                    var email = await database.StringGetAsync(user?.Email ?? "");
+                    var phone = await database.StringGetAsync($"VCode:{user?.Phone ?? ""}");
+                    var email = await database.StringGetAsync($"VCode:{user?.Email ?? ""}");
                     //验证有效性
                     if (phone == request.VerificationCode || email == request.VerificationCode)
                     {
@@ -228,6 +230,9 @@ namespace UserService.App
                         dbContext.Update(user);
                         if (await dbContext.SaveChangesAsync() > 0)
                         {
+                            //移除键
+                            await database.KeyDeleteAsync($"VCode:{user?.Phone ?? ""}");
+                            await database.KeyDeleteAsync($"VCode:{user?.Email ?? ""}");
                             return "修改密码成功";
                         }
                         else
@@ -265,6 +270,7 @@ namespace UserService.App
                     userDetail.Remark = request.Remark ?? userDetail.Remark;
                     userDetail.Sex = request.Sex ?? userDetail.Sex;
                     userDetail.Birthday = string.IsNullOrWhiteSpace(request.Birthday) ? Convert.ToDateTime(request.Birthday) : Convert.ToDateTime(userDetail.Birthday);
+                    dbContext.Entry(userDetail).State = EntityState.Modified;
                     if (await dbContext.SaveChangesAsync() > 0)
                     {
                         return "更新成功";
@@ -295,7 +301,7 @@ namespace UserService.App
                 if (user != null)
                 {
                     //查询验证码
-                    if (await database.StringGetAsync(requests.Bind) != requests.VerificationCode)
+                    if (await database.StringGetAsync($"VCode:{requests.Bind}") != requests.VerificationCode)
                     {
                         throw new Exception("验证码错误");
                     }
@@ -314,8 +320,11 @@ namespace UserService.App
                         throw new Exception("绑定渠道错误:必须为phone、email");
                     }
                     //保存修改
+                    dbContext.Entry(user).State = EntityState.Modified;
                     if (await dbContext.SaveChangesAsync() > 0)
                     {
+                        //移除键
+                        await database.KeyDeleteAsync($"VCode:{requests.Bind}");
                         return "绑定成功";
                     }
                     else
@@ -356,6 +365,7 @@ namespace UserService.App
                         throw new Exception("绑定渠道错误:必须为phone、email");
                     }
                     //保存修改
+                    dbContext.Entry(user).State = EntityState.Modified;
                     if (await dbContext.SaveChangesAsync() > 0)
                     {
                         return "解绑成功";
@@ -472,6 +482,8 @@ namespace UserService.App
                     userDetail.Remark = request.Remark ?? userDetail.Remark;
                     userDetail.Score = request.Score ?? userDetail.Score;
 
+                    dbContext.Entry(user).State = EntityState.Modified;
+                    dbContext.Entry(userDetail).State = EntityState.Modified;
                     if (await dbContext.SaveChangesAsync() > 0)
                     {
                         return "修改成功";

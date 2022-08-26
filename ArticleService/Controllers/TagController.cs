@@ -25,6 +25,7 @@ namespace ArticleService.Controllers
         /// <returns></returns>
         [RBAC(IsPublic = 1)]
         [HttpGet]
+        [TypeFilter(typeof(RedisCache))]
         public async Task<Response<List<TagView>>> Public()
         {
             var result = new Response<List<TagView>>();
@@ -47,6 +48,7 @@ namespace ArticleService.Controllers
         /// <returns></returns>
         [RBAC]
         [HttpGet]
+        [TypeFilter(typeof(RedisCache))]
         public async Task<Response<List<TagView>>> My()
         {
             var result = new Response<List<TagView>>();
@@ -70,6 +72,7 @@ namespace ArticleService.Controllers
         /// <returns></returns>
         [RBAC]
         [HttpPost]
+        [TypeFilter(typeof(RedisFlush), Arguments = new object[] { new string[] { "*article*", "*tag*" } })]
         public async Task<Response<string>> Create(AddTagReq request)
         {
             var result = new Response<string>();
@@ -93,6 +96,7 @@ namespace ArticleService.Controllers
         /// <returns></returns>
         [RBAC]
         [HttpDelete]
+        [TypeFilter(typeof(RedisFlush), Arguments = new object[] { new string[] { "*article*", "*tag*" } })]
         public async Task<Response<string>> Delete(List<DelTagReq> request)
         {
             var result = new Response<string>();
@@ -116,6 +120,7 @@ namespace ArticleService.Controllers
         /// <returns></returns>
         [RBAC]
         [HttpPut]
+        [TypeFilter(typeof(RedisFlush), Arguments = new object[] { new string[] { "*article*", "*tag*" } })]
         public async Task<Response<string>> Update(UpdateTagReq request)
         {
             var result = new Response<string>();

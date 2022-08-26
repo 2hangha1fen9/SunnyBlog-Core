@@ -59,6 +59,7 @@ namespace IdentityService.App
                     role.Name = request.Name ?? role.Name;
                     role.Status = request.Status ?? role.Status;
                     role.UpdateTime = DateTime.Now;
+                    dbContext.Entry(role).State = EntityState.Modified;
                     if (await dbContext.SaveChangesAsync() > 0)
                     {
                         return "修改成功";

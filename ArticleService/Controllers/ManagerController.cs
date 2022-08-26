@@ -29,6 +29,7 @@ namespace ArticleService.Controllers
         /// <returns></returns>
         [RBAC]
         [HttpDelete]
+        [TypeFilter(typeof(RedisFlush), Arguments = new object[] { new string[] { "*article*" } })]
         public async Task<Response<string>> RemoveArticle(List<DelArticleReq> request)
         {
             var result = new Response<string>();
@@ -51,6 +52,7 @@ namespace ArticleService.Controllers
         /// <returns></returns>
         [RBAC]
         [HttpPut]
+        [TypeFilter(typeof(RedisFlush), Arguments = new object[] { new string[] { "*article*" } })]
         public async Task<Response<string>> EditorArticle(EditorArticleReq request)
         {
             var result = new Response<string>();
@@ -74,6 +76,7 @@ namespace ArticleService.Controllers
         /// <returns></returns>
         [RBAC]
         [HttpDelete]
+        [TypeFilter(typeof(RedisFlush), Arguments = new object[] { new string[] { "*article*","*tag*" } })]
         public async Task<Response<string>> DeleteTag(List<DelTagReq> request)
         {
             var result = new Response<string>();
@@ -95,6 +98,7 @@ namespace ArticleService.Controllers
         /// <returns></returns>
         [RBAC]
         [HttpGet]
+        [TypeFilter(typeof(RedisCache))]
         public async Task<Response<List<TagView>>> ListTag()
         {
             var result = new Response<List<TagView>>();
@@ -118,6 +122,7 @@ namespace ArticleService.Controllers
         /// <returns></returns>
         [RBAC]
         [HttpPut]
+        [TypeFilter(typeof(RedisFlush), Arguments = new object[] { new string[] { "*article*", "*tag*" } })]
         public async Task<Response<string>> UpdateTag(UpdateTagReq request)
         {
             var result = new Response<string>();

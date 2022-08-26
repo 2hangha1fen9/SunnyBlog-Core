@@ -53,7 +53,7 @@ namespace UserService.App
             {
                 throw new Exception("请求错误");
             }
-            
+
         }
 
         /// <summary>
@@ -61,7 +61,7 @@ namespace UserService.App
         /// </summary>
         /// <param name="id">用户ID</param>
         /// <returns></returns>
-        public async Task<PageList<FollowView>> FollowList(List<SearchCondition> condidtion, int id, int pageIndex, int pageSize)
+        public async Task<List<FollowView>> FollowList(List<SearchCondition> condidtion, int id)
         {
             using (var dbContext = contextFactory.CreateDbContext())
             {
@@ -81,14 +81,11 @@ namespace UserService.App
                         follows = "Remark".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? follows.Where(f => f.Remark.Contains(con.Value)) : follows;
                     }
                 }
-                //对结果进行分页
-                var followsPage = new PageList<FollowView>();
-                follows = followsPage.Pagination(pageIndex, pageSize, follows); //添加分页表表达式
-                followsPage.Page = (await follows.ToListAsync()).MapToList<FollowView>(); //获取分页结果
-                return followsPage;
+                var followView = (await follows.ToListAsync()).MapToList<FollowView>();
+                return followView;
             }
         }
-        
+
         /// <summary>
         /// 关注某人
         /// </summary>

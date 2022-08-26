@@ -27,6 +27,7 @@ namespace ArticleService.Controllers
         /// <returns></returns>
         [RBAC]
         [HttpGet]
+        [TypeFilter(typeof(RedisCache))]
         public async Task<Response<List<CategoryView>>> My()
         {
             var result = new Response<List<CategoryView>>();
@@ -49,6 +50,7 @@ namespace ArticleService.Controllers
         /// <returns></returns>
         [RBAC]
         [HttpPut]
+        [TypeFilter(typeof(RedisFlush), Arguments = new object[] { new string[] { "*category*" } })]
         public async Task<Response<string>> Update(UpdateCategoryReq request)
         {
             var result = new Response<string>();
@@ -72,6 +74,7 @@ namespace ArticleService.Controllers
         /// <returns></returns>
         [RBAC]
         [HttpPost]
+        [TypeFilter(typeof(RedisFlush), Arguments = new object[] { new string[] { "*category*" } })]
         public async Task<Response<string>> Create(AddCategoryReq request)
         {
             var result = new Response<string>();
@@ -95,6 +98,7 @@ namespace ArticleService.Controllers
         /// <returns></returns>
         [RBAC]
         [HttpDelete]
+        [TypeFilter(typeof(RedisFlush), Arguments = new object[] { new string[] { "*category*" } })]
         public async Task<Response<string>> Delete(List<DelCategoryReq> request)
         {
             var result = new Response<string>();

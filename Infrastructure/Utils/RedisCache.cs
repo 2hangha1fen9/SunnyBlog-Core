@@ -1,14 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using StackExchange.Redis;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Infrastructure
 {
@@ -50,31 +45,49 @@ namespace Infrastructure
 
         public async Task OnResourceExecutionAsync(ResourceExecutingContext context, ResourceExecutionDelegate next)
         {
-            //获取缓存键,默认按api路径缓存
-            if (string.IsNullOrWhiteSpace(CacheKey))
+            try
             {
-                CacheKey =$"{context.HttpContext.Request.Path.Value}{context.HttpContext.Request.QueryString}";
-            }
-
-            //从Redis中获取值
-            var cache = await database.StringGetAsync(CacheKey);
-            if (cache != RedisValue.Null)
-            {
-                //命中缓存，返回缓存中的内容
-                context.Result = new ContentResult()
+                //获取请求路径
+                var path = context.HttpContext.Request.Path.Value;
+                //获取查询参数
+                var query = context.HttpContext.Request.QueryString;
+                //获取body Hash
+                context.HttpContext.Request.EnableBuffering(); //让body可以被重复读取
+                using var bodyStream = new StreamReader(context.HttpContext.Request.Body);
+                var body = (await bodyStream.ReadToEndAsync()).ShaEncrypt(); //获取bodyhash摘要
+                context.HttpContext.Request.Body.Seek(0, SeekOrigin.Begin);//重置流偏移量 
+                
+                //获取缓存键,默认按api路径缓存
+                if (string.IsNullOrWhiteSpace(CacheKey))
                 {
-                    Content = cache
-                };
+                    CacheKey = $"{path}:{query}:{body}";
+                }
+
+                //从Redis中获取值
+                var cache = await database.StringGetAsync(CacheKey);
+                if (cache != RedisValue.Null)
+                {
+                    //命中缓存，返回缓存中的内容
+                    context.Result = new ContentResult()
+                    {
+                        Content = cache
+                    };
+                }
+                else
+                {
+                    //未命中缓存，将查询结果存入redis
+                    var result = await next.Invoke();
+                    var content = ((ObjectResult)result.Result).Value;
+                    //序列化
+                    var json = JsonConvert.SerializeObject(content, jsonConfig);
+                    await database.StringSetAsync(CacheKey, json, TimeSpan.FromSeconds(Expiration));
+                }
             }
-            else
+            catch (Exception ex)
             {
-                //未命中缓存，将查询结果存入redis
-                var result = await next.Invoke();
-                var content = ((ObjectResult)result.Result).Value;
-                //序列化
-                var json = JsonConvert.SerializeObject(content, jsonConfig);
-                await database.StringSetAsync(context.HttpContext.Request.Path.Value, json, TimeSpan.FromSeconds(Expiration));
+                Console.WriteLine(ex.Message);
             }
+            
         }
     }
 
@@ -86,7 +99,7 @@ namespace Infrastructure
         /// <summary>
         /// 自定义缓存键
         /// </summary>
-        public string CacheKey { get; set; }
+        public string[] CacheKeys { get; set; }
         /// <summary>
         /// redis库号
         /// </summary>
@@ -95,9 +108,9 @@ namespace Infrastructure
         /// Redis客户端,依赖注入
         /// </summary>
         private readonly IDatabase database;
-        public RedisFlush(IConnectionMultiplexer connection, string cacheKey, int? databaseNum = 1)
+        public RedisFlush(IConnectionMultiplexer connection, string[] cacheKeys, int? databaseNum = 1)
         {
-            this.CacheKey = cacheKey;
+            this.CacheKeys = cacheKeys;
             this.DatabaseNum = databaseNum.Value;
             this.database = connection.GetDatabase(DatabaseNum);
         }
@@ -108,7 +121,16 @@ namespace Infrastructure
         /// <param name="context"></param>
         public async void OnResultExecuting(ResultExecutingContext context)
         {
-            await database.KeyDeleteAsync(CacheKey);
+            //查询所有匹配的键
+            foreach (var key in CacheKeys)
+            {
+                var result = await database.ScriptEvaluateAsync(LuaScript.Prepare($"local res = redis.call('KEYS','{key}') return res"));
+                if (!result.IsNull)
+                {
+                    RedisKey[] k = (RedisKey[])result;
+                    this.database.KeyDelete(k);
+                }
+            }
         }
 
         public async void OnResultExecuted(ResultExecutedContext context)

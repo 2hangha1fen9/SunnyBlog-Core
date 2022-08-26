@@ -26,6 +26,7 @@ namespace UserService.Controllers
         /// <returns></returns>
         [RBAC]
         [HttpPost]
+        [TypeFilter(typeof(RedisFlush), Arguments = new object[] { new string[] { "*follow*"} })]
         public async Task<Response<string>> Sb([FromQuery]int id)
         {
             var result = new Response<string>();
@@ -49,6 +50,7 @@ namespace UserService.Controllers
         /// <returns></returns>
         [RBAC]
         [HttpDelete]
+        [TypeFilter(typeof(RedisFlush), Arguments = new object[] { new string[] { "*follow*" } })]
         public async Task<Response<string>> Cancel([FromQuery]int id)
         {
             var result = new Response<string>();
@@ -69,12 +71,13 @@ namespace UserService.Controllers
         /// 查看用户的关注列表
         /// </summary>
         [HttpGet]
-        public async Task<Response<PageList<FollowView>>> List(int id, [FromBody]List<SearchCondition>? condidtion = null, int? pageIndex = 1, int? pageSize = 10)
+        [TypeFilter(typeof(RedisCache))]
+        public async Task<Response<List<FollowView>>> List(int id, [FromBody]List<SearchCondition>? condidtion = null)
         {
-            var result = new Response<PageList<FollowView>>();
+            var result = new Response<List<FollowView>>();
             try
             {
-                result.Result = await followApp.FollowList(condidtion,id,pageIndex.Value,pageSize.Value);
+                result.Result = await followApp.FollowList(condidtion, id);
             }
             catch (Exception ex)
             {
@@ -91,6 +94,7 @@ namespace UserService.Controllers
         /// <returns></returns>
         [RBAC]
         [HttpGet]
+        [TypeFilter(typeof(RedisCache))]
         public async Task<Response<bool>> Status(int id)
         {
             var result = new Response<bool>();

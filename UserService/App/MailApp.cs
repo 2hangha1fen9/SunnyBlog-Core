@@ -60,7 +60,7 @@ namespace Infrastructure
                 await smtp.SendAsync(mime);
             }
             //存入redis中
-            await database.StringSetAsync(email, vcode, TimeSpan.FromSeconds(180));
+            await database.StringSetAsync($"VCode:{email}", vcode, TimeSpan.FromSeconds(180));
             return "发送成功";
         }
     }

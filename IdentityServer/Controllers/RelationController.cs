@@ -9,6 +9,7 @@ namespace IdentityService.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [RBAC]
     public class RelationController : ControllerBase
     {
         private readonly IRelationApp relationApp;
@@ -23,7 +24,6 @@ namespace IdentityService.Controllers
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        [RBAC]
         [HttpPost]
         public async Task<Response<string>> RolePermissionBind(RolePermissionBindReq request)
         {
@@ -45,7 +45,6 @@ namespace IdentityService.Controllers
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        [RBAC]
         [HttpPost]
         public async Task<Response<string>> UserRoleBind(UserRoleBindReq request)
         {
@@ -67,7 +66,6 @@ namespace IdentityService.Controllers
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        [RBAC]
         [HttpDelete]
         public async Task<Response<string>> RolePermissionUbind(RolePermissionBindReq request)
         {
@@ -89,7 +87,6 @@ namespace IdentityService.Controllers
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        [RBAC]
         [HttpDelete]
         public async Task<Response<string>> UserRoleUbind(UserRoleBindReq request)
         {

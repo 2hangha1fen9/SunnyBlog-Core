@@ -11,6 +11,7 @@ namespace IdentityService.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [RBAC]
     public class RoleController : ControllerBase
     {
         private readonly IRoleApp roleApp;
@@ -27,7 +28,6 @@ namespace IdentityService.Controllers
         /// <param name="pageSize"></param>
         /// <param name="condition"></param>
         /// <returns></returns>
-        [RBAC]
         [HttpGet]
         public async Task<Response<PageList<RoleView>>> List([FromQuery] int? pageIndex = 1, [FromQuery] int? pageSize = 10, [FromBody] List<SearchCondition>? condition = null)
         {
@@ -51,7 +51,6 @@ namespace IdentityService.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [RBAC]
         [HttpGet]
         public async Task<Response<RoleView>> Get(int id)
         {
@@ -75,7 +74,6 @@ namespace IdentityService.Controllers
         /// <param name="pageIndex"></param>
         /// <param name="pageSize"></param>
         /// <returns></returns>
-        [RBAC]
         [HttpGet]
         public async Task<Response<PageList<RoleView>>> GetByUser(int id, [FromQuery] int? pageIndex = 1, [FromQuery] int? pageSize = 10)
         {
@@ -101,7 +99,6 @@ namespace IdentityService.Controllers
         /// <param name="pageIndex"></param>
         /// <param name="pageSize"></param>
         /// <returns></returns>
-        [RBAC]
         [HttpGet]
         public async Task<Response<PageList<RoleView>>> GetByPermission(int id, [FromQuery] int? pageIndex = 1, [FromQuery] int? pageSize = 10)
         {
@@ -125,7 +122,6 @@ namespace IdentityService.Controllers
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        [RBAC]
         [HttpPost]
         public async Task<Response<string>> Add(AddRoleReq request)
         {
@@ -147,7 +143,6 @@ namespace IdentityService.Controllers
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        [RBAC]
         [HttpDelete]
         public async Task<Response<string>> Del(List<DelRoleReq> request)
         {
@@ -169,7 +164,6 @@ namespace IdentityService.Controllers
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        [RBAC]
         [HttpPut]
         public async Task<Response<string>> Modify(ModifyRoleReq request)
         {

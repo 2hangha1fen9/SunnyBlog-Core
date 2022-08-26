@@ -101,6 +101,7 @@ namespace ArticleService.App
                     {
                         category.Name = request.Name ?? category.Name;
                         category.ParentId = request.ParentId;
+                        dbContext.Entry(category).State = EntityState.Modified;
                         await dbContext.SaveChangesAsync();
                     }
                     return "修改成功";

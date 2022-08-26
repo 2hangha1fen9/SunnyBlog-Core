@@ -70,6 +70,7 @@ namespace UserService.Controllers
         /// <returns></returns>
         [HttpPost]
         [RBAC(IsPublic = 1)]
+        [TypeFilter(typeof(RedisFlush), Arguments = new object[] { new string[] { "*user*"} })]
         public async Task<Response<string>> Register(UserRegisterReq request)
         {
             var result = new Response<string>();
@@ -113,7 +114,7 @@ namespace UserService.Controllers
         /// <returns></returns>
         [RBAC]
         [HttpPut]
-        [TypeFilter(typeof(RedisFlush),Arguments = new object[] {"/api/user/list"})]
+        [TypeFilter(typeof(RedisFlush),Arguments = new object[] { new string[] { "*user*"} })]
         public async Task<Response<string>> UpdateInfo(ChangeUserReq request)
         {
             var result = new Response<string>();

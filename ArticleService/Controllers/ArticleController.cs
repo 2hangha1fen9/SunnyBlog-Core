@@ -27,6 +27,7 @@ namespace ArticleService.Controllers
         /// <returns></returns>
         [RBAC(IsPublic = 1)]
         [HttpGet]
+        [TypeFilter(typeof(RedisCache))]
         public async Task<Response<PageList<ArticleView>>> List([FromBody]List<SearchCondition>? condidtion = null, [FromQuery]int? pageIndex = 1, [FromQuery]int? pageSize = 10)
         {
             var result = new Response<PageList<ArticleView>>();
@@ -50,6 +51,7 @@ namespace ArticleService.Controllers
         /// <returns></returns>
         [RBAC(IsPublic = 1)]
         [HttpGet]
+        [TypeFilter(typeof(RedisCache))]
         public async Task<Response<ArticleView>> Detail(int id)
         {
             var result = new Response<ArticleView>();
@@ -72,6 +74,7 @@ namespace ArticleService.Controllers
         /// <returns></returns>
         [RBAC]
         [HttpGet]
+        [TypeFilter(typeof(RedisCache))]
         public async Task<Response<PageList<ArticleListView>>> My([FromBody]List<SearchCondition>? condidtion = null, [FromQuery] int? pageIndex = 1, [FromQuery] int? pageSize = 10)
         {
             var result = new Response<PageList<ArticleListView>>();
@@ -96,6 +99,7 @@ namespace ArticleService.Controllers
         /// <returns></returns>
         [RBAC]
         [HttpPut]
+        [TypeFilter(typeof(RedisFlush), Arguments = new object[] { new string[] { "*article*" } })]
         public async Task<Response<string>> Editor(EditorArticleReq request)
         {
             var result = new Response<string>();
@@ -120,6 +124,7 @@ namespace ArticleService.Controllers
         /// <returns></returns>
         [RBAC]
         [HttpPost]
+        [TypeFilter(typeof(RedisFlush), Arguments = new object[] { new string[] { "*article*" } })]
         public async Task<Response<string>> Publish(PublishArticleReq request)
         {
             var result = new Response<string>();
@@ -144,6 +149,7 @@ namespace ArticleService.Controllers
         /// <returns></returns>
         [RBAC]
         [HttpDelete]
+        [TypeFilter(typeof(RedisFlush), Arguments = new object[] { new string[] { "*article*" } })]
         public async Task<Response<string>> Remove(List<DelArticleReq> request)
         {
             var result = new Response<string>();

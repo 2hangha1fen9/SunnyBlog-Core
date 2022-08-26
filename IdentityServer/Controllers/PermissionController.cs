@@ -11,6 +11,7 @@ namespace IdentityService.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
+    [RBAC]
     public class PermissionController : ControllerBase
     {
         private readonly IPermissionApp permissionApp;
@@ -27,7 +28,6 @@ namespace IdentityService.Controllers
         /// <param name="pageSize"></param>
         /// <param name="condition"></param>
         /// <returns></returns>
-        [RBAC]
         [HttpGet]
         public async Task<Response<PageList<PermissionView>>> List([FromQuery] int? pageIndex = 1, [FromQuery] int? pageSize = 10, [FromBody] List<SearchCondition>? condition = null)
         {
@@ -50,7 +50,6 @@ namespace IdentityService.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [RBAC]
         [HttpGet]
         public async Task<Response<PermissionView>> Get(int id)
         {
@@ -74,7 +73,6 @@ namespace IdentityService.Controllers
         /// <param name="pageIndex"></param>
         /// <param name="pageSize"></param>
         /// <returns></returns>
-        [RBAC]
         [HttpGet]
         public async Task<Response<PageList<PermissionView>>> GetByUser(int id,[FromQuery] int? pageIndex = 1, [FromQuery] int? pageSize = 10)
         {
@@ -94,13 +92,12 @@ namespace IdentityService.Controllers
         }
 
         /// <summary>
-        /// 根据用户ID查询权限列表
+        /// 根据角色ID查询权限列表
         /// </summary>
         /// <param name="id"></param>
         /// <param name="pageIndex"></param>
         /// <param name="pageSize"></param>
         /// <returns></returns>
-        [RBAC]
         [HttpGet]
         public async Task<Response<PageList<PermissionView>>> GetByRole(int id, [FromQuery] int? pageIndex = 1, [FromQuery] int? pageSize = 10)
         {
@@ -124,9 +121,8 @@ namespace IdentityService.Controllers
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        [RBAC]
         [HttpPost]
-        [TypeFilter(typeof(RedisFlush), Arguments = new object[] { "publicPermission", 0 })]
+        [TypeFilter(typeof(RedisFlush), Arguments = new object[] { new string[] { "*publicPermission*" } })]
         public async Task<Response<string>> Add(AddPermissionReq request)
         {
             var result = new Response<string>();
@@ -147,9 +143,8 @@ namespace IdentityService.Controllers
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        [RBAC]
         [HttpDelete]
-        [TypeFilter(typeof(RedisFlush), Arguments = new object[] { "publicPermission", 0 })]
+        [TypeFilter(typeof(RedisFlush), Arguments = new object[] { new string[] {"*publicPermission*"}})]
         public async Task<Response<string>> Del(List<DelPermissionReq> request)
         {
             var result = new Response<string>();
@@ -170,9 +165,8 @@ namespace IdentityService.Controllers
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        [RBAC]
         [HttpPut]
-        [TypeFilter(typeof(RedisFlush), Arguments = new object[] { "publicPermission", 0 })]
+        [TypeFilter(typeof(RedisFlush), Arguments = new object[] { new string[] { "*publicPermission*" } })]
         public async Task<Response<string>> Modify(ModifyPermissionReq request)
         {
             var result = new Response<string>();

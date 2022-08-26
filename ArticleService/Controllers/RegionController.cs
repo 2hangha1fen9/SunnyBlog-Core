@@ -25,6 +25,7 @@ namespace ArticleService.Controllers
         /// <returns></returns>
         [RBAC(IsPublic = 1)]
         [HttpGet]
+        [TypeFilter(typeof(RedisCache))]
         public async Task<Response<List<RegionView>>> List()
         {
             var result = new Response<List<RegionView>>();
@@ -70,6 +71,7 @@ namespace ArticleService.Controllers
         /// <returns></returns>
         [RBAC]
         [HttpDelete]
+        [TypeFilter(typeof(RedisFlush), Arguments = new object[] { new string[] { "*article*", "*region*" } })]
         public async Task<Response<string>> Delete(List<DelRegionReq> request)
         {
             var result = new Response<string>();
@@ -92,6 +94,7 @@ namespace ArticleService.Controllers
         /// <returns></returns>
         [RBAC]
         [HttpPost]
+        [TypeFilter(typeof(RedisFlush), Arguments = new object[] { new string[] {"*region*" } })]
         public async Task<Response<string>> Create(AddRegionReq request)
         {
             var result = new Response<string>();

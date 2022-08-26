@@ -7,7 +7,7 @@ namespace UserService.App.Interface
     {
         Task<string> FollowSb(int id,int sbId);
         Task<string> CancelFollowSb(int id, int sbId);
-        Task<PageList<FollowView>> FollowList(List<SearchCondition> condidtion, int id,int pageIndex, int pageSize);
+        Task<List<FollowView>> FollowList(List<SearchCondition> condidtion, int id);
         Task<bool> FollowStatus(int id, int sbId);
     }
 }
