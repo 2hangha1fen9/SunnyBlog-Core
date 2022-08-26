@@ -99,7 +99,7 @@ namespace ArticleService.Controllers
         /// <returns></returns>
         [RBAC]
         [HttpPut]
-        [TypeFilter(typeof(RedisFlush), Arguments = new object[] { new string[] { "*article*" } })]
+        [TypeFilter(typeof(RedisFlush), Arguments = new object[] { new string[] { "*article*" } })] 
         public async Task<Response<string>> Editor(EditorArticleReq request)
         {
             var result = new Response<string>();

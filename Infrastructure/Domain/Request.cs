@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace Infrastructure
 {
+    /// <summary>
+    /// 通用搜索条件
+    /// </summary>
     public class SearchCondition
     {
         [Required(ErrorMessage = "搜索条件不能为空")]

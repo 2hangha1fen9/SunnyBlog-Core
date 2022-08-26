@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 namespace Infrastructure
 {
     /// <summary>
-    /// 分页结果
+    /// 分页视图
     /// </summary>
     /// <typeparam name="V">数据类型</typeparam>
     public class PageList<V>
@@ -37,9 +37,9 @@ namespace Infrastructure
         /// <summary>
         /// 添加分页表达式
         /// </summary>
-        /// <param name="pageIndex"></param>
+        /// <param name="pageIndex">页索引</param>
         /// <param name="pageSize">-1表示全表查询</param>
-        /// <param name="list"></param>
+        /// <param name="list">数据源</param>
         public IQueryable<T> Pagination<T>(int pageIndex, int pageSize, IQueryable<T> list)
         {
             TotalCount = list.Count();

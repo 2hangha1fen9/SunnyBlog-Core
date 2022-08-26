@@ -173,8 +173,8 @@ namespace UserService.App
                 }
 
                 //验证验证码
-                if ((request.Phone != null && await database.StringGetAsync($"VCode:{request.Phone}") == request.VerificationCode) ||
-                    (request.Email != null && await database.StringGetAsync($"VCode:{request.Email}") == request.VerificationCode))
+                if ((await database.StringGetDeleteAsync($"VCode:{request.Phone}") == request.VerificationCode) ||
+                    (await database.StringGetDeleteAsync($"VCode:{request.Email}") == request.VerificationCode))
                 {
                     //验证有效性
                     User user = request.MapTo<User>();
@@ -192,9 +192,6 @@ namespace UserService.App
                             RegisterTime = DateTime.Now
                         });
                         await dbContext.SaveChangesAsync();
-                        //移除键
-                        await database.KeyDeleteAsync($"VCode:{request.Phone}");
-                        await database.KeyDeleteAsync($"VCode:{request.Email}");
                         return "注册成功";
                     }
                     else
@@ -221,8 +218,8 @@ namespace UserService.App
                 var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Username == request.Username);
                 if (user != null)
                 {
-                    var phone = await database.StringGetAsync($"VCode:{user?.Phone ?? ""}");
-                    var email = await database.StringGetAsync($"VCode:{user?.Email ?? ""}");
+                    var phone = await database.StringGetDeleteAsync($"VCode:{user.Phone}");
+                    var email = await database.StringGetDeleteAsync($"VCode:{user.Email}");
                     //验证有效性
                     if (phone == request.VerificationCode || email == request.VerificationCode)
                     {
@@ -230,9 +227,6 @@ namespace UserService.App
                         dbContext.Update(user);
                         if (await dbContext.SaveChangesAsync() > 0)
                         {
-                            //移除键
-                            await database.KeyDeleteAsync($"VCode:{user?.Phone ?? ""}");
-                            await database.KeyDeleteAsync($"VCode:{user?.Email ?? ""}");
                             return "修改密码成功";
                         }
                         else
@@ -301,7 +295,7 @@ namespace UserService.App
                 if (user != null)
                 {
                     //查询验证码
-                    if (await database.StringGetAsync($"VCode:{requests.Bind}") != requests.VerificationCode)
+                    if (await database.StringGetDeleteAsync($"VCode:{requests.Bind}") != requests.VerificationCode)
                     {
                         throw new Exception("验证码错误");
                     }
