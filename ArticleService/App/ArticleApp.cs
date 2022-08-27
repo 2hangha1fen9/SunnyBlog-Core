@@ -242,6 +242,73 @@ namespace ArticleService.App
                 return articlePage;
             }
         }
+        
+        /// <summary>
+        /// 用户文章列表
+        /// </summary>
+        public async Task<PageList<ArticleView>> GetUserArticleList(List<SearchCondition> condidtion,int uid, int pageIndex, int pageSize)
+        {
+            using (var dbContext = contextFactory.CreateDbContext())
+            {
+                //创建数据映射
+                var article = dbContext.Articles.Select(a => new
+                {
+                    Id = a.Id,
+                    UserId = a.UserId,
+                    UserPhoto = "",
+                    Nick = "",
+                    Title = a.Title,
+                    Content = a.Content.Substring(0, 100),
+                    Photo = a.Photo,
+                    Tags = a.ArticleTags.Where(at => at.Tag.IsPrivate == 0).Select(at => new TagView()
+                    {
+                        Id = at.Id,
+                        UserId = at.Tag.UserId,
+                        Name = at.Tag.Name,
+                        Color = at.Tag.Color
+                    }),
+                    RegionName = a.Region.Name,
+                    RegionId = a.Region.Id,
+                    CreateTime = a.CreateTime,
+                    Status = a.Status,
+                    CommentStatus = a.CommentStatus,
+                    IsLock = a.IsLock
+                }).Where(a => a.Status == 1 && a.UserId == uid);
+                //筛选条件
+                if (condidtion.Count > 0)
+                {
+                    foreach (var con in condidtion)
+                    {
+                        article = "Title".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? article.Where(a => a.Title.Contains(con.Value)) : article;
+                        article = "Content".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? article.Where(a => a.Content.Contains(con.Value)) : article;
+                        article = "Tag".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? article.Where(a => a.Tags.Where(t => t.Name.Contains(con.Value) || t.Id == Convert.ToInt32(con.Value)).Count() > 0) : article;
+                        article = "Region".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? article.Where(a => a.RegionName.Contains(con.Value) || a.RegionId == Convert.ToInt32(con.Value)) : article;
+                    }
+                }
+                //分页条件
+                var articlePage = new PageList<ArticleView>();
+                article = articlePage.Pagination(pageIndex, pageSize, article);
+                articlePage.Page = (await article.ToListAsync()).MapToList<ArticleView>();
+                //填充文章用户信息
+                //调用RPC填充用户信息
+                //调用consul服务发现，获取rpc服务地址
+                var url = ServiceUrl.GetServiceUrlByName("UserService",
+                            config.GetSection("Consul").Get<ConsulServiceOptions>().ConsulAddress);
+                //创建通讯频道
+                using var channel = GrpcChannel.ForAddress(url);
+                //创建客户端
+                var client = new gUser.gUserClient(channel);
+                //填充文章的分页用户信息
+                foreach (var page in articlePage.Page)
+                {
+                    //获取用户
+                    var user = await client.GetUserByIDAsync(new UserInfoRequest() { Id = page.UserId });
+                    page.Nick = user.Nick;
+                    page.UserPhoto = user.Photo;
+                }
+                return articlePage;
+            }
+        }
 
         /// <summary>
         /// 获取文章行列表

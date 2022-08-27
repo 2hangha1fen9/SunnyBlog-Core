@@ -32,9 +32,6 @@
     <Reference Include="Consul">
       <HintPath>O:\VisualStudio\Package\consul\1.6.1.1\lib\netstandard2.0\Consul.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.AspNetCore.Http.Abstractions">
-      <HintPath>O:\VisualStudio\Package\microsoft.aspnetcore.http.abstractions\2.2.0\lib\netstandard2.0\Microsoft.AspNetCore.Http.Abstractions.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.EntityFrameworkCore">
       <HintPath>O:\VisualStudio\Package\microsoft.entityframeworkcore\6.0.8\lib\net6.0\Microsoft.EntityFrameworkCore.dll</HintPath>
     </Reference>

@@ -1,9 +1,15 @@
+using ArticleService.Rpc.Protos;
 using Com.Ctrip.Framework.Apollo;
 using Com.Ctrip.Framework.Apollo.Enums;
+using CommentService;
+using CommentService.App;
+using CommentService.App.Interface;
+using CommentService.Rpc.Protos;
 using Infrastructure;
 using Infrastructure.Auth;
 using Infrastructure.Consul;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using StackExchange.Redis;
 using System.Reflection;
@@ -28,11 +34,11 @@ builder.Services.AddSwaggerGen(options =>
     var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
 });
-/*//配置数据库
-builder.Services.AddDbContextFactory<AuthDBContext>(option =>
+//配置数据库
+builder.Services.AddDbContextFactory<CommentDBContext>(option =>
 {
     option.UseSqlServer(builder.Configuration.GetValue<string>("SqlServer"));
-});*/
+});
 //Redis客户端注册
 builder.Services.AddSingleton<IConnectionMultiplexer>(cm =>
 {
@@ -54,13 +60,29 @@ builder.Services.AddAuthentication("Bearer")
         ValidateAudience = false
     };
 });
+
+//gRPC服务注册
+builder.Services.AddGrpc();
+builder.Services.AddGrpcClient<gArticle.gArticleClient>(option =>
+{
+    option.Address = new Uri(ServiceUrl.GetServiceUrlByName("ArticleService", builder.Configuration.GetSection("Consul").Get<ConsulServiceOptions>().ConsulAddress));
+});
+builder.Services.AddGrpcClient<gUser.gUserClient>(option =>
+{
+    option.Address = new Uri(ServiceUrl.GetServiceUrlByName("UserService", builder.Configuration.GetSection("Consul").Get<ConsulServiceOptions>().ConsulAddress));
+});
+
+//服务注册
+builder.Services.AddScoped<ICommentApp, CommentApp>();
+builder.Services.AddScoped<ILikeApp, LikeApp>();
+
 var app = builder.Build();
 
 // consul注入
 app.UseConsul(builder.Configuration.GetSection("Consul").Get<ConsulServiceOptions>());
 
 //节点注册
-app.UsePermissionRegistrar<Program>(builder.Configuration.GetSection("Consul").Get<ConsulServiceOptions>().ConsulAddress);
+app.UsePermissionRegistrar<Program>(builder.Configuration.GetSection("Consul").Get<ConsulServiceOptions>().ConsulAddress).Wait();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

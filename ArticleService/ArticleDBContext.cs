@@ -10,7 +10,6 @@ namespace ArticleService
 {
     public partial class ArticleDBContext : DbContext
     {
-
         public ArticleDBContext(DbContextOptions<ArticleDBContext> options)
             : base(options)
         {

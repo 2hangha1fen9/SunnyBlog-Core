@@ -31,8 +31,8 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="Rpc\Service\" />
 		<Protobuf Include="Rpc\Protos\user.proto" GrpcServices="Client" />
+		<Protobuf Include="Rpc\Protos\article.proto" GrpcServices="Server" />
 	</ItemGroup>
 
 	<ProjectExtensions>

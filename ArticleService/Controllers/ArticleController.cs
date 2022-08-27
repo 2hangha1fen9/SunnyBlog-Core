@@ -45,6 +45,29 @@ namespace ArticleService.Controllers
         }
 
         /// <summary>
+        /// 用户文章列表
+        /// </summary>
+        /// <returns></returns>
+        [RBAC]
+        [HttpGet]
+        [TypeFilter(typeof(RedisCache))]
+        public async Task<Response<PageList<ArticleView>>> User([FromQuery] int uid,[FromBody] List<SearchCondition>? condidtion = null, [FromQuery] int? pageIndex = 1, [FromQuery] int? pageSize = 10)
+        {
+            var result = new Response<PageList<ArticleView>>();
+            try
+            {
+                var article = await articleApp.GetUserArticleList(condidtion, uid, pageIndex.Value, pageSize.Value);
+                result.Result = article;
+            }
+            catch (Exception ex)
+            {
+                result.Status = 500;
+                result.Message = ex.InnerException?.Message ?? ex.Message;
+            }
+            return result;
+        }
+
+        /// <summary>
         /// 浏览文章正文
         /// </summary>
         /// <param name="id"></param>

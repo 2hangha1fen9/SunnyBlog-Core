@@ -69,7 +69,6 @@ namespace UserService.Controllers
         /// <param name="request"></param>
         /// <returns></returns>
         [HttpPut]
-        [TypeFilter(typeof(RedisFlush), Arguments = new object[] { new string[] { "*user*"} })]
         public async Task<Response<string>> ModifyUser(UpdateUserReq request)
         {
             var result = new Response<string>();
@@ -91,7 +90,6 @@ namespace UserService.Controllers
         /// <param name="request"></param>
         /// <returns></returns>
         [HttpPost]
-        [TypeFilter(typeof(RedisFlush), Arguments = new object[] { new string[] { "*user*"} })]
         public async Task<Response<string>> AddUser(AddUserReq request)
         {
             var result = new Response<string>();
@@ -113,7 +111,6 @@ namespace UserService.Controllers
         /// <param name="requests"></param>
         /// <returns></returns>
         [HttpDelete]
-        [TypeFilter(typeof(RedisFlush), Arguments = new object[] { new string[] { "*user*"} })]
         public async Task<Response<string>> DelUser(List<DelUserReq> requests)
         {
             var result = new Response<string>();

@@ -8,6 +8,7 @@ namespace ArticleService.App.Interface
     {
         Task<ArticleView> GetArticle(int id);
         Task<PageList<ArticleView>> GetArticleList(List<SearchCondition> condidtion, int pageIndex, int pageSize);
+        Task<PageList<ArticleView>> GetUserArticleList(List<SearchCondition> condidtion, int uid, int pageIndex, int pageSize);
         Task<PageList<ArticleListView>> GetRowList(List<SearchCondition> condidtion, int pageIndex, int pageSize);
         Task<PageList<ArticleListView>> GetRowList(List<SearchCondition> condidtion, int uid, int pageIndex, int pageSize);
         Task<string> RemoveArticle(List<DelArticleReq> request);

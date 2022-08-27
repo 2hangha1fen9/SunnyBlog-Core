@@ -1,4 +1,5 @@
-﻿using Grpc.Core;
+﻿using Google.Protobuf.WellKnownTypes;
+using Grpc.Core;
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using UserService.Rpc.Protos;
@@ -49,6 +50,23 @@ namespace UserService.Rpc.Service
                 }).FirstOrDefaultAsync(u => u.Id == request.Id);
                 var userInfo = user.MapTo<UserInfoResponse>();
                 return userInfo;
+            }
+        }
+
+        public async override Task<UserInfoListReqponse> GetUserList(Empty request, ServerCallContext context)
+        {
+            using (var c = contextFactory.CreateDbContext())
+            {
+                var user = await c.Users.Select(u => new
+                {
+                    Id = u.Id,
+                    Username = u.Username,
+                    Nick = u.UserDetail.Nick,
+                    Photo = u.Photo
+                }).ToListAsync();
+                var userInfoList = new UserInfoListReqponse();
+                userInfoList.UserInfo.AddRange(user.MapToList<UserInfoResponse>());
+                return userInfoList;
             }
         }
     }

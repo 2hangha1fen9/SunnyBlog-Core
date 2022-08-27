@@ -13,6 +13,7 @@ using Newtonsoft.Json;
 using StackExchange.Redis;
 using Microsoft.AspNetCore.Http;
 using System.Reflection;
+using ArticleService.Rpc.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 //Apollo配置中心
@@ -72,6 +73,9 @@ builder.Services.AddAuthentication("Bearer")
     };
 });
 
+//gRPC注册
+builder.Services.AddGrpc();
+
 var app = builder.Build();
 
 // consul注入
@@ -79,6 +83,9 @@ app.UseConsul(builder.Configuration.GetSection("Consul").Get<ConsulServiceOption
 
 //节点注册
 app.UsePermissionRegistrar<Program>(builder.Configuration.GetSection("Consul").Get<ConsulServiceOptions>().ConsulAddress);
+
+//rpc服务注册
+app.MapGrpcService<GArticleService>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

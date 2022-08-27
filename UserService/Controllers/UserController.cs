@@ -25,7 +25,6 @@ namespace UserService.Controllers
         /// <returns>用户列表</returns>
         [HttpGet]
         [RBAC(IsPublic = 1)]
-        [TypeFilter(typeof(RedisCache))]
         public async Task<Response<PageList<UserView>>> List([FromQuery] int? pageIndex = 1 , [FromQuery] int? pageSize = 10, [FromBody] List<SearchCondition>? condidtion = null)
         {
             var result = new Response<PageList<UserView>>();
@@ -70,7 +69,6 @@ namespace UserService.Controllers
         /// <returns></returns>
         [HttpPost]
         [RBAC(IsPublic = 1)]
-        [TypeFilter(typeof(RedisFlush), Arguments = new object[] { new string[] { "*user*"} })]
         public async Task<Response<string>> Register(UserRegisterReq request)
         {
             var result = new Response<string>();
@@ -114,7 +112,6 @@ namespace UserService.Controllers
         /// <returns></returns>
         [RBAC]
         [HttpPut]
-        [TypeFilter(typeof(RedisFlush),Arguments = new object[] { new string[] { "*user*"} })]
         public async Task<Response<string>> UpdateInfo(ChangeUserReq request)
         {
             var result = new Response<string>();

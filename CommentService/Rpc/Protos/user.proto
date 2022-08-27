@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-option csharp_namespace = "UserService.Rpc.Protos";
+option csharp_namespace = "CommentService.Rpc.Protos";
 
 package sunnyblog;
 import "google/protobuf/empty.proto";
