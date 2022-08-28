@@ -45,6 +45,32 @@ namespace ArticleService.Controllers
         }
 
         /// <summary>
+        /// 列出所有文章列表
+        /// </summary>
+        /// <param name="condidtion"></param>
+        /// <param name="pageIndex"></param>
+        /// <param name="pageSize"></param>
+        /// <returns></returns>
+        [RBAC]
+        [HttpGet]
+        [TypeFilter(typeof(RedisCache))]
+        public async Task<Response<PageList<ArticleListView>>> All([FromBody] List<SearchCondition>? condidtion = null, [FromQuery] int? pageIndex = 1, [FromQuery] int? pageSize = 10)
+        {
+            var result = new Response<PageList<ArticleListView>>();
+            try
+            {
+                var article = await articleApp.GetRowList(condidtion, pageIndex.Value, pageSize.Value);
+                result.Result = article;
+            }
+            catch (Exception ex)
+            {
+                result.Status = 500;
+                result.Message = ex.InnerException?.Message ?? ex.Message;
+            }
+            return result;
+        }
+
+        /// <summary>
         /// 用户文章列表
         /// </summary>
         /// <returns></returns>

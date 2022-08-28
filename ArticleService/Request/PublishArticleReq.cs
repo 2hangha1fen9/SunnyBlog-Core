@@ -34,11 +34,11 @@ namespace ArticleService.Request
         /// </summary>
         public List<int>? Categorys { get; set; }
         /// <summary>
-        /// 文章状态
+        /// 文章状态-1待审核1已发布2私有3回收站
         /// </summary>
         public int? Status { get; set; }
         /// <summary>
-        /// 评论状态
+        /// 评论状态-1不可以评论1可评论2需要审核评论
         /// </summary>
         public int? CommentStatus { get; set; }
     }

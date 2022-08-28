@@ -25,11 +25,13 @@ namespace CommentService
             {
                 entity.Property(e => e.CreateTime).HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.IsRead).HasComment("1已读0未读");
+                entity.Property(e => e.IsRead)
+                    .HasDefaultValueSql("((-1))")
+                    .HasComment("1已读-1未读");
 
                 entity.Property(e => e.Status)
                     .HasDefaultValueSql("((1))")
-                    .HasComment("1审核通过0未审核");
+                    .HasComment("1审核通过-1未审核");
 
                 entity.HasOne(d => d.Parent)
                     .WithMany(p => p.InverseParent)
@@ -39,7 +41,7 @@ namespace CommentService
 
             modelBuilder.Entity<Like>(entity =>
             {
-                entity.Property(e => e.Status).HasComment("0点赞1收藏");
+                entity.Property(e => e.Status).HasComment("1点赞2收藏");
             });
 
             OnModelCreatingPartial(modelBuilder);

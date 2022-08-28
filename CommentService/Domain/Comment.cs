@@ -28,14 +28,14 @@ namespace CommentService.Domain
         [Column("createTime", TypeName = "datetime")]
         public DateTime CreateTime { get; set; }
         /// <summary>
-        /// 1审核通过0未审核
+        /// 1审核通过-1未审核
         /// </summary>
         [Column("status")]
         public int Status { get; set; }
         [Column("parentId")]
         public int? ParentId { get; set; }
         /// <summary>
-        /// 1已读0未读
+        /// 1已读-1未读
         /// </summary>
         [Column("isRead")]
         public int IsRead { get; set; }

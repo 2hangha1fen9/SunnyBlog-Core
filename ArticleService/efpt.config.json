@@ -34,6 +34,10 @@
          "ObjectType": 0
       },
       {
+         "Name": "[dbo].[GlobalSetting]",
+         "ObjectType": 0
+      },
+      {
          "Name": "[dbo].[Tags]",
          "ObjectType": 0
       }

@@ -134,9 +134,9 @@ namespace ArticleService.App
                     Id = a.Id,
                     UserId = a.UserId,
                     Title = a.Title,
-                    Content = a.Content.Substring(0, 400),
+                    Content = a.Content,
                     Photo = a.Photo,
-                    Tags = a.ArticleTags.Where(at => at.Tag.IsPrivate == 0).Select(at => new TagView()
+                    Tags = a.ArticleTags.Where(at => at.Tag.IsPrivate == 1).Select(at => new TagView()
                     {
                         Id = at.Id,
                         UserId = at.Tag.UserId,
@@ -144,7 +144,7 @@ namespace ArticleService.App
                         Color = at.Tag.Color
                     }),
                     RegionName = a.Region.Name,
-                    RegionId = a.Region.Id,
+                    RegionId = a.RegionId,
                     CreateTime = a.CreateTime,
                     Status = a.Status,
                     CommentStatus = a.CommentStatus,
@@ -186,7 +186,7 @@ namespace ArticleService.App
                     Title = a.Title,
                     Content = a.Content.Substring(0, 100),
                     Photo = a.Photo,
-                    Tags = a.ArticleTags.Where(at => at.Tag.IsPrivate == 0).Select(at => new TagView()
+                    Tags = a.ArticleTags.Where(at => at.Tag.IsPrivate == 1).Select(at => new TagView()
                     {
                         Id = at.Id,
                         UserId = at.Tag.UserId,
@@ -194,7 +194,7 @@ namespace ArticleService.App
                         Color = at.Tag.Color
                     }),
                     RegionName = a.Region.Name,
-                    RegionId = a.Region.Id,
+                    RegionId = a.RegionId,
                     CreateTime = a.CreateTime,
                     Status = a.Status,
                     CommentStatus = a.CommentStatus,
@@ -244,7 +244,7 @@ namespace ArticleService.App
                     Title = a.Title,
                     Content = a.Content.Substring(0, 100),
                     Photo = a.Photo,
-                    Tags = a.ArticleTags.Where(at => at.Tag.IsPrivate == 0).Select(at => new TagView()
+                    Tags = a.ArticleTags.Where(at => at.Tag.IsPrivate == 1).Select(at => new TagView()
                     {
                         Id = at.Id,
                         UserId = at.Tag.UserId,
@@ -252,7 +252,7 @@ namespace ArticleService.App
                         Color = at.Tag.Color
                     }),
                     RegionName = a.Region.Name,
-                    RegionId = a.Region.Id,
+                    RegionId = a.RegionId,
                     CreateTime = a.CreateTime,
                     Status = a.Status,
                     CommentStatus = a.CommentStatus,
@@ -302,7 +302,7 @@ namespace ArticleService.App
                     UserId = a.UserId,
                     Title = a.Title,
                     RegionName = a.Region.Name,
-                    RegionId = a.Region.Id,
+                    RegionId = a.RegionId,
                     Username = "",
                     Status = a.Status,
                     CommentStatus = a.CommentStatus,
@@ -354,7 +354,7 @@ namespace ArticleService.App
                     UserId = a.UserId,
                     Title = a.Title,
                     RegionName = a.Region.Name,
-                    RegionId = a.Region.Id,
+                    RegionId = a.RegionId,
                     Category = a.ArtCategories.Select(c => new CategoryView()
                     {
                         Id = c.Id,
@@ -410,8 +410,19 @@ namespace ArticleService.App
             {
                 var article = request.MapTo<Article>();
                 article.UserId = uid;
+                //获取全局文章设置
+                var articleStatus = await dbContext.GlobalSettings.FirstOrDefaultAsync(g => g.Option == "ArticleStatus");
+                var commentStatus = await dbContext.GlobalSettings.FirstOrDefaultAsync(g => g.Option == "CommentStatus");
+                if (articleStatus != null && articleStatus.Value.HasValue)
+                {
+                    article.Status = articleStatus.Value.Value;
+                }
+                if (commentStatus != null && commentStatus.Value.HasValue)
+                {
+                    article.CommentStatus = commentStatus.Value.Value;
+                }
                 //保存修改
-                await dbContext.Articles.AddAsync(article);
+                dbContext.Articles.Add(article);
                 if (await dbContext.SaveChangesAsync() < 0)
                 {
                     throw new Exception("文章发布失败");

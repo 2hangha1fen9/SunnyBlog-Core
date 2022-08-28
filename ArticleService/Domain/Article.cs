@@ -35,12 +35,12 @@ namespace ArticleService.Domain
         [Column("regionId")]
         public int? RegionId { get; set; }
         /// <summary>
-        /// 1已发布2草稿3回收站0待审核
+        /// -1待审核1已发布2私有3回收站
         /// </summary>
         [Column("status")]
         public int Status { get; set; }
         /// <summary>
-        /// 1可评论2需要审核评论0不可以评论
+        /// -1不可以评论1可评论2需要审核评论
         /// </summary>
         [Column("commentStatus")]
         public int CommentStatus { get; set; }
@@ -49,7 +49,7 @@ namespace ArticleService.Domain
         [Column("updateTime", TypeName = "datetime")]
         public DateTime? UpdateTime { get; set; }
         /// <summary>
-        /// 0未锁定1锁定
+        /// 1未锁定-1锁定
         /// </summary>
         [Column("isLock")]
         public int IsLock { get; set; }

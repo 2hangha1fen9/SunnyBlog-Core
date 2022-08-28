@@ -26,23 +26,26 @@ namespace ArticleService.App
         {
             using (var dbContext = contextFactory.CreateDbContext())
             {
-                //查询所有标签
-                var tags = await dbContext.Tags.ToListAsync();
-                foreach (var tid in tagIds)
+                if (tagIds != null)
                 {
-                    if (tags.FirstOrDefault(t => t.Id == tid) != null)
+                    //查询所有标签
+                    var tags = await dbContext.Tags.ToListAsync();
+                    foreach (var tid in tagIds)
                     {
-                        await dbContext.ArticleTags.AddAsync(new ArticleTag()
+                        if (tags.FirstOrDefault(t => t.Id == tid) != null)
                         {
-                            ArticleId = articleId,
-                            TagId = tid
-                        });
+                            await dbContext.ArticleTags.AddAsync(new ArticleTag()
+                            {
+                                ArticleId = articleId,
+                                TagId = tid
+                            });
+                        }
                     }
-                }
-                //保存修改
-                if (await dbContext.SaveChangesAsync() < 0)
-                {
-                    throw new Exception("文章标签添加失败");
+                    //保存修改
+                    if (await dbContext.SaveChangesAsync() < 0)
+                    {
+                        throw new Exception("文章标签添加失败");
+                    }
                 }
             }
         }

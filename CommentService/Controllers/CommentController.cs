@@ -225,7 +225,31 @@ namespace CommentService.Controllers
             try
             {
                 var userId = HttpContext.User.Claims?.FirstOrDefault(c => c.Type == "user_id")?.Value;
-                result.Result = await commentApp.ReadArticle(cid, Convert.ToInt32(userId));
+                result.Result = await commentApp.ReadComment(cid, Convert.ToInt32(userId));
+            }
+            catch (Exception ex)
+            {
+                result.Status = 500;
+                result.Message = ex.InnerException?.Message ?? ex.Message;
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// 审核评论
+        /// </summary>
+        /// <param name="cid"></param>
+        /// <returns></returns>
+        [RBAC]
+        [HttpPut]
+        [TypeFilter(typeof(RedisFlush), Arguments = new object[] { new string[] { "*comment*" } })]
+        public async Task<Response<string>> Allow(int cid)
+        {
+            var result = new Response<string>();
+            try
+            {
+                var userId = HttpContext.User.Claims?.FirstOrDefault(c => c.Type == "user_id")?.Value;
+                result.Result = await commentApp.AllowComment(cid, Convert.ToInt32(userId));
             }
             catch (Exception ex)
             {

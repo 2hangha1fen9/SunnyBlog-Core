@@ -22,13 +22,14 @@ namespace CommentService.Controllers
         /// <summary>
         /// 我的点赞/收藏
         /// </summary>
+        /// <param name="status">1点赞2收藏</param>
         /// <param name="condidtion"></param>
         /// <param name="pageIndex"></param>
         /// <param name="pageSize"></param>
         /// <returns></returns>
         [RBAC]
         [HttpGet]
-        public async Task<Response<PageList<LikeView>>> MyLike([FromQuery]int? status = 0,[FromBody] List<SearchCondition>? condidtion = null, [FromQuery] int? pageIndex = 1, [FromQuery] int? pageSize = 10)
+        public async Task<Response<PageList<LikeView>>> MyLike([FromQuery]int? status = 1,[FromBody] List<SearchCondition>? condidtion = null, [FromQuery] int? pageIndex = 1, [FromQuery] int? pageSize = 10)
         {
             var result = new Response<PageList<LikeView>>();
             try
@@ -48,11 +49,11 @@ namespace CommentService.Controllers
         /// 点赞/收藏文章(取反)
         /// </summary>
         /// <param name="aid">文章ID</param>
-        /// <param name="status">0点赞1收藏</param>
+        /// <param name="status">1点赞2收藏</param>
         /// <returns></returns>
         [RBAC]
         [HttpPost]
-        public async Task<Response<string>> LikeArticle(int aid,int? status = 0)
+        public async Task<Response<string>> LikeArticle(int aid,int? status = 1)
         {
             var result = new Response<string>();
             try

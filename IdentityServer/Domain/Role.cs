@@ -26,7 +26,7 @@ namespace IdentityService.Domain
         [StringLength(50)]
         public string Name { get; set; }
         /// <summary>
-        /// 1启用0禁用
+        /// -1禁用1启用
         /// </summary>
         [Column("status")]
         public int Status { get; set; }

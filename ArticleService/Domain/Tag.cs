@@ -28,6 +28,9 @@ namespace ArticleService.Domain
         [Column("color")]
         [StringLength(50)]
         public string Color { get; set; }
+        /// <summary>
+        /// -1私有标签1公共标签
+        /// </summary>
         [Column("isPrivate")]
         public int IsPrivate { get; set; }
 

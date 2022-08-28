@@ -51,7 +51,7 @@ namespace UserService.Request
         /// </summary>
         public string? Photo { get; set; }
         /// <summary>
-        /// 状态
+        /// 状态1启用0禁用
         /// </summary>
         public int? Status { get; set; }
     }

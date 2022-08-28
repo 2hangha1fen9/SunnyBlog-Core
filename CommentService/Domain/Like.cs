@@ -19,7 +19,7 @@ namespace CommentService.Domain
         [Column("userId")]
         public int UserId { get; set; }
         /// <summary>
-        /// 0点赞1收藏
+        /// 1点赞2收藏
         /// </summary>
         [Column("status")]
         public int Status { get; set; }

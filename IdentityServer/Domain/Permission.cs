@@ -40,10 +40,13 @@ namespace IdentityService.Domain
         [Column("createTime", TypeName = "datetime")]
         public DateTime? CreateTime { get; set; }
         /// <summary>
-        /// 1启用0禁用
+        /// 1启用-1禁用
         /// </summary>
         [Column("status")]
         public int Status { get; set; }
+        /// <summary>
+        /// 1匿名权限-1私有权限
+        /// </summary>
         [Column("isPublic")]
         public int IsPublic { get; set; }
 

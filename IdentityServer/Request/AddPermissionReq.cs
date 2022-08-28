@@ -30,6 +30,6 @@ namespace IdentityService.Request
         /// <summary>
         /// 是否为公共权限
         /// </summary>
-        public int IsPublic { get; set; } = 0;
+        public int IsPublic { get; set; } = -1;
     }
 }

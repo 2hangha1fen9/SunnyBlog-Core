@@ -27,25 +27,29 @@ namespace ArticleService.App
         {
             using (var dbContext = contextFactory.CreateDbContext())
             {
-                //查询文章
-                var article = dbContext.Articles.FirstOrDefaultAsync(a => a.Id == articleId && a.UserId == uid);
-                //查询用户所有分类
-                var userCategory = await dbContext.Categories.Where(c => c.UserId == uid).ToListAsync();
-                foreach (var cid in categoryIds)
+                if (categoryIds != null)
                 {
-                    if (userCategory.FirstOrDefault(uc => uc.Id == cid) != null)
+                    //查询文章
+                    var article = dbContext.Articles.FirstOrDefaultAsync(a => a.Id == articleId && a.UserId == uid);
+                    //查询用户所有分类
+                    var userCategory = await dbContext.Categories.Where(c => c.UserId == uid).ToListAsync();
+                    foreach (var cid in categoryIds)
                     {
-                        dbContext.ArtCategories.Add(new ArtCategory()
+                        if (userCategory.FirstOrDefault(uc => uc.Id == cid) != null)
                         {
-                            CategoryId = cid,
-                            ArticleId = articleId
-                        });
+                            dbContext.ArtCategories.Add(new ArtCategory()
+                            {
+                                CategoryId = cid,
+                                ArticleId = articleId
+                            });
+                        }
+                    }
+                    if (await dbContext.SaveChangesAsync() < 0)
+                    {
+                        throw new Exception("文章分类添加失败");
                     }
                 }
-                if (await dbContext.SaveChangesAsync() < 0)
-                {
-                    throw new Exception("文章分类添加失败");
-                }
+               
             }
         }
 

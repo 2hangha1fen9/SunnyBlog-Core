@@ -34,21 +34,22 @@ namespace CommentService.App
         {
             using (var dbContext = contextFactory.CreateDbContext())
             {
+                //获取文章状态,判断文章是否可以评论
+                var articleInfo = await articleRpc.GetArticleInfoAsync(new ArticleId() { Id = request.ArticleId });
                 var comment = request.MapTo<Comment>();
                 comment.UserId = uid;
                 comment.CreateTime = DateTime.Now;
-                //获取文章状态,判断文章是否可以评论
-                var articleInfo = await articleRpc.GetArticleInfoAsync(new ArticleId() { Id = request.ArticleId });
-                if (articleInfo.CommentStatus != 1 || articleInfo.Status != 1 || articleInfo.IsLock != 0)
+                comment.Status = articleInfo.CommentStatus;
+                if (articleInfo.CommentStatus != -1 || articleInfo.Status == 1 || articleInfo.IsLock == 1)
                 {
-                    return "该文章没有开通评论";
+                    await dbContext.Comments.AddAsync(comment);
+                    if (await dbContext.SaveChangesAsync() < 0)
+                    {
+                        throw new Exception("评论失败");
+                    }
+                    return articleInfo.CommentStatus == 1 ? "评论成功" : "评论成功,需要作者审核后展示";
                 }
-                await dbContext.Comments.AddAsync(comment);
-                if (await dbContext.SaveChangesAsync() < 0)
-                {
-                    throw new Exception("评论失败");
-                }
-                return "评论成功";
+                throw new Exception("作者没有开通评论");
             }
         }
 
@@ -339,13 +340,40 @@ namespace CommentService.App
         /// <param name="uid"></param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        public async Task<string> ReadArticle(int cid,int uid)
+        public async Task<string> ReadComment(int cid,int uid)
         {
             using (var dbContext = contextFactory.CreateDbContext())
             {
                 var comment = await dbContext.Comments.Where(c => c.Id == cid && c.UserId == uid).FirstOrDefaultAsync();
                 if (comment != null)
                 {
+                    comment.IsRead = 1;
+                    dbContext.Comments.Update(comment);
+                    if (await dbContext.SaveChangesAsync() < 0)
+                    {
+                        throw new Exception("操作失败");
+                    }
+                    return "操作成功";
+                }
+                throw new Exception("找不到此条评论");
+            }
+        }
+
+        /// <summary>
+        /// 审核评论
+        /// </summary>
+        /// <param name="cid"></param>
+        /// <param name="uid"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public async Task<string> AllowComment(int cid, int uid)
+        {
+            using (var dbContext = contextFactory.CreateDbContext())
+            {
+                var comment = await dbContext.Comments.Where(c => c.Id == cid && c.UserId == uid).FirstOrDefaultAsync();
+                if (comment != null)
+                {
+                    comment.Status = 1;
                     comment.IsRead = 1;
                     dbContext.Comments.Update(comment);
                     if (await dbContext.SaveChangesAsync() < 0)

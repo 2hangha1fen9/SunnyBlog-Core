@@ -20,6 +20,7 @@ namespace ArticleService
         public virtual DbSet<Article> Articles { get; set; }
         public virtual DbSet<ArticleTag> ArticleTags { get; set; }
         public virtual DbSet<Category> Categories { get; set; }
+        public virtual DbSet<GlobalSetting> GlobalSettings { get; set; }
         public virtual DbSet<Tag> Tags { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -42,7 +43,7 @@ namespace ArticleService
             {
                 entity.Property(e => e.Status)
                     .HasDefaultValueSql("((1))")
-                    .HasComment("1启用0禁用");
+                    .HasComment("1启用-1禁用");
 
                 entity.HasOne(d => d.Parent)
                     .WithMany(p => p.InverseParent)
@@ -54,15 +55,17 @@ namespace ArticleService
             {
                 entity.Property(e => e.CommentStatus)
                     .HasDefaultValueSql("((1))")
-                    .HasComment("1可评论2需要审核评论0不可以评论");
+                    .HasComment("-1不可以评论1可评论2需要审核评论");
 
                 entity.Property(e => e.CreateTime).HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.IsLock).HasComment("0未锁定1锁定");
+                entity.Property(e => e.IsLock)
+                    .HasDefaultValueSql("((1))")
+                    .HasComment("1未锁定-1锁定");
 
                 entity.Property(e => e.Status)
                     .HasDefaultValueSql("((1))")
-                    .HasComment("1已发布2草稿3回收站0待审核");
+                    .HasComment("-1待审核1已发布2私有3回收站");
 
                 entity.HasOne(d => d.Region)
                     .WithMany(p => p.Articles)
@@ -89,6 +92,13 @@ namespace ArticleService
                     .WithMany(p => p.InverseParent)
                     .HasForeignKey(d => d.ParentId)
                     .HasConstraintName("FK_Category_Category");
+            });
+
+            modelBuilder.Entity<Tag>(entity =>
+            {
+                entity.Property(e => e.IsPrivate)
+                    .HasDefaultValueSql("((-1))")
+                    .HasComment("-1私有标签1公共标签");
             });
 
             OnModelCreatingPartial(modelBuilder);

@@ -14,6 +14,7 @@ namespace CommentService.App.Interface
         Task<string> DeleteArticleComment(int cid, int uid);
         Task<string> DeleteComment(int cid, int uid);
         Task<string> DeleteComment(int cid);
-        Task<string> ReadArticle(int cid, int uid);
+        Task<string> ReadComment(int cid, int uid);
+        Task<string> AllowComment(int cid, int uid);
     }
 }

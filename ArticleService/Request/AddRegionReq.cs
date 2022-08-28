@@ -18,7 +18,7 @@ namespace ArticleService.Request
         /// </summary>
         public int? ParentId { get; set; }
         /// <summary>
-        /// 状态
+        /// 状态1启用-1禁用
         /// </summary>
         public int? Status { get; set; }
 

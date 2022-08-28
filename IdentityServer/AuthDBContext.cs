@@ -10,26 +10,15 @@ namespace IdentityService
 {
     public partial class AuthDBContext : DbContext
     {
+
         public AuthDBContext(DbContextOptions<AuthDBContext> options)
             : base(options)
         {
         }
 
-        /// <summary>
-        /// 权限表
-        /// </summary>
         public virtual DbSet<Permission> Permissions { get; set; }
-        /// <summary>
-        /// 角色表
-        /// </summary>
         public virtual DbSet<Role> Roles { get; set; }
-        /// <summary>
-        /// 角色权限表
-        /// </summary>
         public virtual DbSet<RolePermissionRelation> RolePermissionRelations { get; set; }
-        /// <summary>
-        /// 用户角色表
-        /// </summary>
         public virtual DbSet<UserRoleRelation> UserRoleRelations { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -38,9 +27,13 @@ namespace IdentityService
             {
                 entity.Property(e => e.CreateTime).HasDefaultValueSql("(getdate())");
 
+                entity.Property(e => e.IsPublic)
+                    .HasDefaultValueSql("((-1))")
+                    .HasComment("1匿名权限-1私有权限");
+
                 entity.Property(e => e.Status)
                     .HasDefaultValueSql("((1))")
-                    .HasComment("1启用0禁用");
+                    .HasComment("1启用-1禁用");
             });
 
             modelBuilder.Entity<Role>(entity =>
@@ -49,7 +42,7 @@ namespace IdentityService
 
                 entity.Property(e => e.Status)
                     .HasDefaultValueSql("((1))")
-                    .HasComment("1启用0禁用");
+                    .HasComment("-1禁用1启用");
             });
 
             modelBuilder.Entity<RolePermissionRelation>(entity =>

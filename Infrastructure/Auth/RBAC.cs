@@ -17,7 +17,7 @@ namespace Infrastructure.Auth
             this.PolicyName = policyName;
         }
 
-        public int IsPublic { get; set; } = 0;
+        public int IsPublic { get; set; } = -1;
 
         public string PolicyName
         {
