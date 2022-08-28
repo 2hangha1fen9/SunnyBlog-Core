@@ -8,8 +8,7 @@ using Infrastructure;
 using Infrastructure.Consul;
 using Microsoft.EntityFrameworkCore;
 using Service.IdentityService.App.Interface;
-
-
+using static IdentityService.Rpc.Protos.gUser;
 
 namespace Service.IdentityService.App
 {
@@ -19,13 +18,12 @@ namespace Service.IdentityService.App
         /// 数据库上下文
         /// </summary>
         private readonly IDbContextFactory<AuthDBContext> contextFactory;
-        //获取配置
-        private readonly IConfiguration config;
+        private readonly gUserClient userRpc;
 
-        public PermissionApp(IDbContextFactory<AuthDBContext> contextFactory,IConfiguration config)
+        public PermissionApp(IDbContextFactory<AuthDBContext> contextFactory, gUserClient userRpc)
         {
             this.contextFactory = contextFactory;
-            this.config = config;
+            this.userRpc = userRpc;
         }
 
         /// <summary>
@@ -130,15 +128,8 @@ namespace Service.IdentityService.App
         /// <returns>第一个元素用户ID,第二元素权限列表</returns>
         public async Task<object[]> GetPermission(string username,string password)
         {
-            //调用consul服务发现，获取rpc服务地址
-            var url = ServiceUrl.GetServiceUrlByName("UserService",
-                        config.GetSection("Consul").Get<ConsulServiceOptions>().ConsulAddress);
-            //创建通讯频道
-            using var channel = GrpcChannel.ForAddress(url);
-            //创建客户端
-            var client = new gUser.gUserClient(channel);
             //远程调用
-            var user = await client.GetUserIDAsync(new UserRequest()
+            var user = await userRpc.GetUserIDAsync(new UserRequest()
             {
                 Username = username,
                 Password = password,

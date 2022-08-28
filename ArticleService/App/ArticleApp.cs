@@ -7,6 +7,7 @@ using Infrastructure;
 using Infrastructure.Consul;
 using Microsoft.EntityFrameworkCore;
 using ArticleService.Domain;
+using static ArticleService.Rpc.Protos.gUser;
 
 namespace ArticleService.App
 {
@@ -15,14 +16,14 @@ namespace ArticleService.App
         private readonly IDbContextFactory<ArticleDBContext> contextFactory;
         private readonly IArticleTagApp articleTagApp;
         private readonly IArticleCategoryApp articleCategoryApp;
-        private readonly IConfiguration config;//获取配置
+        private readonly gUserClient userRpc;
 
-        public ArticleApp(IDbContextFactory<ArticleDBContext> contextFactory, IArticleTagApp articleTagApp, IArticleCategoryApp articleCategoryApp, IConfiguration config)
+        public ArticleApp(IDbContextFactory<ArticleDBContext> contextFactory, IArticleTagApp articleTagApp, IArticleCategoryApp articleCategoryApp, gUserClient userRpc)
         {
             this.contextFactory = contextFactory;
             this.articleTagApp = articleTagApp;
             this.articleCategoryApp = articleCategoryApp;
-            this.config = config;
+            this.userRpc = userRpc;
         }
 
         /// <summary>
@@ -152,16 +153,8 @@ namespace ArticleService.App
                 if (article != null)
                 {
                     var adv = article.MapTo<ArticleView>();
-                    //调用RPC填充用户信息
-                    //调用consul服务发现，获取rpc服务地址
-                    var url = ServiceUrl.GetServiceUrlByName("UserService",
-                                config.GetSection("Consul").Get<ConsulServiceOptions>().ConsulAddress);
-                    //创建通讯频道
-                    using var channel = GrpcChannel.ForAddress(url);
-                    //创建客户端
-                    var client = new gUser.gUserClient(channel);
                     //调用rgc方法获取用户信息
-                    var userInfo = client.GetUserByID(new UserInfoRequest() { Id = article.UserId });
+                    var userInfo = userRpc.GetUserByID(new UserInfoRequest() { Id = article.UserId });
                     if (userInfo != null)
                     {
                         adv.Nick = userInfo.Nick;
@@ -222,20 +215,11 @@ namespace ArticleService.App
                 var articlePage = new PageList<ArticleView>();
                 article = articlePage.Pagination(pageIndex, pageSize, article);
                 articlePage.Page = (await article.ToListAsync()).MapToList<ArticleView>();
-                //填充文章用户信息
-                //调用RPC填充用户信息
-                //调用consul服务发现，获取rpc服务地址
-                var url = ServiceUrl.GetServiceUrlByName("UserService",
-                            config.GetSection("Consul").Get<ConsulServiceOptions>().ConsulAddress);
-                //创建通讯频道
-                using var channel = GrpcChannel.ForAddress(url);
-                //创建客户端
-                var client = new gUser.gUserClient(channel);
                 //填充文章的分页用户信息
                 foreach (var page in articlePage.Page)
                 {
                     //获取用户
-                    var user = await client.GetUserByIDAsync(new UserInfoRequest() { Id = page.UserId });
+                    var user = await userRpc.GetUserByIDAsync(new UserInfoRequest() { Id = page.UserId });
                     page.Nick = user.Nick;
                     page.UserPhoto = user.Photo;
                 }
@@ -289,20 +273,11 @@ namespace ArticleService.App
                 var articlePage = new PageList<ArticleView>();
                 article = articlePage.Pagination(pageIndex, pageSize, article);
                 articlePage.Page = (await article.ToListAsync()).MapToList<ArticleView>();
-                //填充文章用户信息
-                //调用RPC填充用户信息
-                //调用consul服务发现，获取rpc服务地址
-                var url = ServiceUrl.GetServiceUrlByName("UserService",
-                            config.GetSection("Consul").Get<ConsulServiceOptions>().ConsulAddress);
-                //创建通讯频道
-                using var channel = GrpcChannel.ForAddress(url);
-                //创建客户端
-                var client = new gUser.gUserClient(channel);
                 //填充文章的分页用户信息
                 foreach (var page in articlePage.Page)
                 {
                     //获取用户
-                    var user = await client.GetUserByIDAsync(new UserInfoRequest() { Id = page.UserId });
+                    var user = await userRpc.GetUserByIDAsync(new UserInfoRequest() { Id = page.UserId });
                     page.Nick = user.Nick;
                     page.UserPhoto = user.Photo;
                 }
@@ -351,20 +326,11 @@ namespace ArticleService.App
                 var articlePage = new PageList<ArticleListView>();
                 article = articlePage.Pagination(pageIndex, pageSize, article);
                 articlePage.Page = (await article.ToListAsync()).MapToList<ArticleListView>();
-                //填充文章用户信息
-                //调用RPC填充用户信息
-                //调用consul服务发现，获取rpc服务地址
-                var url = ServiceUrl.GetServiceUrlByName("UserService",
-                            config.GetSection("Consul").Get<ConsulServiceOptions>().ConsulAddress);
-                //创建通讯频道
-                using var channel = GrpcChannel.ForAddress(url);
-                //创建客户端
-                var client = new gUser.gUserClient(channel);
                 //填充文章的分页用户信息
                 foreach (var page in articlePage.Page)
                 {
                     //获取用户
-                    var user = await client.GetUserByIDAsync(new UserInfoRequest() { Id = page.UserId });
+                    var user = await userRpc.GetUserByIDAsync(new UserInfoRequest() { Id = page.UserId });
                     page.Username = user.Username;
                 }
                 return articlePage;
@@ -421,20 +387,11 @@ namespace ArticleService.App
                 var articlePage = new PageList<ArticleListView>();
                 article = articlePage.Pagination(pageIndex, pageSize, article);
                 articlePage.Page = (await article.ToListAsync()).MapToList<ArticleListView>();
-                //填充文章用户信息
-                //调用RPC填充用户信息
-                //调用consul服务发现，获取rpc服务地址
-                var url = ServiceUrl.GetServiceUrlByName("UserService",
-                            config.GetSection("Consul").Get<ConsulServiceOptions>().ConsulAddress);
-                //创建通讯频道
-                using var channel = GrpcChannel.ForAddress(url);
-                //创建客户端
-                var client = new gUser.gUserClient(channel);
                 //填充文章的分页用户信息
                 foreach (var page in articlePage.Page)
                 {
                     //获取用户
-                    var user = await client.GetUserByIDAsync(new UserInfoRequest() { Id = page.UserId });
+                    var user = await userRpc.GetUserByIDAsync(new UserInfoRequest() { Id = page.UserId });
                     page.Username = user.Username;
                 }
                 return articlePage;

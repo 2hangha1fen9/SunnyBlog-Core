@@ -14,6 +14,8 @@ using StackExchange.Redis;
 using Microsoft.AspNetCore.Http;
 using System.Reflection;
 using ArticleService.Rpc.Service;
+using static ArticleService.Rpc.Protos.gUser;
+using ArticleService.Rpc.Protos;
 
 var builder = WebApplication.CreateBuilder(args);
 //Apollo≈‰÷√÷––ƒ
@@ -75,6 +77,10 @@ builder.Services.AddAuthentication("Bearer")
 
 //gRPC◊¢≤·
 builder.Services.AddGrpc();
+builder.Services.AddGrpcClient<gUser.gUserClient>(option =>
+{
+    option.Address = new Uri(ServiceUrl.GetServiceUrlByName("UserService", builder.Configuration.GetSection("Consul").Get<ConsulServiceOptions>().ConsulAddress));
+});
 
 var app = builder.Build();
 

@@ -17,6 +17,7 @@ using Infrastructure.Auth;
 using IdentityService.App.Interface;
 using IdentityService.App;
 using StackExchange.Redis;
+using IdentityService.Rpc.Protos;
 
 var builder = WebApplication.CreateBuilder(args);
 //Apollo配置中心
@@ -54,6 +55,10 @@ builder.Services.AddSingleton<IConnectionMultiplexer>(cm =>
 
 //注册gRPC
 builder.Services.AddGrpc();
+builder.Services.AddGrpcClient<gUser.gUserClient>(option =>
+{
+    option.Address = new Uri(ServiceUrl.GetServiceUrlByName("UserService", builder.Configuration.GetSection("Consul").Get<ConsulServiceOptions>().ConsulAddress));
+});
 
 //添加服务
 builder.Services.AddScoped<IPermissionApp, PermissionApp>();
