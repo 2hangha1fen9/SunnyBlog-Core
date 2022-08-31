@@ -20,6 +20,10 @@
       {
          "Name": "[dbo].[Likes]",
          "ObjectType": 0
+      },
+      {
+         "Name": "[dbo].[Views]",
+         "ObjectType": 0
       }
    ],
    "UiHint": "zhang.SunnyBlog.dbo",

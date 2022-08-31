@@ -48,7 +48,7 @@ namespace UserService.App
                     var user = await dbContext.Users.FirstOrDefaultAsync(x => x.Id == id);
                     if (user != null)
                     {
-                        user.Photo = $"/api/avatar/{id}.png";
+                        user.Photo = $"/avatar/{id}.png";
                     }
                     else
                     {

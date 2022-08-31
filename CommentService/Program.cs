@@ -75,6 +75,8 @@ builder.Services.AddGrpcClient<gUser.gUserClient>(option =>
 //ЗўЮёзЂВс
 builder.Services.AddScoped<ICommentApp, CommentApp>();
 builder.Services.AddScoped<ILikeApp, LikeApp>();
+builder.Services.AddScoped<IViewApp, ViewApp>();
+builder.Services.AddScoped<ICountApp, CountApp>();
 
 var app = builder.Build();
 

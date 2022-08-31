@@ -1,5 +1,4 @@
 ﻿using CommentService.App.Interface;
-using CommentService.Request;
 using CommentService.Response;
 using Infrastructure;
 using Infrastructure.Auth;
@@ -10,30 +9,38 @@ namespace CommentService.Controllers
 {
     [Route("api/[controller]/[action]")]
     [ApiController]
-    public class MarkController : ControllerBase
+    public class SummaryController : ControllerBase
     {
-        private readonly ILikeApp likeApp;
+        private readonly ICountApp countApp;
 
-        public MarkController(ILikeApp likeApp)
+        public SummaryController(ICountApp countApp)
         {
-            this.likeApp = likeApp;
+            this.countApp = countApp;
         }
 
+
+
         /// <summary>
-        /// 点赞/收藏文章(取反)
+        /// 获取文章访问量评论数点赞量
         /// </summary>
-        /// <param name="aid">文章ID</param>
-        /// <param name="status">1点赞2收藏</param>
+        /// <param name="aid"></param>
         /// <returns></returns>
-        [RBAC]
+        [RBAC(IsPublic = 1)]
         [HttpGet]
-        public async Task<Response<string>> Article(int aid,int? status = 1)
+        public async Task<Response<ArticleCountView>> ArticleCount(int aid)
         {
-            var result = new Response<string>();
+            var result = new Response<ArticleCountView>();
             try
             {
                 var userId = HttpContext.User.Claims?.FirstOrDefault(c => c.Type == "user_id")?.Value;
-                result.Result = await likeApp.LikeArticle(aid, Convert.ToInt32(userId),status.Value);
+                if (string.IsNullOrWhiteSpace(userId))
+                {
+                    result.Result = await countApp.GetArticleCount(aid);
+                }
+                else
+                {
+                    result.Result = await countApp.GetArticleCount(aid, Convert.ToInt32(userId));
+                }
             }
             catch (Exception ex)
             {

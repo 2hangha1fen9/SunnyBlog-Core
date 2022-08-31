@@ -21,7 +21,7 @@ namespace Infrastructure
         /// </summary>
         public string CacheKey { get; set; }
         /// <summary>
-        /// redis库号
+        /// redis库号  0库:验证码,公共缓存 1库:api缓存 2库:点赞/收藏/浏览
         /// </summary>
         public int DatabaseNum { get; set; }
         /// <summary>

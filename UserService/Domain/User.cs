@@ -37,7 +37,7 @@ namespace UserService.Domain
         [StringLength(200)]
         public string Password { get; set; }
         /// <summary>
-        /// 1启用0禁用
+        /// 1启用-1禁用
         /// </summary>
         [Column("status")]
         public int Status { get; set; }

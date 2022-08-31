@@ -20,18 +20,27 @@ namespace UserService.Rpc.Service
             this.contextFactory = contextFactory;
         }
 
-        public async override Task<UserResponse> GetUserID(UserRequest request, ServerCallContext context)
+        public async override Task<UserInfoResponse> GetUserByPassword(UserRequest request, ServerCallContext context)
         {
             using (var c= contextFactory.CreateDbContext())
             {
                 //查询用户名密码，将结果存入gRPC载荷对象
                 var username = request.Username;
                 var password = request.Password.ShaEncrypt();
-                var user = await c.Users.Where(u => u.Username == username && u.Password == password).FirstOrDefaultAsync();
-                var userResponse = new UserResponse();
+                var user = await c.Users.Where(u => u.Username == username && u.Password == password).Select(u => new
+                {
+                    Id = u.Id,
+                    Username = u.Username,
+                    Nick = u.UserDetail.Nick,
+                    Photo = u.Photo
+                }).FirstOrDefaultAsync();
+                var userResponse = new UserInfoResponse();
                 if (user != null)
                 {
                     userResponse.Id = user.Id;
+                    userResponse.Username = user.Username;
+                    userResponse.Nick = user.Nick;
+                    userResponse.Photo = user.Photo;
                 }
                 return userResponse;
             }
@@ -60,9 +69,9 @@ namespace UserService.Rpc.Service
                 var user = await c.Users.Select(u => new
                 {
                     Id = u.Id,
-                    Username = u.Username,
-                    Nick = u.UserDetail.Nick,
-                    Photo = u.Photo
+                    Username = u.Username ?? "",
+                    Nick = u.UserDetail.Nick ?? "",
+                    Photo = u.Photo ?? ""
                 }).ToListAsync();
                 var userInfoList = new UserInfoListReqponse();
                 userInfoList.UserInfo.AddRange(user.MapToList<UserInfoResponse>());

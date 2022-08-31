@@ -129,7 +129,7 @@ namespace Service.IdentityService.App
         public async Task<object[]> GetPermission(string username,string password)
         {
             //远程调用
-            var user = await userRpc.GetUserIDAsync(new UserRequest()
+            var user = await userRpc.GetUserByPasswordAsync(new UserRequest()
             {
                 Username = username,
                 Password = password,
@@ -143,7 +143,7 @@ namespace Service.IdentityService.App
                                 r.Controller,
                                 r.Action
                             }).ToArrayAsync();
-                return new object[] { user.Id, permissions};
+                return new object[] { user, permissions};
             }
         }
 

@@ -10,7 +10,6 @@ namespace CommentService
 {
     public partial class CommentDBContext : DbContext
     {
-
         public CommentDBContext(DbContextOptions<CommentDBContext> options)
             : base(options)
         {
@@ -18,6 +17,7 @@ namespace CommentService
 
         public virtual DbSet<Comment> Comments { get; set; }
         public virtual DbSet<Like> Likes { get; set; }
+        public virtual DbSet<View> Views { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -41,7 +41,16 @@ namespace CommentService
 
             modelBuilder.Entity<Like>(entity =>
             {
-                entity.Property(e => e.Status).HasComment("1点赞2收藏");
+                entity.Property(e => e.Status)
+                    .HasDefaultValueSql("((1))")
+                    .HasComment("1点赞2收藏");
+            });
+
+            modelBuilder.Entity<View>(entity =>
+            {
+                entity.Property(e => e.UserId).HasDefaultValueSql("((0))");
+
+                entity.Property(e => e.ViewTime).HasDefaultValueSql("(getdate())");
             });
 
             OnModelCreatingPartial(modelBuilder);

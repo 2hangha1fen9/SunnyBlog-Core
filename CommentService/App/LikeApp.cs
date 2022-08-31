@@ -6,6 +6,8 @@ using Google.Protobuf.WellKnownTypes;
 using Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using StackExchange.Redis;
 using static ArticleService.Rpc.Protos.gArticle;
 
 namespace CommentService.App
@@ -22,81 +24,71 @@ namespace CommentService.App
         }
 
         /// <summary>
-        /// 获取用户所有点赞/收藏
+        /// 点赞/收藏(取消)
         /// </summary>
+        /// <param name="aid"></param>
         /// <param name="uid"></param>
+        /// <param name="status"></param>
         /// <returns></returns>
-        public async Task<PageList<LikeView>> GetUserLike(List<SearchCondition> condidtion, int uid, int status, int pageIndex, int pageSize)
+        public async Task<string> LikeArticle(int aid, int uid, int status)
         {
-            using (var dbContext = contextFactory.CreateDbContext())
+            try
             {
-                //获取所有文章,为了获取标题
-                var articleList = (await articleRpc.GetArticleListAsync(new Empty())).Infos.ToList();
-                var collection = await dbContext.Likes.Where(l => l.UserId == uid && l.Status == status).ToListAsync();
-                if (articleList.Count > 0 && collection.Count > 0)
+                using (var dbContext = contextFactory.CreateDbContext())
                 {
-                    var likeView = collection.Join(articleList, c => c.ArticleId, a => a.Id, (c, a) => new
-                    {
-                        Id = c.Id,
-                        ArticleId = a.Id,
-                        UserId = a.UserId,
-                        Status = c.Status,
-                        ArticleTitle = a.Title
-                    }).AsQueryable();
-
-                    //条件筛选
-                    if (condidtion.Count > 0)
-                    {
-                        foreach (var con in condidtion)
-                        {
-                            likeView = con.Key.Contains(con.Value, StringComparison.OrdinalIgnoreCase) ? likeView.Where(l => l.ArticleTitle.Contains(con.Value)) : likeView;
-                        }
-                    }
-                    var page = new PageList<LikeView>();
-                    likeView = page.Pagination(pageIndex, pageSize, likeView);
-                    page.Page = likeView.MapToList<LikeView>();
-                    return page;
-                }
-                return null;
-            }    
-        }
-
-        /// <summary>
-        /// (取消/添加)点赞/收藏文章
-        /// </summary>
-        /// <param name="request"></param>
-        /// <param name="uid"></param>
-        /// <returns></returns>
-        public async Task<string> LikeArticle(int aid,int uid,int status)
-        {
-            using (var dbContext = contextFactory.CreateDbContext())
-            {
-                try
-                {
-                    var like = dbContext.Likes.FirstOrDefault(l => l.ArticleId == aid && l.UserId == uid && l.Status == status);
+                    var like = await dbContext.Likes.FirstOrDefaultAsync(l => l.ArticleId == aid && l.UserId == uid && l.Status == status);
                     if (like != null)
                     {
+                        //用户取消点赞
                         dbContext.Likes.Remove(like);
                     }
-                    else 
+                    else
                     {
                         like = new Like()
                         {
-                            UserId = uid,
                             ArticleId = aid,
+                            UserId = uid,
                             Status = status
                         };
                         dbContext.Likes.Add(like);
                     }
                     await dbContext.SaveChangesAsync();
-                    return "操作成功";
                 }
-                catch (Exception)
-                {
-                    throw new Exception("操作失败");
-                }
+                return "点赞成功";
+            }
+            catch (Exception)
+            {
+                throw new Exception("点赞失败");
             }
         }
 
+        /// <summary>
+        /// 获取用户的点赞/收藏记录
+        /// </summary>
+        /// <param name="uid"></param>
+        /// <returns></returns>
+        public async Task<List<LikeView>> GetUserLike(int uid)
+        {
+            using (var dbContext = contextFactory.CreateDbContext())
+            {
+                var likes = await dbContext.Likes.Where(l => l.UserId == uid).ToListAsync();
+                return likes.MapToList<LikeView>();
+            }
+        }
+
+        /// <summary>
+        /// 获取文章的点赞/收藏数
+        /// </summary>
+        /// <param name="aid">文章ID</param>
+        /// <param name="status">1点赞数2收藏数</param>
+        /// <returns></returns>
+        public async Task<int> GetArticleLikeCount(int aid,int status)
+        {
+            using (var dbContext = contextFactory.CreateDbContext())
+            {
+                var count = await dbContext.Likes.CountAsync(l => l.ArticleId == aid && l.Status == status);
+                return count;
+            }
+        }
     }
 }

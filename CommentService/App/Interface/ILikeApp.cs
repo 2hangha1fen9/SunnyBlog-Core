@@ -8,7 +8,7 @@ namespace CommentService.App.Interface
     public interface ILikeApp
     {
         Task<string> LikeArticle(int aid,int uid,int status);
-        Task<PageList<LikeView>> GetUserLike(List<SearchCondition> condidtion, int uid, int status, int pageIndex, int pageSize);
-        
+        Task<List<LikeView>> GetUserLike(int uid);
+        Task<int> GetArticleLikeCount(int aid, int status);
     }
 }

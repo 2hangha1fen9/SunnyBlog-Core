@@ -6,6 +6,7 @@ using CommentService.Response;
 using Google.Protobuf.WellKnownTypes;
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
+using StackExchange.Redis;
 using static ArticleService.Rpc.Protos.gArticle;
 using static CommentService.Rpc.Protos.gUser;
 
@@ -383,6 +384,21 @@ namespace CommentService.App
                     return "操作成功";
                 }
                 throw new Exception("找不到此条评论");
+            }
+        }
+
+        /// <summary>
+        /// 获取文章评论数
+        /// </summary>
+        /// <param name="aid"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public async Task<int> GetArticleCommentCount(int aid)
+        {
+            using (var dbContext = contextFactory.CreateDbContext())
+            {
+                var count = await dbContext.Comments.CountAsync(c => c.ArticleId == aid);
+                return count;
             }
         }
     }

@@ -10,7 +10,6 @@ namespace UserService
 {
     public partial class UserDBContext : DbContext
     {
-
         public UserDBContext(DbContextOptions<UserDBContext> options)
             : base(options)
         {
@@ -28,7 +27,7 @@ namespace UserService
             {
                 entity.Property(e => e.Status)
                     .HasDefaultValueSql("((1))")
-                    .HasComment("1启用0禁用");
+                    .HasComment("1启用-1禁用");
             });
 
             modelBuilder.Entity<UserDetail>(entity =>
