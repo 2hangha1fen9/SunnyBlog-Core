@@ -1,7 +1,9 @@
 ﻿using Infrastructure;
 using Infrastructure.Auth;
+using Infrastructure.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Newtonsoft.Json;
 using UserService.App.Interface;
 using UserService.Request;
 using UserService.Request.Request;
@@ -21,16 +23,17 @@ namespace UserService.Controllers
         }
 
         /// <summary>
-        /// 获取用户详情列表
+        ///列出用户详情列表
         /// </summary>
         /// <returns></returns>
         [HttpGet]
-        public async Task<Response<PageList<UserDetailView>>> ListUser([FromQuery]int? pageIndex = 1,[FromQuery]int? pageSize = 10,[FromBody]List<SearchCondition>? condition = null)
+        public async Task<Response<PageList<UserDetailView>>> ListUser(int? pageIndex = 1,int? pageSize = 10, string? condition = null)
         {
             var result = new Response<PageList<UserDetailView>>();
             try
             {
-                var list = await userApp.GetUserDetails(condition,pageIndex.Value,pageSize.Value);
+                List<SearchCondition> con = SequenceConverter.ConvertToCondition(condition);
+                var list = await userApp.GetUserDetails(con,pageIndex.Value,pageSize.Value);
                 result.Result = list;
                 return result;
             }

@@ -24,7 +24,7 @@ namespace UserService.Domain
         public int Id { get; set; }
         [Required]
         [Column("username")]
-        [StringLength(20)]
+        [StringLength(50)]
         public string Username { get; set; }
         [Column("phone")]
         [StringLength(11)]

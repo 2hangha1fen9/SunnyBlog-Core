@@ -3,6 +3,7 @@ using ArticleService.Request;
 using ArticleService.Response;
 using Infrastructure;
 using Infrastructure.Auth;
+using Infrastructure.Utils;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ArticleService.Controllers
@@ -28,12 +29,13 @@ namespace ArticleService.Controllers
         [RBAC(IsPublic = 1)]
         [HttpGet]
         [TypeFilter(typeof(RedisCache))]
-        public async Task<Response<PageList<ArticleView>>> List([FromBody]List<SearchCondition>? condidtion = null, [FromQuery]int? pageIndex = 1, [FromQuery]int? pageSize = 10)
+        public async Task<Response<PageList<ArticleListView>>> List(string? condition = null, int? pageIndex = 1,int? pageSize = 10)
         {
-            var result = new Response<PageList<ArticleView>>();
+            var result = new Response<PageList<ArticleListView>>();
             try
             {
-                var article = await articleApp.GetArticleList(condidtion, pageIndex.Value, pageSize.Value);
+                List<SearchCondition> con = SequenceConverter.ConvertToCondition(condition);
+                var article = await articleApp.GetArticleList(con,a => a.Status == 1, pageIndex.Value, pageSize.Value);
                 result.Result = article;
             }
             catch (Exception ex)
@@ -54,12 +56,13 @@ namespace ArticleService.Controllers
         [RBAC]
         [HttpGet]
         [TypeFilter(typeof(RedisCache))]
-        public async Task<Response<PageList<ArticleListView>>> All([FromBody] List<SearchCondition>? condidtion = null, [FromQuery] int? pageIndex = 1, [FromQuery] int? pageSize = 10)
+        public async Task<Response<PageList<ArticleListView>>> All(string? condition = null, int? pageIndex = 1,  int? pageSize = 10)
         {
             var result = new Response<PageList<ArticleListView>>();
             try
             {
-                var article = await articleApp.GetRowList(condidtion, pageIndex.Value, pageSize.Value);
+                List<SearchCondition> con = SequenceConverter.ConvertToCondition(condition);
+                var article = await articleApp.GetArticleList(con,null,pageIndex.Value, pageSize.Value);
                 result.Result = article;
             }
             catch (Exception ex)
@@ -71,18 +74,44 @@ namespace ArticleService.Controllers
         }
 
         /// <summary>
-        /// 用户文章列表
+        /// 列出用户发布的文章列表
         /// </summary>
         /// <returns></returns>
         [RBAC]
         [HttpGet]
         [TypeFilter(typeof(RedisCache))]
-        public async Task<Response<PageList<ArticleView>>> User([FromQuery] int uid,[FromBody] List<SearchCondition>? condidtion = null, [FromQuery] int? pageIndex = 1, [FromQuery] int? pageSize = 10)
+        public async Task<Response<PageList<ArticleListView>>> User(int uid,string? condition = null, int? pageIndex = 1, int? pageSize = 10)
         {
-            var result = new Response<PageList<ArticleView>>();
+            var result = new Response<PageList<ArticleListView>>();
             try
             {
-                var article = await articleApp.GetUserArticleList(condidtion, uid, pageIndex.Value, pageSize.Value);
+                List<SearchCondition> con = SequenceConverter.ConvertToCondition(condition);
+                var article = await articleApp.GetArticleList(con, a => a.UserId == uid && a.Status == 1, pageIndex.Value, pageSize.Value);
+                result.Result = article;
+            }
+            catch (Exception ex)
+            {
+                result.Status = 500;
+                result.Message = ex.InnerException?.Message ?? ex.Message;
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// 列出我的文章列表
+        /// </summary>
+        /// <returns></returns>
+        [RBAC]
+        [HttpGet]
+        [TypeFilter(typeof(RedisCache))]
+        public async Task<Response<PageList<ArticleListView>>> My(string? condition = null, int? pageIndex = 1, int? pageSize = 10)
+        {
+            var result = new Response<PageList<ArticleListView>>();
+            try
+            {
+                List<SearchCondition> con = SequenceConverter.ConvertToCondition(condition);
+                var userId = HttpContext.User.Claims?.FirstOrDefault(c => c.Type == "user_id")?.Value;
+                var article = await articleApp.GetArticleList(con, a => a.UserId == Convert.ToInt32(userId), pageIndex.Value, pageSize.Value);
                 result.Result = article;
             }
             catch (Exception ex)
@@ -107,30 +136,6 @@ namespace ArticleService.Controllers
             try
             {
                 var article = await articleApp.GetArticle(id);
-                result.Result = article;
-            }
-            catch (Exception ex)
-            {
-                result.Status = 500;
-                result.Message = ex.InnerException?.Message ?? ex.Message;
-            }
-            return result;
-        }
-
-        /// <summary>
-        /// 我的文章列表
-        /// </summary>
-        /// <returns></returns>
-        [RBAC]
-        [HttpGet]
-        [TypeFilter(typeof(RedisCache))]
-        public async Task<Response<PageList<ArticleListView>>> My([FromBody]List<SearchCondition>? condidtion = null, [FromQuery] int? pageIndex = 1, [FromQuery] int? pageSize = 10)
-        {
-            var result = new Response<PageList<ArticleListView>>();
-            try
-            {
-                var userId = HttpContext.User.Claims?.FirstOrDefault(c => c.Type == "user_id")?.Value;
-                var article = await articleApp.GetRowList(condidtion,Convert.ToInt32(userId),pageIndex.Value,pageSize.Value);
                 result.Result = article;
             }
             catch (Exception ex)

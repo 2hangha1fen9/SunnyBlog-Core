@@ -20,7 +20,7 @@ namespace ArticleService.Controllers
         }
 
         /// <summary>
-        /// 获取分区视图
+        /// 列出分区
         /// </summary>
         /// <returns></returns>
         [RBAC(IsPublic = 1)]

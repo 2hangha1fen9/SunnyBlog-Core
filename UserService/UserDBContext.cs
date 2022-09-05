@@ -10,6 +10,7 @@ namespace UserService
 {
     public partial class UserDBContext : DbContext
     {
+
         public UserDBContext(DbContextOptions<UserDBContext> options)
             : base(options)
         {
@@ -35,6 +36,8 @@ namespace UserService
                 entity.Property(e => e.UserId).ValueGeneratedNever();
 
                 entity.Property(e => e.RegisterTime).HasDefaultValueSql("(getdate())");
+
+                entity.Property(e => e.Sex).HasComment("1男0女");
 
                 entity.HasOne(d => d.User)
                     .WithOne(p => p.UserDetail)

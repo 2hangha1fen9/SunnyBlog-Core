@@ -45,7 +45,7 @@ namespace Infrastructure
             TotalCount = list.Count();
             if(TotalCount > 0)
             {
-                PageSize = pageSize < 0 ? TotalCount : pageSize;
+                PageSize = pageSize <= 0 ? TotalCount : pageSize;
                 TotalPages = Convert.ToInt32(Math.Ceiling((double)TotalCount / (double)PageSize));
                 PageIndex = pageIndex < 0 ? 1 : pageIndex > TotalPages ? TotalPages : pageIndex;
                 return list.Skip(PageSize * (PageIndex - 1)).Take(PageSize);

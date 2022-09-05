@@ -13,14 +13,18 @@
         /// <summary>
         /// 角色状态
         /// </summary>
-        public string Status { get; set; }
+        public int Status { get; set; }
+        /// <summary>
+        /// 是否为默认角色
+        /// </summary>
+        public int IsDefault { get; set; } 
         /// <summary>
         /// 创建时间
         /// </summary>
-        public DateTime CreatedTime { get; set; }
+        public DateTime CreateTime { get; set; }
         /// <summary>
         /// 更新时间
         /// </summary>
-        public DateTime UpdatedTime { get; set; }
+        public DateTime UpdateTime { get; set; }
     }
 }

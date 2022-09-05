@@ -48,7 +48,7 @@ namespace CommentService.Controllers
         }
 
         /// <summary>
-        /// 获取用户文章访问记录
+        /// 列出用户文章访问记录
         /// </summary>
         /// <returns></returns>
         [RBAC]
@@ -70,7 +70,7 @@ namespace CommentService.Controllers
         }
 
         /// <summary>
-        /// 获取所有文章访问记录
+        /// 列出所有文章访问记录
         /// </summary>
         /// <returns></returns>
         [RBAC]

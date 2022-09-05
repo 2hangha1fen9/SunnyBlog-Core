@@ -60,47 +60,5 @@ namespace IdentityService.Controllers
             }
             return result;
         }
-
-        /// <summary>
-        /// 解除角色权限关系
-        /// </summary>
-        /// <param name="request"></param>
-        /// <returns></returns>
-        [HttpDelete]
-        public async Task<Response<string>> RolePermissionUbind(RolePermissionBindReq request)
-        {
-            var result = new Response<string>();
-            try
-            {
-                result.Result = await relationApp.RolePermissionBind(request,true);
-            }
-            catch (Exception ex)
-            {
-                result.Status = 500;
-                result.Message = ex.InnerException?.Message ?? ex.Message;
-            }
-            return result;
-        }
-
-        /// <summary>
-        /// 解除角色权限关系
-        /// </summary>
-        /// <param name="request"></param>
-        /// <returns></returns>
-        [HttpDelete]
-        public async Task<Response<string>> UserRoleUbind(UserRoleBindReq request)
-        {
-            var result = new Response<string>();
-            try
-            {
-                result.Result = await relationApp.UserRoleBind(request,true);
-            }
-            catch (Exception ex)
-            {
-                result.Status = 500;
-                result.Message = ex.InnerException?.Message ?? ex.Message;
-            }
-            return result;
-        }
     }
 }

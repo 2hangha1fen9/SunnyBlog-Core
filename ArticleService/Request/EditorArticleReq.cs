@@ -17,6 +17,10 @@ namespace ArticleService.Request
         /// </summary>
         public string? Title { get; set; }
         /// <summary>
+        /// 文章简介
+        /// </summary>
+        public string? Summary { get; set; }
+        /// <summary>
         /// 文章内容
         /// </summary>
         public string? Content { get; set; }

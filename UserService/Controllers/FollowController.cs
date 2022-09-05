@@ -2,6 +2,7 @@
 using Infrastructure.Auth;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using UserService.App.Interface;
 using UserService.Response;
 
@@ -44,7 +45,7 @@ namespace UserService.Controllers
         }
 
         /// <summary>
-        /// 取消某关注
+        /// 取消关注某用户
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -72,12 +73,15 @@ namespace UserService.Controllers
         /// </summary>
         [HttpGet]
         [TypeFilter(typeof(RedisCache))]
-        public async Task<Response<List<FollowView>>> List(int id, [FromBody]List<SearchCondition>? condidtion = null)
+        public async Task<Response<List<FollowView>>> List(int id, string? condidtion = null)
         {
             var result = new Response<List<FollowView>>();
             try
             {
-                result.Result = await followApp.FollowList(condidtion, id);
+                List<SearchCondition> con = new List<SearchCondition>();
+                try { con = JsonConvert.DeserializeObject<List<SearchCondition>>(condidtion); }
+                catch (Exception) { }
+                result.Result = await followApp.FollowList(con, id);
             }
             catch (Exception ex)
             {

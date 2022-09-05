@@ -148,6 +148,31 @@ namespace Service.IdentityService.App
         }
 
         /// <summary>
+        /// 根据账户名获取用户权限
+        /// </summary>
+        /// <param name="username"></param>
+        /// <returns></returns>
+        public async Task<object[]> GetPermission(string username)
+        {
+            //远程调用
+            var user = await userRpc.GetUserByUsernameAsync(new UserNameRequest()
+            {
+                Username = username,
+            });
+            //查询用户权限
+            using (var context = contextFactory.CreateDbContext())
+            {
+                var permissions = await context.Set<Permission>().FromSqlRaw($"select * from Permission as p where p.id in(select permissionId from RolePermissionRelation as rp where rp.roleId in(select roleId from UserRoleRelation as ur,Role r where ur.roleId = r.id and ur.userId = {user.Id} and exists(select * from [User] u where id = ur.userId and u.status = 1) and r.status = 1)) and status = 1")
+                            .Select(r => new
+                            {
+                                r.Controller,
+                                r.Action
+                            }).ToArrayAsync();
+                return new object[] { user, permissions };
+            }
+        }
+
+        /// <summary>
         /// 根据ID获取权限详情
         /// </summary>
         /// <param name="id"></param>
@@ -180,6 +205,7 @@ namespace Service.IdentityService.App
                     Action = p.Permission.Action,
                     UpdateTime = p.Permission.UpdateTime,
                     CreateTime = p.Permission.CreateTime,
+                    Description = p.Permission.Description,
                     Status = p.Permission.Status,
                     IsPublic = p.Permission.IsPublic
                 });
@@ -219,7 +245,7 @@ namespace Service.IdentityService.App
         {
             using (var dbContext = contextFactory.CreateDbContext())
             {
-                var permissions = dbContext.Permissions.AsQueryable();
+                var permissions = dbContext.Permissions.OrderBy(p => p.Service).AsQueryable();
                 if (condidtion.Count > 0)
                 {
                     foreach (var con in condidtion)

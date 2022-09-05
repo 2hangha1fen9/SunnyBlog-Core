@@ -34,6 +34,11 @@ namespace IdentityService.Domain
         public DateTime CreateTime { get; set; }
         [Column("updateTime", TypeName = "datetime")]
         public DateTime? UpdateTime { get; set; }
+        /// <summary>
+        /// 1默认-1不默认
+        /// </summary>
+        [Column("isDefault")]
+        public int IsDefault { get; set; }
 
         [InverseProperty("Role")]
         public virtual ICollection<RolePermissionRelation> RolePermissionRelations { get; set; }

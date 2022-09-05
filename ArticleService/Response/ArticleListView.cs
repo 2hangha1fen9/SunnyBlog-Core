@@ -14,9 +14,25 @@
         /// </summary>
         public int UserId { get; set; }
         /// <summary>
+        /// 用户昵称
+        /// </summary>
+        public string Nick { get; set; }
+        /// <summary>
+        /// 用户名
+        /// </summary>
+        public string Username { get; set; }
+        /// <summary>
         /// 文章标题
         /// </summary>
         public string Title { get; set; }
+        /// <summary>
+        /// 文章简介
+        /// </summary>
+        public string Summary { get; set; }
+        /// <summary>
+        /// 文章封面
+        /// </summary>
+        public string Photo { get; set; }
         /// <summary>
         /// 分区名称
         /// </summary>
@@ -26,17 +42,21 @@
         /// </summary>
         public int RegionId { get; set; }
         /// <summary>
+        /// 文章标签
+        /// </summary>
+        public List<TagView> Tags { get; set; }
+        /// <summary>
         /// 文章分类
         /// </summary>
-        public List<CategoryView> Category { get; set; }
-        /// <summary>
-        /// 用户名
-        /// </summary>
-        public string Username { get; set; }
+        public List<CategoryView> Categorys { get; set; }
         /// <summary>
         /// 文章状态
         /// </summary>
         public int Status { get; set; }
+        /// <summary>
+        /// 是否被锁定
+        /// </summary>
+        public int IsLock { get; set; }
         /// <summary>
         /// 评论状态
         /// </summary>

@@ -58,6 +58,7 @@ namespace IdentityService.App
                 {
                     role.Name = request.Name ?? role.Name;
                     role.Status = request.Status ?? role.Status;
+                    role.IsDefault = request.IsDefault ?? role.IsDefault;
                     role.UpdateTime = DateTime.Now;
                     dbContext.Entry(role).State = EntityState.Modified;
                     if (await dbContext.SaveChangesAsync() > 0)
@@ -127,6 +128,7 @@ namespace IdentityService.App
                     Id = r.RoleId,
                     Name = r.Role.Name,
                     Status = r.Role.Status,
+                    IsDefault = r.Role.IsDefault,
                     CreateTime = r.Role.CreateTime,
                     UpdateTime = r.Role.UpdateTime,
                 });
@@ -148,9 +150,10 @@ namespace IdentityService.App
             {
                 var roles = context.UserRoleRelations.Where(urr => urr.UserId == id).Select(r => new Role()
                 {
-                    Id = r.Id,
+                    Id = r.RoleId,
                     Name = r.Role.Name,
                     Status = r.Role.Status,
+                    IsDefault=r.Role.IsDefault,
                     UpdateTime = r.Role.UpdateTime,
                     CreateTime = r.Role.CreateTime
                 });
@@ -178,6 +181,7 @@ namespace IdentityService.App
                         roles = "Id".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? roles.Where(r => r.Id == Convert.ToInt32(con.Value)) : roles;
                         roles = "Name".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? roles.Where(r => r.Name.Contains(con.Value)) : roles;
                         roles = "Status".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? roles.Where(r => r.Status == Convert.ToInt32(con.Value)) : roles;
+                        roles = "IsDefault".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? roles.Where(r => r.IsDefault == Convert.ToInt32(con.Value)) : roles;
                     }
                 }
                 var rolePage = new PageList<RoleView>();

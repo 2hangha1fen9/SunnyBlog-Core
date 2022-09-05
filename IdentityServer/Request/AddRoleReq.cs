@@ -13,5 +13,9 @@ namespace IdentityService.Request
         /// 状态
         /// </summary>
         public int? Status { get; set; } = 1;
+        /// <summary>
+        /// 是否为默认角色
+        /// </summary>
+        public int? IsDefault { get; set; } = 0;
     }
 }

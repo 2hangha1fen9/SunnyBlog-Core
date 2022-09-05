@@ -30,6 +30,7 @@ namespace Infrastructure.Auth
         }
 
         public Task<AuthorizationPolicy> GetFallbackPolicyAsync()
+        
         {
             return Task.FromResult<AuthorizationPolicy>(null);
         }

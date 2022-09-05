@@ -24,14 +24,20 @@ namespace UserService.Controllers
         /// <returns></returns>
         [RBAC]
         [HttpPut]
-        public async Task<Response<UploadResult>> Upload(UploadPhotoReq request)
+        public async Task<Response<UploadResult>> Upload([FromForm]UploadPhotoReq request,[FromQuery]int? uid = null)
         {
             var result = new Response<UploadResult>();
             try
             {
                 //获取token中的用户ID
                 var userId = Convert.ToInt32(HttpContext.User.Claims.FirstOrDefault(c => c.Type == "user_id")?.Value);
-                result.Result = await photoApp.UploadPhoto(request,Convert.ToInt32(userId));
+                
+                if (uid.HasValue)
+                {
+                    userId = uid.Value;
+                }
+
+                result.Result = await photoApp.UploadPhoto(request,userId);
             }
             catch (Exception ex)
             {

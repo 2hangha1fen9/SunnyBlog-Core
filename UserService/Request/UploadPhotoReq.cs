@@ -11,6 +11,6 @@ namespace UserService.Request
         /// 图片数据
         /// </summary>
         [Required]
-        public string Data { get; set; }
+        public IFormFile Data { get; set; }
     }
 }

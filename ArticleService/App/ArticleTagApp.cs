@@ -256,11 +256,15 @@ namespace ArticleService.App
                 }
                 foreach (var tid in tagIds)//添加最新标签
                 {
-                    dbContext.Entry(new ArticleTag()
+                    //判断标签是否存在,存在则添加
+                    if (tags.FirstOrDefault(t => t.Id == tid) != null)
                     {
-                        ArticleId = articleId,
-                        TagId = tid
-                    }).State = EntityState.Added;
+                        dbContext.Entry(new ArticleTag()
+                        {
+                            ArticleId = articleId,
+                            TagId = tid
+                        }).State = EntityState.Added;
+                    }
                 }
                 //保存修改
                 await dbContext.SaveChangesAsync();

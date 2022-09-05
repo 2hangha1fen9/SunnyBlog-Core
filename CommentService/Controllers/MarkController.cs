@@ -20,7 +20,7 @@ namespace CommentService.Controllers
         }
 
         /// <summary>
-        /// 点赞/收藏文章(取反)
+        /// 点赞/收藏文章
         /// </summary>
         /// <param name="aid">文章ID</param>
         /// <param name="status">1点赞2收藏</param>

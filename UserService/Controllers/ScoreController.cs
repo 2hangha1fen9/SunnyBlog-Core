@@ -18,7 +18,7 @@ namespace UserService.Controllers
         }
 
         /// <summary>
-        /// 签到
+        /// 用户签到
         /// </summary>
         /// <returns></returns>
         [RBAC]

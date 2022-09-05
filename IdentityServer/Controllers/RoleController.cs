@@ -3,9 +3,11 @@ using IdentityService.Request;
 using IdentityService.Response;
 using Infrastructure;
 using Infrastructure.Auth;
+using Infrastructure.Utils;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace IdentityService.Controllers
 {
@@ -29,12 +31,13 @@ namespace IdentityService.Controllers
         /// <param name="condition"></param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<Response<PageList<RoleView>>> List([FromQuery] int? pageIndex = 1, [FromQuery] int? pageSize = 10, [FromBody] List<SearchCondition>? condition = null)
+        public async Task<Response<PageList<RoleView>>> List(int? pageIndex = 1,int? pageSize = 10, string? condition = null)
         {
             var result = new Response<PageList<RoleView>>();
             try
             {
-                var roles = await roleApp.ListRole(condition,pageIndex.Value,pageSize.Value);
+                List<SearchCondition> con = SequenceConverter.ConvertToCondition(condition);
+                var roles = await roleApp.ListRole(con, pageIndex.Value,pageSize.Value);
                 result.Result = roles;
                 return result;
             }
@@ -75,7 +78,7 @@ namespace IdentityService.Controllers
         /// <param name="pageSize"></param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<Response<PageList<RoleView>>> GetByUser(int id, [FromQuery] int? pageIndex = 1, [FromQuery] int? pageSize = 10)
+        public async Task<Response<PageList<RoleView>>> GetByUser(int id,int? pageIndex = 1,int? pageSize = 10)
         {
             var result = new Response<PageList<RoleView>>();
             try
@@ -100,7 +103,7 @@ namespace IdentityService.Controllers
         /// <param name="pageSize"></param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<Response<PageList<RoleView>>> GetByPermission(int id, [FromQuery] int? pageIndex = 1, [FromQuery] int? pageSize = 10)
+        public async Task<Response<PageList<RoleView>>> GetByPermission(int id,int? pageIndex = 1,int? pageSize = 10)
         {
             var result = new Response<PageList<RoleView>>();
             try

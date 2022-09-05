@@ -1,7 +1,9 @@
 ﻿using Infrastructure;
 using Infrastructure.Auth;
+using Infrastructure.Utils;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using Newtonsoft.Json;
 using UserService.App.Interface;
 using UserService.Request;
 using UserService.Response;
@@ -20,17 +22,18 @@ namespace UserService.Controllers
         }
 
         /// <summary>
-        /// 获取用户列表
+        /// 列出用户列表
         /// </summary>
         /// <returns>用户列表</returns>
         [HttpGet]
         [RBAC(IsPublic = 1)]
-        public async Task<Response<PageList<UserView>>> List([FromQuery] int? pageIndex = 1 , [FromQuery] int? pageSize = 10, [FromBody] List<SearchCondition>? condidtion = null)
+        public async Task<Response<PageList<UserView>>> List(int? pageIndex = 1 ,int? pageSize = 10,string? condition = null)
         {
             var result = new Response<PageList<UserView>>();
             try
             {
-                var users = await userApp.GetUsers(condidtion,pageIndex.Value,pageSize.Value);
+                List<SearchCondition> con = SequenceConverter.ConvertToCondition(condition);
+                var users = await userApp.GetUsers(con, pageIndex.Value,pageSize.Value);
                 result.Result = users;
             }
             catch (Exception ex)
@@ -42,7 +45,7 @@ namespace UserService.Controllers
         }
 
         /// <summary>
-        /// 获取当前用户的详情
+        /// 列出当前登录者的用户详情
         /// </summary>
         /// <returns></returns>
         [RBAC]
@@ -85,7 +88,7 @@ namespace UserService.Controllers
         }
 
         /// <summary>
-        /// 找回密码
+        /// 用户找回密码
         /// </summary>
         /// <returns></returns>
         [HttpPost]
@@ -106,7 +109,7 @@ namespace UserService.Controllers
         }
 
         /// <summary>
-        /// 修改用户信息
+        /// 用户修改个人信息
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
@@ -129,7 +132,7 @@ namespace UserService.Controllers
         }
 
         /// <summary>
-        /// 账号绑定
+        /// 用户账号绑定
         /// </summary>
         /// <returns></returns>
         [RBAC]
@@ -151,7 +154,7 @@ namespace UserService.Controllers
         }
 
         /// <summary>
-        /// 账号解绑
+        /// 用户账号解绑
         /// </summary>
         /// <returns></returns>
         [RBAC]

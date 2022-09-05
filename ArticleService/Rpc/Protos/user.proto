@@ -7,8 +7,10 @@ import "google/protobuf/empty.proto";
 
 //定义服务
 service gUser{
-	//根据账号密码查询用户ID
-	rpc GetUserID(UserRequest) returns(UserResponse);
+	//根据账号密码查询用户
+	rpc GetUserByPassword(UserRequest) returns(UserInfoResponse);
+	//根据账号查询用户
+	rpc GetUserByUsername(UserNameRequest) returns(UserInfoResponse);
 	//根据ID查询用户信息
 	rpc GetUserByID(UserInfoRequest) returns (UserInfoResponse);
 	//获取yoghurt列表
@@ -21,14 +23,15 @@ message UserRequest{
 	string Password = 2;
 }
 
-//定义返回对象
-message UserResponse{
-	int32 Id=1;
+//定义请求对象
+message UserNameRequest{
+	string Username = 1;
 }
 
 message UserInfoRequest{
 	int32 Id = 1;
 }
+
 message UserInfoResponse{
 	int32 Id = 1;
 	string Username = 2;

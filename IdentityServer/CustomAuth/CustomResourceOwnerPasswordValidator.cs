@@ -9,6 +9,7 @@ using IdentityModel.Client;
 using IdentityService.Rpc.Protos;
 using UserInfoResponse = IdentityService.Rpc.Protos.UserInfoResponse;
 using IdentityServer4.Models;
+using StackExchange.Redis;
 
 namespace Service.IdentityService
 {
@@ -19,20 +20,40 @@ namespace Service.IdentityService
     {
         //依赖使用
         private readonly IPermissionApp permissionApp;
-        public CustomResourceOwnerPasswordValidator(IPermissionApp permissionApp)
+        private readonly IDatabase database;
+
+        public CustomResourceOwnerPasswordValidator(IPermissionApp permissionApp, IConnectionMultiplexer connection)
         {
             this.permissionApp = permissionApp;
+            this.database= connection.GetDatabase();
         }
 
         public async Task ValidateAsync(ResourceOwnerPasswordValidationContext context)
         {
             if (!string.IsNullOrEmpty(context.UserName) && !string.IsNullOrEmpty(context.Password))
             {
-                //查询用户权限
-                var data = await permissionApp.GetPermission(context.UserName, context.Password);
-                var user = data[0] as UserInfoResponse;
-                var permission = data[1] as Array;
-                if (user != null && permission?.Length > 0)
+                UserInfoResponse? user = null;
+                Array? permission = null;
+                //账号密码模式查询用户权限
+                if (context.Request.ClientId == "password")
+                {
+                    var data = await permissionApp.GetPermission(context.UserName, context.Password);
+                    user = data[0] as UserInfoResponse;
+                    permission = data[1] as Array;
+                }
+                //验证码查询用户权限
+                else if (context.Request.ClientId == "vcode")
+                {
+                    //验证邮箱/手机号验证码
+                    var code = await database.StringGetDeleteAsync($"VCode:{context.UserName}");
+                    if (code == context.Password)
+                    {
+                        var data = await permissionApp.GetPermission(context.UserName);
+                        user = data[0] as UserInfoResponse;
+                        permission = data[1] as Array;
+                    }
+                }
+                if (user != null && permission != null && permission?.Length > 0)
                 {
                     //自定义令牌信息，将用户id和权限表存入token
                     context.Result = new GrantValidationResult(context.UserName,

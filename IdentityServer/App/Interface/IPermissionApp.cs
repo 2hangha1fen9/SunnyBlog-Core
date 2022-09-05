@@ -8,6 +8,7 @@ namespace Service.IdentityService.App.Interface
     public interface IPermissionApp
     {
         Task<object[]> GetPermission(string username,string password);
+        Task<object[]> GetPermission(string username);
         Task<PermissionView> GetPermissionById(int id);
         Task<PageList<PermissionView>> GetPermissionsByUserId(int id,int pageIndex, int pageSize);
         Task<PageList<PermissionView>> GetPermissionsByRoleId(int id,int pageIndex, int pageSize);

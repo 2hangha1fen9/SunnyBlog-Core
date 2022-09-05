@@ -20,7 +20,7 @@ namespace ArticleService.Controllers
         }
 
         /// <summary>
-        /// 获取所有公共标签
+        /// 列出所有公共标签
         /// </summary>
         /// <returns></returns>
         [RBAC(IsPublic = 1)]
@@ -43,7 +43,7 @@ namespace ArticleService.Controllers
         }
 
         /// <summary>
-        /// 获取用户个人标签
+        /// 列出用户个人标签
         /// </summary>
         /// <returns></returns>
         [RBAC]

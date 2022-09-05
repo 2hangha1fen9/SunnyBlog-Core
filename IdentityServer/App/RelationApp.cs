@@ -3,6 +3,7 @@ using IdentityService.Domain;
 using IdentityService.Request;
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
+using Service.IdentityService.App.Interface;
 
 namespace IdentityService.App
 {
@@ -21,33 +22,39 @@ namespace IdentityService.App
         /// <param name="request"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public async Task<string> RolePermissionBind(RolePermissionBindReq request,bool isRemove = false)
+        public async Task<string> RolePermissionBind(RolePermissionBindReq request)
         {
             using (var dbContext = contextFactory.CreateDbContext())
             {
                 try
                 {
+                    //获取角色所有权限
+                    var rolePermission = await dbContext.RolePermissionRelations.Where(p => p.RoleId == request.RoleId).ToListAsync();
+                    //获取所有权限
+                    var permissions = await dbContext.Permissions.ToListAsync();
+                    //先清空当前角色的权限
+                    foreach (var item in rolePermission)
+                    {
+                        dbContext.Entry(item).State = EntityState.Deleted;
+                    }
+                    //添加最新的权限
                     foreach (var pid in request.PermissionIds)
                     {
-                        var rpr = await dbContext.RolePermissionRelations.FirstOrDefaultAsync(rpr => rpr.RoleId == request.RoleId && rpr.PermissionId == pid);
-                        if (rpr == null && !isRemove) //添加
+                        if (permissions.FirstOrDefault(p => p.Id  == pid) != null)
                         {
-                            await dbContext.RolePermissionRelations.AddAsync(new RolePermissionRelation() { RoleId = request.RoleId, PermissionId = pid });
-                        }
-                        if (rpr != null && isRemove) //删除
-                        {
-                            dbContext.RolePermissionRelations.Remove(rpr);
+                            dbContext.Entry(new RolePermissionRelation()
+                            {
+                                RoleId = request.RoleId,
+                                PermissionId = pid,
+                            }).State = EntityState.Added;
                         }
                     }
-                    if (await dbContext.SaveChangesAsync() < 0)
-                    {
-                        throw new Exception(isRemove ? "解绑成功" : "绑定成功");
-                    }
-                    return isRemove ? "解绑成功":"绑定成功";
+                    await dbContext.SaveChangesAsync();
+                    return "绑定成功";
                 }
                 catch (Exception)
                 {
-                    throw new Exception( isRemove ? "部分解绑失败":"部分绑定失败");
+                    throw new Exception("部分绑定失败");
                 }
             }
         }
@@ -58,33 +65,39 @@ namespace IdentityService.App
         /// <param name="request"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public async Task<string> UserRoleBind(UserRoleBindReq request, bool isRemove = false)
+        public async Task<string> UserRoleBind(UserRoleBindReq request)
         {
             using (var dbContext = contextFactory.CreateDbContext())
             {
                 try
                 {
+                    //获取用户所有角色
+                    var userRole = await dbContext.UserRoleRelations.Where(u => u.UserId == request.UserId).ToListAsync();
+                    //获取所有角色
+                    var role = await dbContext.Roles.ToListAsync();
+                    //清空用户的所有角色
+                    foreach (var item in userRole)
+                    {
+                        dbContext.Entry(item).State = EntityState.Deleted;
+                    }
+                    //添加最新的角色
                     foreach (var rid in request.RoleIds)
                     {
-                        var urr = await dbContext.UserRoleRelations.FirstOrDefaultAsync(rpr => rpr.UserId == request.UserId && rpr.RoleId == rid);
-                        if (urr == null && !isRemove) //添加
+                        if (role.FirstOrDefault(r => r.Id == rid) != null)
                         {
-                            await dbContext.UserRoleRelations.AddAsync(new UserRoleRelation() { UserId = request.UserId, RoleId = rid });
-                        }
-                        if (urr != null && isRemove) //删除
-                        {
-                            dbContext.UserRoleRelations.Remove(urr);
+                            dbContext.Entry(new UserRoleRelation()
+                            {
+                                UserId = request.UserId,
+                                RoleId = rid,
+                            }).State = EntityState.Added;
                         }
                     }
-                    if (await dbContext.SaveChangesAsync() < 0)
-                    {
-                        throw new Exception(isRemove ? "解绑成功" : "绑定成功");
-                    }
-                    return isRemove ? "解绑成功" : "绑定成功";
+                    await dbContext.SaveChangesAsync();
+                    return "绑定成功";
                 }
                 catch (Exception)
                 {
-                    throw new Exception(isRemove ? "部分解绑失败" : "部分绑定失败");
+                    throw new Exception("部分绑定失败");
                 }
             }
         }

@@ -8,6 +8,7 @@ using Infrastructure.Consul;
 using Microsoft.EntityFrameworkCore;
 using ArticleService.Domain;
 using static ArticleService.Rpc.Protos.gUser;
+using System.Linq.Expressions;
 
 namespace ArticleService.App
 {
@@ -27,67 +28,36 @@ namespace ArticleService.App
         }
 
         /// <summary>
-        /// 编辑文章(管理)
-        /// </summary>
-        /// <param name="request"></param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-        public async Task<string> EditorArticle(EditorArticleReq request)
-        {
-            using (var dbContext = contextFactory.CreateDbContext())
-            {
-                //查询文章
-                var article = await dbContext.Articles.FirstOrDefaultAsync(a => a.Id == request.Id);
-                if (article != null)
-                {
-                    //文章更新
-                    article.Title = request.Title ?? article.Title;
-                    article.Content = request.Content ?? article.Content;
-                    article.Photo = request.Photo ?? article.Photo;
-                    article.RegionId = request.RegionId ?? article.RegionId;
-                    article.Status = request.Status ?? article.Status;
-                    article.CommentStatus = request.CommentStatus ?? article.CommentStatus;
-                    article.UpdateTime = DateTime.Now;
-                    article.IsLock = request.isLock ?? article.IsLock;
-                    //保存修改
-                    dbContext.Entry(article).State = EntityState.Modified;
-                    if (await dbContext.SaveChangesAsync() < 0)
-                    {
-                        throw new Exception("更新失败");
-                    }
-                    else
-                    {
-                        return "更新成功";
-                    }
-                }
-                else
-                {
-                    throw new Exception("没有找到这篇文章");
-                }
-            }
-        }
-
-        /// <summary>
-        /// 编辑文章(用户)
+        /// 编辑文章
         /// </summary>
         /// <param name="request"></param>
         /// <param name="uid"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public async Task<string> EditorArticle(EditorArticleReq request, int uid)
+        public async Task<string> EditorArticle(EditorArticleReq request, int? uid)
         {
             using (var dbContext = contextFactory.CreateDbContext())
             {
+                Article? article = null;
                 //查询文章
-                var article = await dbContext.Articles.FirstOrDefaultAsync(a => a.Id == request.Id && a.UserId == uid && a.IsLock == 0);
+                if (uid.HasValue)
+                {
+                    article = await dbContext.Articles.FirstOrDefaultAsync(a => a.Id == request.Id && a.UserId == uid && a.IsLock == 0);
+                }
+                else
+                {
+                    article = await dbContext.Articles.FirstOrDefaultAsync(a => a.Id == request.Id);
+                }
                 if (article != null)
                 {
                     //文章更新
                     article.Title = request.Title ?? article.Title;
+                    article.Summary = request.Summary ?? article.Summary;
                     article.Content = request.Content ?? article.Content;
                     article.Photo = request.Photo ?? article.Photo;
                     article.RegionId = request.RegionId ?? article.RegionId;
                     article.Status = request.Status ?? article.Status;
+                    article.IsLock = request.isLock ?? article.IsLock;
                     article.CommentStatus = request.CommentStatus ?? article.CommentStatus;
                     article.UpdateTime = DateTime.Now;
                     //标签更新
@@ -96,9 +66,9 @@ namespace ArticleService.App
                         articleTagApp.UpdateArticleTag(article.Id, request.Tags);
                     }
                     //分区更新
-                    if (request.Categorys?.Count > 0)
+                    if (uid.HasValue && request.Categorys?.Count > 0)
                     {
-                        articleCategoryApp.UpdateArticleCategory(uid, article.Id, request.Categorys);
+                        articleCategoryApp.UpdateArticleCategory(uid.Value, article.Id, request.Categorys);
                     }
                     //保存修改
                     dbContext.Entry(article).State = EntityState.Modified;
@@ -132,10 +102,12 @@ namespace ArticleService.App
                 var article = await dbContext.Articles.Select(a => new
                 {
                     Id = a.Id,
-                    UserId = a.UserId,
                     Title = a.Title,
                     Content = a.Content,
+                    Summary = a.Summary,
                     Photo = a.Photo,
+                    RegionName = a.Region.Name,
+                    RegionId = a.RegionId,
                     Tags = a.ArticleTags.Where(at => at.Tag.IsPrivate == 1).Select(at => new TagView()
                     {
                         Id = at.Id,
@@ -143,23 +115,21 @@ namespace ArticleService.App
                         Name = at.Tag.Name,
                         Color = at.Tag.Color
                     }),
-                    RegionName = a.Region.Name,
-                    RegionId = a.RegionId,
-                    CreateTime = a.CreateTime,
+                    Categorys = a.ArtCategories.Select(c => new CategoryView()
+                    {
+                        Id = c.Id,
+                        Name = c.Category.Name,
+                        UserId = c.Category.UserId,
+                        ParentId = c.Category.ParentId ?? 0,
+                        InverseParent = null
+                    }),
                     Status = a.Status,
                     CommentStatus = a.CommentStatus,
-                    IsLock = a.IsLock
+                    CreateTime = a.CreateTime,
                 }).FirstOrDefaultAsync(a => a.Id == id && a.Status == 1);
                 if (article != null)
                 {
                     var adv = article.MapTo<ArticleView>();
-                    //调用rgc方法获取用户信息
-                    var userInfo = userRpc.GetUserByID(new UserInfoRequest() { Id = article.UserId });
-                    if (userInfo != null)
-                    {
-                        adv.Nick = userInfo.Nick;
-                        adv.UserPhoto = userInfo.Photo;
-                    }
                     return adv;
                 }
                 else
@@ -172,190 +142,36 @@ namespace ArticleService.App
         /// <summary>
         /// 获取文章列表
         /// </summary>
-        public async Task<PageList<ArticleView>> GetArticleList(List<SearchCondition> condidtion, int pageIndex, int pageSize)
+        public async Task<PageList<ArticleListView>> GetArticleList(List<SearchCondition> condidtion, Expression<Func<Article, bool>> predict , int pageIndex, int pageSize)
         {
             using (var dbContext = contextFactory.CreateDbContext())
             {
                 //创建数据映射
-                var article = dbContext.Articles.Select(a => new
+                var article = dbContext.Articles.AsQueryable();
+                //使用前置条件,判断是否是只需要用户的文章,还是用户自己个人的文章,还是所有文章
+                if (predict != null)
+                {
+                    article = article.Where(predict);
+                }
+                var articleMap = article.Select(a => new
                 {
                     Id = a.Id,
                     UserId = a.UserId,
-                    UserPhoto = "",
                     Nick = "",
-                    Title = a.Title,
-                    Content = a.Content.Substring(0, 100),
-                    Photo = a.Photo,
-                    Tags = a.ArticleTags.Where(at => at.Tag.IsPrivate == 1).Select(at => new TagView()
-                    {
-                        Id = at.Id,
-                        UserId = at.Tag.UserId,
-                        Name = at.Tag.Name,
-                        Color = at.Tag.Color
-                    }),
-                    RegionName = a.Region.Name,
-                    RegionId = a.RegionId,
-                    CreateTime = a.CreateTime,
-                    Status = a.Status,
-                    CommentStatus = a.CommentStatus,
-                    IsLock = a.IsLock
-                }).Where(a => a.Status == 1);
-                //筛选条件
-                if (condidtion.Count > 0)
-                {
-                    foreach (var con in condidtion)
-                    {
-                        article = "Title".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? article.Where(a => a.Title.Contains(con.Value)) : article;
-                        article = "Content".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? article.Where(a => a.Content.Contains(con.Value)) : article;
-                        article = "Tag".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? article.Where(a => a.Tags.Where(t => t.Name.Contains(con.Value) || t.Id == Convert.ToInt32(con.Value)).Count() > 0) : article;
-                        article = "Region".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? article.Where(a => a.RegionName.Contains(con.Value) || a.RegionId == Convert.ToInt32(con.Value)) : article;
-                    }
-                }
-                //分页条件
-                var articlePage = new PageList<ArticleView>();
-                article = articlePage.Pagination(pageIndex, pageSize, article);
-                articlePage.Page = (await article.ToListAsync()).MapToList<ArticleView>();
-                //填充文章的分页用户信息
-                foreach (var page in articlePage.Page)
-                {
-                    //获取用户
-                    var user = await userRpc.GetUserByIDAsync(new UserInfoRequest() { Id = page.UserId });
-                    page.Nick = user.Nick;
-                    page.UserPhoto = user.Photo;
-                }
-                return articlePage;
-            }
-        }
-        
-        /// <summary>
-        /// 用户文章列表
-        /// </summary>
-        public async Task<PageList<ArticleView>> GetUserArticleList(List<SearchCondition> condidtion,int uid, int pageIndex, int pageSize)
-        {
-            using (var dbContext = contextFactory.CreateDbContext())
-            {
-                //创建数据映射
-                var article = dbContext.Articles.Select(a => new
-                {
-                    Id = a.Id,
-                    UserId = a.UserId,
-                    UserPhoto = "",
-                    Nick = "",
-                    Title = a.Title,
-                    Content = a.Content.Substring(0, 100),
-                    Photo = a.Photo,
-                    Tags = a.ArticleTags.Where(at => at.Tag.IsPrivate == 1).Select(at => new TagView()
-                    {
-                        Id = at.Id,
-                        UserId = at.Tag.UserId,
-                        Name = at.Tag.Name,
-                        Color = at.Tag.Color
-                    }),
-                    RegionName = a.Region.Name,
-                    RegionId = a.RegionId,
-                    CreateTime = a.CreateTime,
-                    Status = a.Status,
-                    CommentStatus = a.CommentStatus,
-                    IsLock = a.IsLock
-                }).Where(a => a.Status == 1 && a.UserId == uid);
-                //筛选条件
-                if (condidtion.Count > 0)
-                {
-                    foreach (var con in condidtion)
-                    {
-                        article = "Title".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? article.Where(a => a.Title.Contains(con.Value)) : article;
-                        article = "Content".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? article.Where(a => a.Content.Contains(con.Value)) : article;
-                        article = "Tag".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? article.Where(a => a.Tags.Where(t => t.Name.Contains(con.Value) || t.Id == Convert.ToInt32(con.Value)).Count() > 0) : article;
-                        article = "Region".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? article.Where(a => a.RegionName.Contains(con.Value) || a.RegionId == Convert.ToInt32(con.Value)) : article;
-                    }
-                }
-                //分页条件
-                var articlePage = new PageList<ArticleView>();
-                article = articlePage.Pagination(pageIndex, pageSize, article);
-                articlePage.Page = (await article.ToListAsync()).MapToList<ArticleView>();
-                //填充文章的分页用户信息
-                foreach (var page in articlePage.Page)
-                {
-                    //获取用户
-                    var user = await userRpc.GetUserByIDAsync(new UserInfoRequest() { Id = page.UserId });
-                    page.Nick = user.Nick;
-                    page.UserPhoto = user.Photo;
-                }
-                return articlePage;
-            }
-        }
-
-        /// <summary>
-        /// 获取文章行列表
-        /// </summary>
-        /// <param name="condidtion"></param>
-        /// <param name="pageIndex"></param>
-        /// <param name="pageSize"></param>
-        /// <returns></returns>
-        public async Task<PageList<ArticleListView>> GetRowList(List<SearchCondition> condidtion, int pageIndex, int pageSize)
-        {
-            using (var dbContext = contextFactory.CreateDbContext())
-            {
-                var article = dbContext.Articles.Select(a => new
-                {
-                    Id = a.Id,
-                    UserId = a.UserId,
-                    Title = a.Title,
-                    RegionName = a.Region.Name,
-                    RegionId = a.RegionId,
                     Username = "",
-                    Status = a.Status,
-                    CommentStatus = a.CommentStatus,
-                    CreateTime = a.CreateTime,
-                    IsLock = a.IsLock
-                });
-                //筛选条件
-                if (condidtion.Count > 0)
-                {
-                    foreach (var con in condidtion)
-                    {
-                        article = "Title".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? article.Where(a => a.Title.Contains(con.Value)) : article;
-                        article = "Region".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? article.Where(a => a.RegionName.Contains(con.Value) || a.RegionId == Convert.ToInt32(con.Value)) : article;
-                        article = "Username".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? article.Where(a => a.Username.Contains(con.Value)) : article;
-                        article = "Status".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? article.Where(a => a.Status == Convert.ToInt32(con.Value)) : article;
-                        article = "IsLock".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? article.Where(a => a.IsLock == Convert.ToInt32(con.Value)) : article;
-                        article = "CommentStatus".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? article.Where(a => a.CommentStatus == Convert.ToInt32(con.Value)) : article;
-                    }
-                }
-                //分页条件
-                var articlePage = new PageList<ArticleListView>();
-                article = articlePage.Pagination(pageIndex, pageSize, article);
-                articlePage.Page = (await article.ToListAsync()).MapToList<ArticleListView>();
-                //填充文章的分页用户信息
-                foreach (var page in articlePage.Page)
-                {
-                    //获取用户
-                    var user = await userRpc.GetUserByIDAsync(new UserInfoRequest() { Id = page.UserId });
-                    page.Username = user.Username;
-                }
-                return articlePage;
-            }
-        }
-
-        /// <summary>
-        /// 获取文章行列表(用户)
-        /// </summary>
-        /// <param name="condidtion"></param>
-        /// <param name="pageIndex"></param>
-        /// <param name="pageSize"></param>
-        /// <returns></returns>
-        public async Task<PageList<ArticleListView>> GetRowList(List<SearchCondition> condidtion, int uid, int pageIndex, int pageSize)
-        {
-            using (var dbContext = contextFactory.CreateDbContext())
-            {
-                var article = dbContext.Articles.Where(a => a.UserId == uid).Select(a => new
-                {
-                    Id = a.Id,
-                    UserId = a.UserId,
                     Title = a.Title,
+                    Summary = a.Summary,
+                    Photo = a.Photo,
                     RegionName = a.Region.Name,
                     RegionId = a.RegionId,
-                    Category = a.ArtCategories.Select(c => new CategoryView()
+                    Tags = a.ArticleTags.Where(at => at.Tag.IsPrivate == 1).Select(at => new TagView()
+                    {
+                        Id = at.Id,
+                        UserId = at.Tag.UserId,
+                        Name = at.Tag.Name,
+                        Color = at.Tag.Color
+                    }),
+                    Categorys = a.ArtCategories.Select(c => new CategoryView()
                     {
                         Id = c.Id,
                         Name = c.Category.Name,
@@ -363,35 +179,37 @@ namespace ArticleService.App
                         ParentId = c.Category.ParentId ?? 0,
                         InverseParent = null
                     }),
-                    Username = "",
                     Status = a.Status,
+                    IsLock = a.IsLock,
                     CommentStatus = a.CommentStatus,
                     CreateTime = a.CreateTime,
-                    IsLock = a.IsLock
                 });
                 //筛选条件
                 if (condidtion.Count > 0)
                 {
                     foreach (var con in condidtion)
                     {
-                        article = "Title".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? article.Where(a => a.Title.Contains(con.Value)) : article;
-                        article = "Region".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? article.Where(a => a.RegionName.Contains(con.Value) || a.RegionId == Convert.ToInt32(con.Value)) : article;
-                        article = "Username".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? article.Where(a => a.Username.Contains(con.Value)) : article;
-                        article = "Status".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? article.Where(a => a.Status == Convert.ToInt32(con.Value)) : article;
-                        article = "IsLock".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? article.Where(a => a.IsLock == Convert.ToInt32(con.Value)) : article;
-                        article = "CommentStatus".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? article.Where(a => a.CommentStatus == Convert.ToInt32(con.Value)) : article;
-                        article = "Category".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? article.Where(a => a.Category.Where(c => c.Name.Contains(con.Value) || c.Id == Convert.ToInt32(con.Value)).Count() > 0) : article;
+                        articleMap = "Username".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.Username.Contains(con.Value)) : articleMap;
+                        articleMap = "Title".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.Title.Contains(con.Value)) : articleMap;
+                        articleMap = "Summary".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.Summary.Contains(con.Value)) : articleMap;
+                        articleMap = "Region".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.RegionName.Contains(con.Value)) : articleMap;
+                        articleMap = "Tag".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.Tags.Where(t => t.Name.Contains(con.Value) || t.Id == Convert.ToInt32(con.Value)).Count() > 0) : articleMap;
+                        articleMap = "Category".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.Categorys.Where(c => c.Name.Contains(con.Value) || c.Id == Convert.ToInt32(con.Value)).Count() > 0) : articleMap;
+                        articleMap = "Status".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.Status == Convert.ToInt32(con.Value)) : articleMap;
+                        articleMap = "IsLock".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.IsLock == Convert.ToInt32(con.Value)) : articleMap;
+                        articleMap = "CommentStatus".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.CommentStatus == Convert.ToInt32(con.Value)) : articleMap;
                     }
                 }
                 //分页条件
                 var articlePage = new PageList<ArticleListView>();
-                article = articlePage.Pagination(pageIndex, pageSize, article);
+                articleMap = articlePage.Pagination(pageIndex, pageSize, articleMap);
                 articlePage.Page = (await article.ToListAsync()).MapToList<ArticleListView>();
                 //填充文章的分页用户信息
                 foreach (var page in articlePage.Page)
                 {
                     //获取用户
                     var user = await userRpc.GetUserByIDAsync(new UserInfoRequest() { Id = page.UserId });
+                    page.Nick = user.Nick;
                     page.Username = user.Username;
                 }
                 return articlePage;

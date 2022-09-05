@@ -21,7 +21,7 @@ namespace ArticleService.Controllers
         }
 
         /// <summary>
-        /// 获取用户的分类
+        /// 列出我的的分类
         /// </summary>
         /// <param name="uid"></param>
         /// <returns></returns>

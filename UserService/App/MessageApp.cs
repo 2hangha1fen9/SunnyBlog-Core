@@ -1,9 +1,11 @@
-﻿using Microsoft.Extensions.Caching.Distributed;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
 using StackExchange.Redis;
 using System.Text.RegularExpressions;
 using TencentCloud.Common;
 using TencentCloud.Sms.V20190711;
 using TencentCloud.Sms.V20190711.Models;
+using UserService;
 using UserService.App.Interface;
 using UserService.Domain;
 using UserService.Domain.config;
@@ -12,7 +14,6 @@ namespace Infrastructure
 {
     public class MessageApp:IMessageApp
     {
-
         /// <summary>
         /// Redis客户端,依赖注入
         /// </summary>
@@ -21,11 +22,13 @@ namespace Infrastructure
         /// 短信配置
         /// </summary>
         private readonly MessageConfig config;
+        private readonly IDbContextFactory<UserDBContext> contextFactory;
 
-        public MessageApp(IConnectionMultiplexer connection, MessageConfig config)
+        public MessageApp(IConnectionMultiplexer connection, MessageConfig config,IDbContextFactory<UserDBContext> contextFactory)
         {
             this.database = connection.GetDatabase();
             this.config = config;
+            this.contextFactory = contextFactory;
         }
 
         /// <summary>
@@ -36,6 +39,7 @@ namespace Infrastructure
         /// <exception cref="NotImplementedException"></exception>
         public async Task<string> SendMessageCode(string phone)
         {
+            
             //生成验证码
             var vcode = EncryptionHelper.GetRandomSequnce(6);
             //配置权限
@@ -61,7 +65,7 @@ namespace Infrastructure
                 var option = new DistributedCacheEntryOptions();
                 option.SetAbsoluteExpiration(TimeSpan.FromSeconds(120));
                 //存入redis中
-                await database.StringSetAsync($"VCode:{phone}", EncryptionHelper.GetRandomSequnce(6), TimeSpan.FromSeconds(180));
+                await database.StringSetAsync($"VCode:{phone}", vcode, TimeSpan.FromSeconds(180));
                 return "发送成功";
             }
             throw new Exception("发送失败");

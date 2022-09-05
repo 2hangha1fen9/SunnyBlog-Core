@@ -40,6 +40,8 @@ namespace IdentityService
             {
                 entity.Property(e => e.CreateTime).HasDefaultValueSql("(getdate())");
 
+                entity.Property(e => e.IsDefault).HasComment("1默认-1不默认");
+
                 entity.Property(e => e.Status)
                     .HasDefaultValueSql("((1))")
                     .HasComment("-1禁用1启用");
@@ -63,6 +65,7 @@ namespace IdentityService
                 entity.HasOne(d => d.Role)
                     .WithMany(p => p.UserRoleRelations)
                     .HasForeignKey(d => d.RoleId)
+                    .OnDelete(DeleteBehavior.ClientSetNull)
                     .HasConstraintName("FK_UserRoleRelation_Role");
             });
 

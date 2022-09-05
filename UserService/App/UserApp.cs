@@ -88,27 +88,27 @@ namespace UserService.App
         {
             using (var context = contextFactory.CreateDbContext())
             {
-                var users = context.UserDetails.Select(u => new
+                var users = context.Users.Select(u => new
                 {
-                    UserId = u.UserId,
-                    Username = u.User.Username,
-                    Nick = u.Nick,
-                    Phone = u.User.Phone,
-                    Email = u.User.Email,
-                    Sex = u.Sex,
-                    Birthday = u.Birthday,
-                    RegisterTime = u.RegisterTime,
-                    Remark = u.Remark,
-                    Score = u.Score,
-                    Photo = u.User.Photo,
-                    Status = u.User.Status
+                    Id = u.Id,
+                    Username = u.Username,
+                    Nick = u.UserDetail.Nick,
+                    Phone = u.Phone,
+                    Email = u.Email,
+                    Sex = u.UserDetail.Sex,
+                    Birthday = u.UserDetail.Birthday,
+                    RegisterTime = u.UserDetail.RegisterTime,
+                    Remark = u.UserDetail.Remark,
+                    Photo = u.Photo,
+                    Score = u.UserDetail == null ? 0.0m : u.UserDetail.Score,
+                    Status = u.Status
                 });
                 //判断是否有条件
                 if (condition.Count > 0)
                 {
                     foreach (var con in condition)
                     {
-                        users = "UserId".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? users.Where(u => u.UserId == Convert.ToInt32(con.Value)) : users;
+                        users = "Id".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? users.Where(u => u.Id == Convert.ToInt32(con.Value)) : users;
                         users = "Username".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? users.Where(u => u.Username.Contains(con.Value)) : users;
                         users = "Nick".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? users.Where(u => u.Nick.Contains(con.Value)) : users;
                         users = "Phone".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? users.Where(u => u.Phone.Contains(con.Value)) : users;
@@ -135,21 +135,21 @@ namespace UserService.App
         {
             using (var context = contextFactory.CreateDbContext())
             {
-                var user = await context.UserDetails.Where(u => u.UserId == id).Select(u => new
+                var user = await context.Users.Select(u => new
                 {
-                    UserId = u.UserId,
-                    Username = u.User.Username,
-                    Nick = u.Nick,
-                    Phone = u.User.Phone,
-                    Email = u.User.Email,
-                    Sex = u.Sex,
-                    Birthday = u.Birthday,
-                    RegisterTime = u.RegisterTime,
-                    Remark = u.Remark,
-                    Score = u.Score,
-                    Photo = u.User.Photo,
-                    Status = u.User.Status
-                }).FirstOrDefaultAsync();
+                    Id = u.Id,
+                    Username = u.Username,
+                    Nick = u.UserDetail.Nick,
+                    Phone = u.Phone,
+                    Email = u.Email,
+                    Sex = u.UserDetail.Sex,
+                    Birthday = u.UserDetail.Birthday,
+                    RegisterTime = u.UserDetail.RegisterTime,
+                    Remark = u.UserDetail.Remark,
+                    Photo = u.Photo,
+                    Score = u.UserDetail == null ? 0.0m : u.UserDetail.Score,
+                    Status = u.Status
+                }).FirstOrDefaultAsync(u => u.Id == id);
                 var userView = user.MapTo<UserDetailView>();
                 return userView;
             }
@@ -166,8 +166,8 @@ namespace UserService.App
             {
                 //查询用户是否存在
                 if (await dbContext.Users.FirstOrDefaultAsync(u => u.Username == request.Username ||
-                                                                   u.Phone == request.Phone ||
-                                                                   u.Email == request.Email) != null)
+                                                                   (u.Phone ?? "-1") == request.Phone ||
+                                                                   (u.Email ?? "-1") == request.Email) != null)
                 {
                     throw new Exception("用户已存在");
                 }
@@ -388,8 +388,8 @@ namespace UserService.App
             {
                 //查询用户是否存在
                 if (await dbContext.Users.FirstOrDefaultAsync(u => u.Username == request.Username ||
-                                                                   u.Phone == request.Phone ||
-                                                                   u.Email == request.Email) != null)
+                                                                   (u.Phone ?? "-1") == request.Phone ||
+                                                                   (u.Email ?? "-1") == request.Email) != null)
                 {
                     throw new Exception("用户已存在");
                 }
@@ -462,22 +462,35 @@ namespace UserService.App
                 //查询用户
                 var user = await dbContext.Users.FirstOrDefaultAsync(u => u.Id == request.Id);
                 var userDetail = await dbContext.UserDetails.FirstOrDefaultAsync(u => u.UserId == request.Id);
-                if (user != null && userDetail != null)
+                bool isNull = userDetail == null ? true:false; //用户详情是否为空
+                if (user != null)
                 {
                     user.Username = request.Username ?? user.Username;
                     user.Phone = request.Phone ?? user.Phone;
                     user.Email = request.Email ?? user.Email;
                     user.Status = request.Status ?? user.Status;
                     user.Phone = request.Phone ?? user.Phone;
+                    if(isNull)
+                    {
+                        userDetail = new UserDetail();
+                        userDetail.UserId = user.Id;
+                    }
                     userDetail.Nick = request.Nick ?? userDetail.Nick;
                     userDetail.Sex = request.Sex ?? userDetail.Sex;
-                    userDetail.Birthday = Convert.ToDateTime(request.Birthday ?? userDetail.Birthday.ToString());
-                    userDetail.RegisterTime = Convert.ToDateTime(request.RegisterTime ?? userDetail.RegisterTime.ToString());
+                    userDetail.Birthday = request.Birthday == null ?  (userDetail.Birthday == null ? null : Convert.ToDateTime(userDetail.Birthday)) : Convert.ToDateTime(request.Birthday);
+                    userDetail.RegisterTime = request.RegisterTime == null ? (userDetail.RegisterTime == null ? null : Convert.ToDateTime(userDetail.RegisterTime)) : Convert.ToDateTime(request.RegisterTime);
                     userDetail.Remark = request.Remark ?? userDetail.Remark;
                     userDetail.Score = request.Score ?? userDetail.Score;
 
                     dbContext.Entry(user).State = EntityState.Modified;
-                    dbContext.Entry(userDetail).State = EntityState.Modified;
+                    if (isNull) //如果为空则添加,不为空则修改
+                    {
+                        dbContext.Entry(userDetail).State = EntityState.Added;
+                    }
+                    else
+                    {
+                        dbContext.Entry(userDetail).State = EntityState.Modified;
+                    }
                     if (await dbContext.SaveChangesAsync() > 0)
                     {
                         return "修改成功";

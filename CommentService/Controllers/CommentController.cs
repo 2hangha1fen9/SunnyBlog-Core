@@ -5,6 +5,7 @@ using CommentService.Request;
 using Infrastructure.Auth;
 using CommentService.Response;
 using System.ComponentModel.DataAnnotations;
+using Infrastructure.Utils;
 
 namespace CommentService.Controllers
 {
@@ -115,7 +116,7 @@ namespace CommentService.Controllers
         }
 
         /// <summary>
-        /// 获取文章评论
+        /// 列出某篇文章评论
         /// </summary>
         /// <param name="aid">文章ID</param>
         /// <param name="condidtion">过滤条件</param>
@@ -125,12 +126,13 @@ namespace CommentService.Controllers
         [RBAC(IsPublic = 1)]
         [HttpGet]
         [TypeFilter(typeof(RedisCache))]
-        public async Task<Response<PageList<CommentView>>> List([FromQuery]int aid, [FromBody]List<SearchCondition>? condidtion = null, [FromQuery] int? pageIndex = 1, [FromQuery] int? pageSize = 10)
+        public async Task<Response<PageList<CommentView>>> List(int aid, string? condition = null,int? pageIndex = 1, int? pageSize = 10)
         {
             var result = new Response<PageList<CommentView>>();
             try
             {
-                result.Result = await commentApp.GetArticleComment(aid,condidtion,pageIndex.Value,pageSize.Value);
+                List<SearchCondition> con = SequenceConverter.ConvertToCondition(condition);
+                result.Result = await commentApp.GetArticleComment(aid, con, pageIndex.Value,pageSize.Value);
             }
             catch (Exception ex)
             {
@@ -141,7 +143,7 @@ namespace CommentService.Controllers
         }
 
         /// <summary>
-        /// 获取用户发表的评论
+        /// 列出用户发表的评论
         /// </summary>
         /// <param name="aid">文章ID</param>
         /// <param name="condidtion">过滤条件</param>
@@ -150,12 +152,13 @@ namespace CommentService.Controllers
         /// <returns></returns>
         [RBAC(IsPublic = 1)]
         [HttpGet]
-        public async Task<Response<PageList<CommentListView>>> User([FromQuery][Required]int uid, [FromBody]List<SearchCondition>? condidtion = null, [FromQuery]int? pageIndex = 1, [FromQuery]int? pageSize = 10)
+        public async Task<Response<PageList<CommentListView>>> User(int uid, string? condition = null, int? pageIndex = 1, int? pageSize = 10)
         {
             var result = new Response<PageList<CommentListView>>();
             try
             {
-                result.Result = await commentApp.GetUserCommentList(uid, condidtion, pageIndex.Value, pageSize.Value);
+                List<SearchCondition> con = SequenceConverter.ConvertToCondition(condition);
+                result.Result = await commentApp.GetUserCommentList(uid, con, pageIndex.Value, pageSize.Value);
             }
             catch (Exception ex)
             {
@@ -166,7 +169,7 @@ namespace CommentService.Controllers
         }
 
         /// <summary>
-        /// 获取用户给我的的评论
+        /// 列出用户给我的的评论
         /// </summary>
         /// <param name="aid">文章ID</param>
         /// <param name="condidtion">过滤条件</param>
@@ -175,13 +178,14 @@ namespace CommentService.Controllers
         /// <returns></returns>
         [RBAC]
         [HttpGet]
-        public async Task<Response<PageList<CommentListView>>> My([FromBody] List<SearchCondition>? condidtion = null, [FromQuery] int? pageIndex = 1, [FromQuery] int? pageSize = 10)
+        public async Task<Response<PageList<CommentListView>>> My(string? condition = null,int? pageIndex = 1, int? pageSize = 10)
         {
             var result = new Response<PageList<CommentListView>>();
             try
             {
+                List<SearchCondition> con = SequenceConverter.ConvertToCondition(condition);
                 var userId = HttpContext.User.Claims?.FirstOrDefault(c => c.Type == "user_id")?.Value;
-                result.Result = await commentApp.GetMyCommentList(Convert.ToInt32(userId), condidtion, pageIndex.Value, pageSize.Value);
+                result.Result = await commentApp.GetMyCommentList(Convert.ToInt32(userId), con, pageIndex.Value, pageSize.Value);
             }
             catch (Exception ex)
             {
@@ -192,17 +196,18 @@ namespace CommentService.Controllers
         }
 
         /// <summary>
-        /// 获取所有评论
+        /// 列出所有评论
         /// </summary>
         /// <returns></returns>
         [RBAC]
         [HttpGet]
-        public async Task<Response<PageList<CommentListView>>> All([FromBody] List<SearchCondition> condidtion = null, [FromQuery] int? pageIndex = 1, [FromQuery] int? pageSize = 10)
+        public async Task<Response<PageList<CommentListView>>> All(string? condition = null,int? pageIndex = 1,int? pageSize = 10)
         {
             var result = new Response<PageList<CommentListView>>();
             try
             {
-                result.Result = await commentApp.GetCommentList(condidtion, pageIndex.Value, pageSize.Value);
+                List<SearchCondition> con = SequenceConverter.ConvertToCondition(condition);
+                result.Result = await commentApp.GetCommentList(con, pageIndex.Value, pageSize.Value);
             }
             catch (Exception ex)
             {

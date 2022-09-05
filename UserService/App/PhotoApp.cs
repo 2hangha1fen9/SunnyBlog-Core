@@ -28,19 +28,19 @@ namespace UserService.App
         {
             try
             {
-                //获取图片数据的头部信息
-                string[] data = request.Data.Split(","); 
-                //获取图片Base64编码
-                byte[] base64 = Convert.FromBase64String(data[1].Replace(" ", "+"));
-                //判断图片格式
-                var type = data[0].Replace("data:","").Replace(";base64","").Split("/");
-                if(type[0] != "image" && (type[1] != "png" || type[1] != "jpeg" || type[1] != "gif" || type[1] != "bmp" || type[1] != "ico")){
+                var fileExtension = Path.GetExtension(request.Data.FileName);
+                if(!(fileExtension != ".png" || fileExtension != ".jpeg" || fileExtension != ".gif" || fileExtension != ".bmp" || fileExtension != ".ico")){
                     throw new Exception("图片格式错误：只能为：png、jpeg、gif、bmp、ico");
                 }
                 //获取物理路径
-                string phyPath = Path.Combine(Directory.GetCurrentDirectory(), "static", "avatar", $"{id}.{type[1]}");
-                //将base64转为图片
-                await File.WriteAllBytesAsync(phyPath, base64);
+                if (request.Data.Length > 0)
+                {
+                    string phyPath = Path.Combine(Directory.GetCurrentDirectory(), "static", "avatar", $"{id}{fileExtension}");
+                    using (var stream = File.Create(phyPath))
+                    {
+                        await request.Data.CopyToAsync(stream);
+                    }
+                }
                 //将路径写入数据库
                 using (var dbContext = contextFactory.CreateDbContext())
                 {
@@ -48,17 +48,11 @@ namespace UserService.App
                     var user = await dbContext.Users.FirstOrDefaultAsync(x => x.Id == id);
                     if (user != null)
                     {
-                        user.Photo = $"/avatar/{id}.png";
-                    }
-                    else
-                    {
-                        throw new Exception("用户信息错误");
-                    }
-                    if (await dbContext.SaveChangesAsync() > 0)
-                    {
+                        user.Photo = $"/avatar/{id}{fileExtension}";
+                        await dbContext.SaveChangesAsync();
                         return new UploadResult()
                         {
-                            Path = $"/api/avatar/{id}.{type[1]}"
+                            Path = $"/avatar/{id}{fileExtension}"
                         };
                     }
                     else

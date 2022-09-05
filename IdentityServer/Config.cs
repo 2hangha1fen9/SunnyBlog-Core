@@ -14,10 +14,10 @@ namespace IdentityServer
         {
             return new[]
             {
-                //开发客户端
+                //账号密码登录
                 new Client
                 {
-                    ClientId = "web",
+                    ClientId = "password",
                     RequireClientSecret=false,
                     AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
                     AllowedScopes = new List<string>
@@ -25,7 +25,19 @@ namespace IdentityServer
                         IdentityServerConstants.StandardScopes.OpenId,
                         IdentityServerConstants.StandardScopes.Profile
                     }
-                }
+                },
+                //邮箱/手机号登录
+                new Client
+                {
+                    ClientId = "vcode",
+                    RequireClientSecret=false,
+                    AllowedGrantTypes = GrantTypes.ResourceOwnerPassword,
+                    AllowedScopes = new List<string>
+                    {
+                        IdentityServerConstants.StandardScopes.OpenId,
+                        IdentityServerConstants.StandardScopes.Profile
+                    }
+                },
             };
         }
 

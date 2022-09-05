@@ -57,7 +57,7 @@ namespace ArticleService.Controllers
             var result = new Response<string>();
             try
             {
-                var article = await articleApp.EditorArticle(request);
+                var article = await articleApp.EditorArticle(request,null);
                 result.Result = article;
             }
             catch (Exception ex)
@@ -92,7 +92,7 @@ namespace ArticleService.Controllers
         }
 
         /// <summary>
-        /// 获取所有标签
+        /// 列出所有标签
         /// </summary>
         /// <returns></returns>
         [RBAC]

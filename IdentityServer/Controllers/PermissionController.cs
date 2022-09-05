@@ -2,9 +2,11 @@
 using IdentityService.Response;
 using Infrastructure;
 using Infrastructure.Auth;
+using Infrastructure.Utils;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using Service.IdentityService.App.Interface;
 
 namespace IdentityService.Controllers
@@ -29,12 +31,13 @@ namespace IdentityService.Controllers
         /// <param name="condition"></param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<Response<PageList<PermissionView>>> List([FromQuery] int? pageIndex = 1, [FromQuery] int? pageSize = 10, [FromBody] List<SearchCondition>? condition = null)
+        public async Task<Response<PageList<PermissionView>>> List(int? pageIndex = 1,int? pageSize = 10,string? condition = null)
         {
             var result = new Response<PageList<PermissionView>>();
             try
             {
-                var permissions = await permissionApp.ListPermission(condition,pageIndex.Value,pageSize.Value);
+                List<SearchCondition> con = SequenceConverter.ConvertToCondition(condition);
+                var permissions = await permissionApp.ListPermission(con, pageIndex.Value,pageSize.Value);
                 result.Result = permissions;
             }
             catch (Exception ex)
@@ -67,14 +70,14 @@ namespace IdentityService.Controllers
         }
 
         /// <summary>
-        /// 根据用户ID查询权限列表
+        /// 根据用户ID列出权限
         /// </summary>
         /// <param name="id"></param>
         /// <param name="pageIndex"></param>
         /// <param name="pageSize"></param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<Response<PageList<PermissionView>>> GetByUser(int id,[FromQuery] int? pageIndex = 1, [FromQuery] int? pageSize = 10)
+        public async Task<Response<PageList<PermissionView>>> GetByUser(int id,int? pageIndex = 1, int? pageSize = 10)
         {
             var result = new Response<PageList<PermissionView>>();
             try
@@ -92,14 +95,14 @@ namespace IdentityService.Controllers
         }
 
         /// <summary>
-        /// 根据角色ID查询权限列表
+        /// 根据角色ID列出权限
         /// </summary>
         /// <param name="id"></param>
         /// <param name="pageIndex"></param>
         /// <param name="pageSize"></param>
         /// <returns></returns>
         [HttpGet]
-        public async Task<Response<PageList<PermissionView>>> GetByRole(int id, [FromQuery] int? pageIndex = 1, [FromQuery] int? pageSize = 10)
+        public async Task<Response<PageList<PermissionView>>> GetByRole(int id,  int? pageIndex = 1, int? pageSize = 10)
         {
             var result = new Response<PageList<PermissionView>>();
             try

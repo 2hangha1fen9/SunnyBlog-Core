@@ -18,6 +18,9 @@ namespace UserService.Domain
         [Column("nick")]
         [StringLength(50)]
         public string Nick { get; set; }
+        /// <summary>
+        /// 1男0女
+        /// </summary>
         [Column("sex")]
         public int? Sex { get; set; }
         [Column("birthday", TypeName = "date")]
