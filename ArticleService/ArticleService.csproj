@@ -35,6 +35,10 @@
 		<Protobuf Include="Rpc\Protos\article.proto" GrpcServices="Server" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="static\picture\" />
+	</ItemGroup>
+
 	<ProjectExtensions>
 		<VisualStudio>
 			<UserProperties />

@@ -28,7 +28,7 @@ namespace ArticleService.Request
         /// <summary>
         /// 文章分区
         /// </summary>
-        public int? Region { get; set; }
+        public int? RegionId { get; set; }
         /// <summary>
         /// 文章分类
         /// </summary>

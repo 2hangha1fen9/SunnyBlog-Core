@@ -4,6 +4,8 @@ using ArticleService.Request;
 using ArticleService.Response;
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq.Expressions;
 
 namespace ArticleService.App
 {
@@ -57,14 +59,22 @@ namespace ArticleService.App
         }
 
         /// <summary>
-        /// 获取所有分区
+        /// 列出分区分区
         /// </summary>
         /// <returns></returns>
-        public async Task<List<RegionView>> GetRegions()
+        public async Task<List<RegionView>> GetRegions(bool isAll = false)
         {
             using (var dbContext = contextFactory.CreateDbContext())
             {
-                var regions = await dbContext.ArtRegions.ToListAsync();
+                List<ArtRegion> regions = null;
+                if (isAll)
+                {
+                    regions = await dbContext.ArtRegions.ToListAsync();
+                }
+                else
+                {
+                    regions = await dbContext.ArtRegions.Where(ar => ar.Status == 1).ToListAsync();
+                }
                 return regions.Where(c => c.ParentId == null).MapToList<RegionView>();
             }
         }

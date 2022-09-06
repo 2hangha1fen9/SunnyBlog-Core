@@ -147,6 +147,30 @@ namespace ArticleService.Controllers
         }
 
         /// <summary>
+        /// 浏览文章正文,无视文章状态
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        [RBAC]
+        [HttpGet]
+        [TypeFilter(typeof(RedisCache))]
+        public async Task<Response<ArticleView>> DetailIgnoreStatus(int id)
+        {
+            var result = new Response<ArticleView>();
+            try
+            {
+                var article = await articleApp.GetArticle(id,true);
+                result.Result = article;
+            }
+            catch (Exception ex)
+            {
+                result.Status = 500;
+                result.Message = ex.InnerException?.Message ?? ex.Message;
+            }
+            return result;
+        }
+
+        /// <summary>
         /// 编辑文章
         /// </summary>
         /// <param name="request"></param>

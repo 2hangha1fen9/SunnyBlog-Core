@@ -25,9 +25,9 @@ namespace ArticleService.Domain
         [StringLength(100)]
         public string Title { get; set; }
         [Required]
-        [Column("content", TypeName = "ntext")]
+        [Column("content")]
         public string Content { get; set; }
-        [Column("summary", TypeName = "ntext")]
+        [Column("summary")]
         public string Summary { get; set; }
         [Column("photo")]
         [StringLength(50)]

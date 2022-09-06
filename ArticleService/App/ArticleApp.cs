@@ -54,8 +54,7 @@ namespace ArticleService.App
                     article.Title = request.Title ?? article.Title;
                     article.Summary = request.Summary ?? article.Summary;
                     article.Content = request.Content ?? article.Content;
-                    article.Photo = request.Photo ?? article.Photo;
-                    article.RegionId = request.RegionId ?? article.RegionId;
+                    article.RegionId = request.RegionId.HasValue ? request.RegionId.Value : null;
                     article.Status = request.Status ?? article.Status;
                     article.IsLock = request.isLock ?? article.IsLock;
                     article.CommentStatus = request.CommentStatus ?? article.CommentStatus;
@@ -72,18 +71,12 @@ namespace ArticleService.App
                     }
                     //保存修改
                     dbContext.Entry(article).State = EntityState.Modified;
-                    if (await dbContext.SaveChangesAsync() < 0)
-                    {
-                        throw new Exception("更新失败");
-                    }
-                    else
-                    {
-                        return "更新成功";
-                    }
+                    await dbContext.SaveChangesAsync();
+                    return "更新成功";
                 }
                 else
                 {
-                    throw new Exception("没有找到这篇文章");
+                    throw new Exception("更新失败");
                 }
             }
         }
@@ -94,7 +87,7 @@ namespace ArticleService.App
         /// <param name="id"></param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        public async Task<ArticleView> GetArticle(int id)
+        public async Task<ArticleView> GetArticle(int id,bool allScope = false)
         {
             using (var dbContext = contextFactory.CreateDbContext())
             {
@@ -108,16 +101,16 @@ namespace ArticleService.App
                     Photo = a.Photo,
                     RegionName = a.Region.Name,
                     RegionId = a.RegionId,
-                    Tags = a.ArticleTags.Where(at => at.Tag.IsPrivate == 1).Select(at => new TagView()
+                    Tags = a.ArticleTags.Select(at => new TagView()
                     {
-                        Id = at.Id,
+                        Id = at.TagId,
                         UserId = at.Tag.UserId,
                         Name = at.Tag.Name,
                         Color = at.Tag.Color
                     }),
                     Categorys = a.ArtCategories.Select(c => new CategoryView()
                     {
-                        Id = c.Id,
+                        Id = c.CategoryId,
                         Name = c.Category.Name,
                         UserId = c.Category.UserId,
                         ParentId = c.Category.ParentId ?? 0,
@@ -126,7 +119,8 @@ namespace ArticleService.App
                     Status = a.Status,
                     CommentStatus = a.CommentStatus,
                     CreateTime = a.CreateTime,
-                }).FirstOrDefaultAsync(a => a.Id == id && a.Status == 1);
+                }).FirstOrDefaultAsync(a => a.Id == id && (allScope || a.Status == 1));
+
                 if (article != null)
                 {
                     var adv = article.MapTo<ArticleView>();
@@ -164,16 +158,16 @@ namespace ArticleService.App
                     Photo = a.Photo,
                     RegionName = a.Region.Name,
                     RegionId = a.RegionId,
-                    Tags = a.ArticleTags.Where(at => at.Tag.IsPrivate == 1).Select(at => new TagView()
+                    Tags = a.ArticleTags.Select(at => new TagView()
                     {
-                        Id = at.Id,
+                        Id = at.TagId,
                         UserId = at.Tag.UserId,
                         Name = at.Tag.Name,
                         Color = at.Tag.Color
                     }),
                     Categorys = a.ArtCategories.Select(c => new CategoryView()
                     {
-                        Id = c.Id,
+                        Id = c.CategoryId,
                         Name = c.Category.Name,
                         UserId = c.Category.UserId,
                         ParentId = c.Category.ParentId ?? 0,
@@ -193,8 +187,8 @@ namespace ArticleService.App
                         articleMap = "Title".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.Title.Contains(con.Value)) : articleMap;
                         articleMap = "Summary".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.Summary.Contains(con.Value)) : articleMap;
                         articleMap = "Region".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.RegionName.Contains(con.Value)) : articleMap;
-                        articleMap = "Tag".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.Tags.Where(t => t.Name.Contains(con.Value) || t.Id == Convert.ToInt32(con.Value)).Count() > 0) : articleMap;
-                        articleMap = "Category".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.Categorys.Where(c => c.Name.Contains(con.Value) || c.Id == Convert.ToInt32(con.Value)).Count() > 0) : articleMap;
+                        articleMap = "Tag".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.Tags.Where(t => t.Name.Contains(con.Value)).Count() > 0) : articleMap;
+                        articleMap = "Category".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.Categorys.Where(c => c.Name.Contains(con.Value)).Count() > 0) : articleMap;
                         articleMap = "Status".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.Status == Convert.ToInt32(con.Value)) : articleMap;
                         articleMap = "IsLock".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.IsLock == Convert.ToInt32(con.Value)) : articleMap;
                         articleMap = "CommentStatus".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.CommentStatus == Convert.ToInt32(con.Value)) : articleMap;
@@ -203,7 +197,7 @@ namespace ArticleService.App
                 //分页条件
                 var articlePage = new PageList<ArticleListView>();
                 articleMap = articlePage.Pagination(pageIndex, pageSize, articleMap);
-                articlePage.Page = (await article.ToListAsync()).MapToList<ArticleListView>();
+                articlePage.Page = (await articleMap.ToListAsync()).MapToList<ArticleListView>();
                 //填充文章的分页用户信息
                 foreach (var page in articlePage.Page)
                 {

@@ -29,37 +29,38 @@ namespace UserService.App
             try
             {
                 var fileExtension = Path.GetExtension(request.Data.FileName);
-                if(!(fileExtension != ".png" || fileExtension != ".jpeg" || fileExtension != ".gif" || fileExtension != ".bmp" || fileExtension != ".ico")){
+                string phyPath = Path.Combine(Directory.GetCurrentDirectory(), "static", "avatar", $"{id}{fileExtension}");
+                if (!(fileExtension != ".png" || fileExtension != ".jpeg" || fileExtension != ".gif" || fileExtension != ".bmp" || fileExtension != ".ico")){
                     throw new Exception("图片格式错误：只能为：png、jpeg、gif、bmp、ico");
                 }
                 //获取物理路径
                 if (request.Data.Length > 0)
                 {
-                    string phyPath = Path.Combine(Directory.GetCurrentDirectory(), "static", "avatar", $"{id}{fileExtension}");
                     using (var stream = File.Create(phyPath))
                     {
                         await request.Data.CopyToAsync(stream);
                     }
-                }
-                //将路径写入数据库
-                using (var dbContext = contextFactory.CreateDbContext())
-                {
-                    //保存数据
-                    var user = await dbContext.Users.FirstOrDefaultAsync(x => x.Id == id);
-                    if (user != null)
+                    //将路径写入数据库
+                    using (var dbContext = contextFactory.CreateDbContext())
                     {
-                        user.Photo = $"/avatar/{id}{fileExtension}";
-                        await dbContext.SaveChangesAsync();
-                        return new UploadResult()
+                        //保存数据
+                        var user = await dbContext.Users.FirstOrDefaultAsync(x => x.Id == id);
+                        if (user != null)
                         {
-                            Path = $"/avatar/{id}{fileExtension}"
-                        };
-                    }
-                    else
-                    {
-                        throw new Exception("用户信息保存错误");
+                            user.Photo = $"/avatar/{id}{fileExtension}";
+                            await dbContext.SaveChangesAsync();
+                            return new UploadResult()
+                            {
+                                Path = $"/avatar/{id}{fileExtension}"
+                            };
+                        }
+                        else
+                        {
+                            throw new Exception("用户信息保存错误");
+                        }
                     }
                 }
+                throw new Exception("没有数据");
             }
             catch (Exception ex)
             {

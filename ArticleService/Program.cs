@@ -16,6 +16,7 @@ using System.Reflection;
 using ArticleService.Rpc.Service;
 using static ArticleService.Rpc.Protos.gUser;
 using ArticleService.Rpc.Protos;
+using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 //Apollo配置中心
@@ -47,6 +48,7 @@ builder.Services.AddScoped<IArticleApp, ArticleApp>();
 builder.Services.AddScoped<IArticleCategoryApp, ArticleCategoryApp>();
 builder.Services.AddScoped<IArticleRegionApp, ArticleRegionApp>();
 builder.Services.AddScoped<IArticleTagApp, ArticleTagApp>();
+builder.Services.AddScoped<IDrawingBedApp, DrawingBedApp>();
 //Redis客户端注册
 builder.Services.AddSingleton<IConnectionMultiplexer>(cm =>
 {
@@ -92,6 +94,13 @@ app.UsePermissionRegistrar<Program>(builder.Configuration.GetSection("Consul").G
 
 //rpc服务注册
 app.MapGrpcService<GArticleService>();
+
+//开启静态文件访问
+app.UseStaticFiles(new StaticFileOptions()
+{
+    FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "static", "picture")),
+    RequestPath = "/api/picture"
+});
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

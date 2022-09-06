@@ -43,6 +43,29 @@ namespace ArticleService.Controllers
         }
 
         /// <summary>
+        /// 列出所有分区
+        /// </summary>
+        /// <returns></returns>
+        [RBAC]
+        [HttpGet]
+        [TypeFilter(typeof(RedisCache))]
+        public async Task<Response<List<RegionView>>> ListAll()
+        {
+            var result = new Response<List<RegionView>>();
+            try
+            {
+                var regions = await articleRegionApp.GetRegions(true);
+                result.Result = regions;
+            }
+            catch (Exception ex)
+            {
+                result.Status = 500;
+                result.Message = ex.InnerException?.Message ?? ex.Message;
+            }
+            return result;
+        }
+
+        /// <summary>
         /// 更新分区
         /// </summary>
         /// <param name="request"></param>

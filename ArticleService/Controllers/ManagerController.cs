@@ -115,6 +115,29 @@ namespace ArticleService.Controllers
         }
 
         /// <summary>
+        /// 获取某个用户的标签
+        /// </summary>
+        /// <returns></returns>
+        [RBAC]
+        [HttpGet]
+        [TypeFilter(typeof(RedisCache))]
+        public async Task<Response<List<TagView>>> ListUserTag(int uid)
+        {
+            var result = new Response<List<TagView>>();
+            try
+            {
+                var tags = await tagApp.GetUserTags(uid);
+                result.Result = tags;
+            }
+            catch (Exception ex)
+            {
+                result.Status = 500;
+                result.Message = ex.InnerException?.Message ?? ex.Message;
+            }
+            return result;
+        }
+
+        /// <summary>
         /// 更新标签
         /// </summary>
         /// <param name="request"></param>
