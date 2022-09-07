@@ -54,7 +54,7 @@ namespace ArticleService.App
                     article.Title = request.Title ?? article.Title;
                     article.Summary = request.Summary ?? article.Summary;
                     article.Content = request.Content ?? article.Content;
-                    article.RegionId = request.RegionId.HasValue ? request.RegionId.Value : null;
+                    article.RegionId = request.RegionId.HasValue && request.RegionId.Value != 0 ? request.RegionId.Value : null;
                     article.Status = request.Status ?? article.Status;
                     article.IsLock = request.isLock ?? article.IsLock;
                     article.CommentStatus = request.CommentStatus ?? article.CommentStatus;
