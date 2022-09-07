@@ -89,7 +89,7 @@ app.UseConsul(builder.Configuration.GetSection("Consul").Get<ConsulServiceOption
 app.MapGrpcService<GUserService>();
 
 //节点注册
-app.UsePermissionRegistrar<Program>(builder.Configuration.GetSection("Consul").Get<ConsulServiceOptions>().ConsulAddress).Wait();
+app.UsePermissionRegistrar<Program>(builder.Configuration.GetSection("Consul").Get<ConsulServiceOptions>().ConsulAddress);
 
 
 //开启静态文件访问

@@ -10,7 +10,6 @@ namespace ArticleService
 {
     public partial class ArticleDBContext : DbContext
     {
-
         public ArticleDBContext(DbContextOptions<ArticleDBContext> options)
             : base(options)
         {
@@ -71,6 +70,7 @@ namespace ArticleService
                 entity.HasOne(d => d.Region)
                     .WithMany(p => p.Articles)
                     .HasForeignKey(d => d.RegionId)
+                    .OnDelete(DeleteBehavior.SetNull)
                     .HasConstraintName("FK_Article_ArtRegion");
             });
 

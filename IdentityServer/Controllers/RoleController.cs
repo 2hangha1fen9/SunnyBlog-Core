@@ -147,7 +147,7 @@ namespace IdentityService.Controllers
         /// <param name="request"></param>
         /// <returns></returns>
         [HttpDelete]
-        public async Task<Response<string>> Del(List<DelRoleReq> request)
+        public async Task<Response<string>> Delete(List<DelRoleReq> request)
         {
             var result = new Response<string>();
             try

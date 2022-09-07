@@ -84,7 +84,7 @@ var app = builder.Build();
 app.UseConsul(builder.Configuration.GetSection("Consul").Get<ConsulServiceOptions>());
 
 //½Úµã×¢²á
-app.UsePermissionRegistrar<Program>(builder.Configuration.GetSection("Consul").Get<ConsulServiceOptions>().ConsulAddress).Wait();
+app.UsePermissionRegistrar<Program>(builder.Configuration.GetSection("Consul").Get<ConsulServiceOptions>().ConsulAddress);
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

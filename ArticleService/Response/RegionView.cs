@@ -18,6 +18,10 @@
         /// </summary>
         public string Description { get; set; }
         /// <summary>
+        /// 分区状态
+        /// </summary>
+        public int Status { get; set; }
+        /// <summary>
         /// 父级ID
         /// </summary>
         public int ParentId { get; set; }

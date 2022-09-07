@@ -14,43 +14,49 @@ namespace IdentityService.Rpc.Service
     {
         //数据库上下文
         private readonly IDbContextFactory<AuthDBContext> contextFactory;
+        private readonly static object obj = new object(); //线程锁
 
         public GEndpointService(IDbContextFactory<AuthDBContext> contextFactory)
         {
             this.contextFactory = contextFactory;
         }
 
-        public async override Task<Empty> RegisterEndpoint(Endpoints request, ServerCallContext context)
+
+
+        public override Task<Empty> RegisterEndpoint(Endpoints request, ServerCallContext context)
         {
-            using (AuthDBContext dBContext = contextFactory.CreateDbContext())
+            lock (obj) //只有一个线程能进行注册,避免数据库死锁
             {
-                //获取待注册的
-                var preRegister = request.Endpoint.MapToList<Permission>();
-                //已存在的服务
-                var permissions = await dBContext.Permissions.ToListAsync();
-                foreach (var pre in preRegister)
+                using (AuthDBContext dBContext = contextFactory.CreateDbContext())
                 {
-                    var p = permissions.FirstOrDefault(p => p.Service == pre.Service && p.Service == pre.Service && p.Controller == pre.Controller && p.Action == pre.Action);
-                    if (p == null)
+                    //获取待注册的
+                    var preRegister = request.Endpoint.MapToList<Permission>();
+                    //已存在的服务
+                    var permissions = dBContext.Permissions.ToList();
+                    foreach (var pre in preRegister)
                     {
-                        //端点不存在，添加
-                        dBContext.Entry(pre).State = EntityState.Added;
+                        var p = permissions.FirstOrDefault(p => p.Service == pre.Service && p.Service == pre.Service && p.Controller == pre.Controller && p.Action == pre.Action);
+                        if (p == null)
+                        {
+                            //端点不存在，添加
+                            dBContext.Entry(pre).State = EntityState.Added;
+                        }
+                        else
+                        {
+                            //端点存在，修改
+                            p.Service = pre.Service;
+                            p.Controller = pre.Controller;
+                            p.Action = pre.Action;
+                            p.Description = pre.Description;
+                            p.UpdateTime = DateTime.Now;
+                            p.IsPublic = pre.IsPublic;
+                            dBContext.Entry(p).State = EntityState.Modified;
+                        }
                     }
-                    else
-                    {
-                        //端点存在，修改
-                        p.Service = pre.Service;
-                        p.Controller = pre.Controller;
-                        p.Action = pre.Action;
-                        p.Description = pre.Description;
-                        p.UpdateTime = DateTime.Now;
-                        p.IsPublic = pre.IsPublic;
-                        dBContext.Entry(p).State = EntityState.Modified;
-                    }
+                    dBContext.SaveChanges();
                 }
-                await dBContext.SaveChangesAsync();
+                return Task.FromResult(new Empty());
             }
-            return new Empty();
         }
 
         public async override Task<Endpoints> GetPublicEndpoint(Empty request, ServerCallContext context)

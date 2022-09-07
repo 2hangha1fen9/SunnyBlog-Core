@@ -148,7 +148,7 @@ namespace IdentityService.Controllers
         /// <returns></returns>
         [HttpDelete]
         [TypeFilter(typeof(RedisFlush), Arguments = new object[] { new string[] {"*publicPermission*"}})]
-        public async Task<Response<string>> Del(List<DelPermissionReq> request)
+        public async Task<Response<string>> Delete(List<DelPermissionReq> request)
         {
             var result = new Response<string>();
             try

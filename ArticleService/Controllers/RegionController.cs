@@ -72,6 +72,7 @@ namespace ArticleService.Controllers
         /// <returns></returns>
         [RBAC]
         [HttpPut]
+        [TypeFilter(typeof(RedisFlush), Arguments = new object[] { new string[] { "*article*", "*region*" } })]
         public async Task<Response<string>> Update(UpdateRegionReq request)
         {
             var result = new Response<string>();

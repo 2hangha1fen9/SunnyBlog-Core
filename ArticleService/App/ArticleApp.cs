@@ -119,6 +119,7 @@ namespace ArticleService.App
                     Status = a.Status,
                     CommentStatus = a.CommentStatus,
                     CreateTime = a.CreateTime,
+                    UpdateTime = a.UpdateTime
                 }).FirstOrDefaultAsync(a => a.Id == id && (allScope || a.Status == 1));
 
                 if (article != null)
@@ -177,6 +178,7 @@ namespace ArticleService.App
                     IsLock = a.IsLock,
                     CommentStatus = a.CommentStatus,
                     CreateTime = a.CreateTime,
+                    UpdateTime = a.UpdateTime,
                 });
                 //筛选条件
                 if (condidtion.Count > 0)

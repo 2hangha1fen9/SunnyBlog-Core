@@ -7,6 +7,8 @@ using Microsoft.Extensions.Configuration;
 using Grpc.Net.Client;
 using Google.Protobuf.Collections;
 using Infrastructure.Auth;
+using Grpc.Net.Client.Configuration;
+using Grpc.Core;
 
 namespace Infrastructure
 {
@@ -27,8 +29,8 @@ namespace Infrastructure
             var url = ServiceUrl.GetServiceUrlByName("IdentityService", consulAddress);
             //创建频道
             using var channel = GrpcChannel.ForAddress(url);
-            //创建客户端
-            var client = new gEndpoint.gEndpointClient(channel);
+             //创建客户端
+             var client = new gEndpoint.gEndpointClient(channel);
             //获取当前程序集
             var controllers = typeof(T). //获取这个类型的Type实例
                 Assembly. //获取当前所有程序集
@@ -36,7 +38,7 @@ namespace Infrastructure
                 AsEnumerable(). //转换为可迭代对象
                 Where(t => typeof(ControllerBase).IsAssignableFrom(t)). //判断对应类型是否是控制器
                 ToList(); //转换为集合
-            //创建消息对象
+                          //创建消息对象
             Endpoints endpoints = new Endpoints();
             foreach (Type type in controllers)
             {
@@ -46,11 +48,11 @@ namespace Infrastructure
                 }
                 //遍历控制的所有方法
                 var methods = type.GetMethods(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public);
-                foreach (MethodInfo method in methods) 
+                foreach (MethodInfo method in methods)
                 {
                     Endpoint endpoint = new Endpoint();
                     endpoint.Service = type.Assembly.GetName().Name; //获取当前程序集名称
-                    endpoint.Controller = type.Name.Replace("Controller",""); //获取当前控制器名称
+                    endpoint.Controller = type.Name.Replace("Controller", ""); //获取当前控制器名称
                     endpoint.Action = method.Name; //获取当前操作方法
                     endpoint.Description = method.GetXmlDocsSummary(); //获取控制器上的注释
                     RBAC rbac = method.GetCustomAttribute<RBAC>(); //获取注解对象，获取api状态
@@ -61,10 +63,10 @@ namespace Infrastructure
                     endpoints.Endpoint.Add(endpoint); //添加对象
                 }
             }
- 
             //调用gRPC
             await client.RegisterEndpointAsync(endpoints);
             return app;
+
         }
     }
 }
