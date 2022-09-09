@@ -65,9 +65,17 @@ namespace CommentService.App
         {
             using (var dbContext = contextFactory.CreateDbContext())
             {
-                var comment = await dbContext.Comments.FirstOrDefaultAsync(c => c.Id == cid && c.UserId == uid);
+                var comments = await dbContext.Comments.ToListAsync(); //获取所有评论
+                var comment = comments.FirstOrDefault(c => c.Id == cid && c.UserId == uid);
                 if (comment != null)
                 {
+                    //取消对应的子评论关系
+                    foreach (var child in comment.InverseParent)
+                    {
+                        child.ParentId = null;
+                        dbContext.Entry(child).State = EntityState.Modified;
+                    }
+                    await dbContext.SaveChangesAsync();
                     dbContext.Comments.Remove(comment);
                     if (await dbContext.SaveChangesAsync() < 0)
                     {
@@ -75,7 +83,11 @@ namespace CommentService.App
                     }
                     return "删除成功";
                 }
-                throw new Exception("评论删除失败");
+                else
+                {
+                    throw new Exception("没有此评论");
+                }
+                
             }
         }
 
@@ -85,21 +97,33 @@ namespace CommentService.App
         /// <param name="cid"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public async Task<string> DeleteComment(int cid)
+        public async Task<string> DeleteComment(int[] cids)
         {
             using (var dbContext = contextFactory.CreateDbContext())
             {
-                var comment = await dbContext.Comments.FirstOrDefaultAsync(c => c.Id == cid);
-                if (comment != null)
+                var comments = await dbContext.Comments.ToListAsync(); //获取所有评论
+                foreach (var cid in cids)
                 {
-                    dbContext.Comments.Remove(comment);
-                    if (await dbContext.SaveChangesAsync() < 0)
+                    //查询将删除的评论
+                    var comment = comments.FirstOrDefault(c => c.Id == cid);
+                    if(comment != null)
                     {
-                        throw new Exception("评论删除失败");
+                        //取消对应的子评论关系
+                        foreach (var child in comment.InverseParent)
+                        {
+                            child.ParentId = null;
+                            dbContext.Entry(child).State = EntityState.Modified;
+                        }
+                        await dbContext.SaveChangesAsync();
                     }
-                    return "删除成功";
+                    dbContext.Comments.Remove(comment);
                 }
-                throw new Exception("评论删除失败");
+
+                if (await dbContext.SaveChangesAsync() < 0)
+                {
+                    throw new Exception("评论删除失败");
+                }
+                return "删除成功";
             }
         }
 
@@ -115,14 +139,24 @@ namespace CommentService.App
             {
                 //获取用户所有文章
                 var articleList = (await articleRpc.GetArticleListAsync(new Empty())).Infos.Where(a => a.UserId == uid);
+                //获取所有评论
+                var comments = await dbContext.Comments.ToListAsync(); 
                 //查询是否有这条评论
-                var comment = await dbContext.Comments.FirstOrDefaultAsync(c => c.Id == cid);
+                var comment = comments.FirstOrDefault(c => c.Id == cid);
                 if (comment != null)
                 {
                     //查询这条评论是否是这个作者的
                     if(articleList.FirstOrDefault(a => a.Id == comment.ArticleId) != null)
                     {
+                        //取消对应的子评论关系
+                        foreach (var child in comment.InverseParent)
+                        {
+                            child.ParentId = null;
+                            dbContext.Entry(child).State = EntityState.Modified;
+                        }
+                        await dbContext.SaveChangesAsync();
                         dbContext.Comments.Remove(comment);
+
                         if (await dbContext.SaveChangesAsync() < 0)
                         {
                             throw new Exception("评论删除失败");
@@ -139,7 +173,7 @@ namespace CommentService.App
         /// </summary>
         /// <param name="aid">文章ID</param>
         /// <returns></returns>
-        public async Task<PageList<CommentView>> GetArticleComment(int aid,List<SearchCondition> condidtion, int pageIndex, int pageSize)
+        public async Task<PageList<CommentView>> GetArticleComment(int aid,List<SearchCondition>? condidtion, int pageIndex, int pageSize)
         {
             using (var dbContext = contextFactory.CreateDbContext())
             {
@@ -154,6 +188,7 @@ namespace CommentService.App
                         ArticleId = c.ArticleId,
                         UserId = u.Id,
                         Nick = u.Nick,
+                        Username = u.Username,
                         Photo = u.Photo,
                         Content = c.Content,
                         CreateTime = c.CreateTime,
@@ -162,13 +197,13 @@ namespace CommentService.App
                     }).Where(c => c.ParentId == null).AsQueryable();
 
                     //条件筛选
-                    if (condidtion.Count > 0)
+                    if (condidtion?.Count > 0)
                     {
                         foreach (var con in condidtion)
                         {
-                            commentView = "Nick".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.Nick.Contains(con.Value)): commentView;
-                            commentView = "Content".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.Nick.Contains(con.Value)) : commentView;
-                        }
+                            commentView = "Nick".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.Nick.Contains(con.Value)) : commentView;
+                            commentView = "Content".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.Content.Contains(con.Value)) : commentView;
+                            commentView = "Username".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.Username.Contains(con.Value)) : commentView;                        }
                     }
                     //分页
                     var commentPage = new PageList<CommentView>();
@@ -185,7 +220,7 @@ namespace CommentService.App
         /// </summary>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        public async Task<PageList<CommentListView>> GetCommentList(List<SearchCondition> condidtion, int pageIndex, int pageSize)
+        public async Task<PageList<CommentListView>> GetCommentList(List<SearchCondition>? condidtion, int pageIndex, int pageSize)
         {
             using (var dbContext = contextFactory.CreateDbContext())
             {
@@ -212,13 +247,15 @@ namespace CommentService.App
                                           CreateTime = c.CreateTime
                                       }).AsQueryable();
                     //条件筛选
-                    if (condidtion.Count > 0)
+                    if (condidtion?.Count > 0)
                     {
                         foreach (var con in condidtion)
                         {
                             commentView = "Nick".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.Nick.Contains(con.Value)) : commentView;
-                            commentView = "Content".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.Nick.Contains(con.Value)) : commentView;
-                            commentView = "Username".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.Nick.Contains(con.Value)) : commentView;
+                            commentView = "Content".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.Content.Contains(con.Value)) : commentView;
+                            commentView = "ArticleTitle".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.ArticleTitle.Contains(con.Value)) : commentView;
+                            commentView = "Username".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.Username.Contains(con.Value)) : commentView;
+                            commentView = "Status".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.Status == Convert.ToInt32(con.Value)) : commentView;
                         }
                     }
                     //分页
@@ -236,7 +273,7 @@ namespace CommentService.App
         /// </summary>
         /// <param name="uid"></param>
         /// <returns></returns>
-        public async Task<PageList<CommentListView>> GetUserCommentList(int uid, List<SearchCondition> condidtion, int pageIndex, int pageSize)
+        public async Task<PageList<CommentListView>> GetUserCommentList(int uid, List<SearchCondition>? condidtion, int pageIndex, int pageSize)
         {
             using (var dbContext = contextFactory.CreateDbContext())
             {
@@ -265,12 +302,15 @@ namespace CommentService.App
                                        }).AsQueryable();
 
                     //条件筛选
-                    if (condidtion.Count > 0)
+                    if (condidtion?.Count > 0)
                     {
                         foreach (var con in condidtion)
                         {
                             commentView = "Nick".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.Nick.Contains(con.Value)) : commentView;
-                            commentView = "Content".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.Nick.Contains(con.Value)) : commentView;
+                            commentView = "Content".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.Content.Contains(con.Value)) : commentView;
+                            commentView = "ArticleTitle".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.ArticleTitle.Contains(con.Value)) : commentView;
+                            commentView = "Username".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.Username.Contains(con.Value)) : commentView;
+                            commentView = "Status".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.Status == Convert.ToInt32(con.Value)) : commentView;
                         }
                     }
                     //分页
@@ -288,7 +328,7 @@ namespace CommentService.App
         /// </summary>
         /// <param name="uid"></param>
         /// <returns></returns>
-        public async Task<PageList<CommentListView>> GetMyCommentList(int uid, List<SearchCondition> condidtion, int pageIndex, int pageSize)
+        public async Task<PageList<CommentListView>> GetMyCommentList(int uid, List<SearchCondition>? condidtion, int pageIndex, int pageSize)
         {
             using (var dbContext = contextFactory.CreateDbContext())
             {
@@ -316,12 +356,15 @@ namespace CommentService.App
                                        }).AsQueryable();
 
                     //条件筛选
-                    if (condidtion.Count > 0)
+                    if (condidtion?.Count > 0)
                     {
                         foreach (var con in condidtion)
                         {
                             commentView = "Nick".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.Nick.Contains(con.Value)) : commentView;
-                            commentView = "Content".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.Nick.Contains(con.Value)) : commentView;
+                            commentView = "Content".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.Content.Contains(con.Value)) : commentView;
+                            commentView = "ArticleTitle".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.ArticleTitle.Contains(con.Value)) : commentView;
+                            commentView = "Username".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.Username.Contains(con.Value)) : commentView;
+                            commentView = "Status".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.Status == Convert.ToInt32(con.Value)) : commentView;
                         }
                     }
                     //分页
@@ -363,15 +406,25 @@ namespace CommentService.App
         /// <summary>
         /// 审核评论
         /// </summary>
-        /// <param name="cid"></param>
-        /// <param name="uid"></param>
+        /// <param name="cid">评论id</param>
+        /// <param name="uid">作者id</param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        public async Task<string> AllowComment(int cid, int uid)
+        public async Task<string> AllowComment(int cid, int? uid)
         {
             using (var dbContext = contextFactory.CreateDbContext())
             {
-                var comment = await dbContext.Comments.Where(c => c.Id == cid && c.UserId == uid).FirstOrDefaultAsync();
+                var comment = await dbContext.Comments.FirstOrDefaultAsync(c => c.Id == cid);
+                if (uid.HasValue) //是否需要验证文章所属用户
+                {
+                    //查询评论的这篇文章是否是作者的
+                    var article = await articleRpc.GetArticleInfoAsync(new ArticleId { Id = cid });
+                    if(article == null || article.Id != comment.ArticleId)
+                    {
+                        throw new Exception("找不到此条评论");
+                    }
+                }
+                
                 if (comment != null)
                 {
                     comment.Status = 1;

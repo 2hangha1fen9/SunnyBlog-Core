@@ -100,7 +100,7 @@ namespace CommentService.Controllers
         [RBAC]
         [HttpDelete]
         [TypeFilter(typeof(RedisFlush), Arguments = new object[] { new string[] { "*comment*" } })]
-        public async Task<Response<string>> Remove(int cid)
+        public async Task<Response<string>> Remove([FromBody]int[] cid)
         {
             var result = new Response<string>();
             try
@@ -241,7 +241,32 @@ namespace CommentService.Controllers
         }
 
         /// <summary>
-        /// 审核评论
+        /// 审核评论(作者)
+        /// </summary>
+        /// <param name="cid"></param>
+        /// <param name="uid">作者ID</param>
+        /// <returns></returns>
+        [RBAC]
+        [HttpPut]
+        [TypeFilter(typeof(RedisFlush), Arguments = new object[] { new string[] { "*comment*" } })]
+        public async Task<Response<string>> AuthroAllow(int cid)
+        {
+            var result = new Response<string>();
+            try
+            {
+                var userId = HttpContext.User.Claims?.FirstOrDefault(c => c.Type == "user_id")?.Value;
+                result.Result = await commentApp.AllowComment(cid, Convert.ToInt32(userId));
+            }
+            catch (Exception ex)
+            {
+                result.Status = 500;
+                result.Message = ex.InnerException?.Message ?? ex.Message;
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// 审核评论(管理员)
         /// </summary>
         /// <param name="cid"></param>
         /// <returns></returns>
@@ -253,8 +278,7 @@ namespace CommentService.Controllers
             var result = new Response<string>();
             try
             {
-                var userId = HttpContext.User.Claims?.FirstOrDefault(c => c.Type == "user_id")?.Value;
-                result.Result = await commentApp.AllowComment(cid, Convert.ToInt32(userId));
+                result.Result = await commentApp.AllowComment(cid, null);
             }
             catch (Exception ex)
             {

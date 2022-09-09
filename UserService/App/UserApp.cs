@@ -53,7 +53,7 @@ namespace UserService.App
         /// 获取用户列表,分页+条件
         /// </summary>
         /// <returns></returns>
-        public async Task<PageList<UserView>> GetUsers(List<SearchCondition> condition, int pageIndex, int pageSize)
+        public async Task<PageList<UserView>> GetUsers(List<SearchCondition>? condition, int pageIndex, int pageSize)
         {
             using (var context = contextFactory.CreateDbContext())
             {
@@ -64,7 +64,7 @@ namespace UserService.App
                     Photo = u.Photo,
                 });
                 //判断是否有条件
-                if (condition.Count > 0)
+                if (condition?.Count > 0)
                 {
                     foreach (var con in condition)
                     {
@@ -84,7 +84,7 @@ namespace UserService.App
         /// 获取用户列表
         /// </summary>
         /// <returns></returns>
-        public async Task<PageList<UserDetailView>> GetUserDetails(List<SearchCondition> condition, int pageIndex, int pageSize)
+        public async Task<PageList<UserDetailView>> GetUserDetails(List<SearchCondition>? condition, int pageIndex, int pageSize)
         {
             using (var context = contextFactory.CreateDbContext())
             {
@@ -104,7 +104,7 @@ namespace UserService.App
                     Status = u.Status
                 });
                 //判断是否有条件
-                if (condition.Count > 0)
+                if (condition?.Count > 0)
                 {
                     foreach (var con in condition)
                     {

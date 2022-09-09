@@ -137,7 +137,7 @@ namespace ArticleService.App
         /// <summary>
         /// 获取文章列表
         /// </summary>
-        public async Task<PageList<ArticleListView>> GetArticleList(List<SearchCondition> condidtion, Expression<Func<Article, bool>> predict , int pageIndex, int pageSize)
+        public async Task<PageList<ArticleListView>> GetArticleList(List<SearchCondition>? condidtion, Expression<Func<Article, bool>> predict , int pageIndex, int pageSize)
         {
             using (var dbContext = contextFactory.CreateDbContext())
             {
@@ -181,7 +181,7 @@ namespace ArticleService.App
                     UpdateTime = a.UpdateTime,
                 });
                 //筛选条件
-                if (condidtion.Count > 0)
+                if (condidtion?.Count > 0)
                 {
                     foreach (var con in condidtion)
                     {
@@ -235,6 +235,7 @@ namespace ArticleService.App
                 {
                     article.CommentStatus = commentStatus.Value.Value;
                 }
+                article.UpdateTime = DateTime.Now;
                 //保存修改
                 dbContext.Articles.Add(article);
                 if (await dbContext.SaveChangesAsync() < 0)
@@ -270,7 +271,7 @@ namespace ArticleService.App
         }
 
         /// <summary>
-        /// 删除文章(用户)
+        /// 删除文章(需要用户ID)
         /// </summary>
         /// <param name="request"></param>
         /// <param name="uid"></param>

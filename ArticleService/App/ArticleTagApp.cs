@@ -104,117 +104,8 @@ namespace ArticleService.App
                 return "删除成功";
             }
         }
-
         /// <summary>
-        /// 获取所有标签(管理)
-        /// </summary>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public async Task<List<TagView>> GetAllTags()
-        {
-            using (var dbContext = contextFactory.CreateDbContext())
-            {
-                var tags = await dbContext.Tags.ToListAsync();
-                return tags.MapToList<TagView>();
-            }
-        }
-
-        /// <summary>
-        /// 获取所有公共标签
-        /// </summary>
-        /// <returns></returns>
-        public async Task<List<TagView>> GetPublicTags()
-        {
-            using (var dbContext = contextFactory.CreateDbContext())
-            {
-                var tags = await dbContext.Tags.Where(t => t.IsPrivate == 0).ToListAsync();
-                return tags.MapToList<TagView>();
-            }
-        }
-
-        /// <summary>
-        /// 获取用户标签
-        /// </summary>
-        /// <param name="uid"></param>
-        /// <returns></returns>
-        public async Task<List<TagView>> GetUserTags(int uid)
-        {
-            using (var dbContext = contextFactory.CreateDbContext())
-            {
-                var tags = await dbContext.Tags.Where(t => t.UserId == uid).ToListAsync();
-                return tags.MapToList<TagView>();
-            }
-        }
-
-        /// <summary>
-        /// 修改标签(管理)
-        /// </summary>
-        /// <param name="request"></param>
-        /// <returns></returns>
-        /// <exception cref="NotImplementedException"></exception>
-        public async Task<string> UpdateTag(UpdateTagReq request)
-        {
-            using (var dbContext = contextFactory.CreateDbContext())
-            {
-                var tags = dbContext.Tags.FirstOrDefault(t => t.Id == request.Id);
-                if (tags != null)
-                {
-                    tags.Name = request.Name ?? tags.Name;
-                    tags.Color = request.Color ?? tags.Color;
-                    tags.IsPrivate = request.IsPrivate ?? tags.IsPrivate;
-
-                    if (await dbContext.SaveChangesAsync() > 0)
-                    {
-                        return "修改成功";
-                    }
-                    else
-                    {
-                        throw new Exception("修改失败");
-                    }
-                }
-                else
-                {
-                    throw new Exception("标签信息异常");
-                }
-            }
-        }
-
-        /// <summary>
-        /// 更新标签
-        /// </summary>
-        /// <param name="request"></param>
-        /// <param name="uid"></param>
-        /// <returns></returns>
-        /// <exception cref="Exception"></exception>
-        public async Task<string> UpdateTag(UpdateTagReq request, int uid)
-        {
-            using (var dbContext = contextFactory.CreateDbContext())
-            {
-                var tags = dbContext.Tags.FirstOrDefault(t => t.UserId == uid && t.Id == request.Id);
-                if (tags != null)
-                {
-                    tags.Name = request.Name ?? tags.Name;
-                    tags.Color = request.Color ?? tags.Color;
-                    tags.IsPrivate = request.IsPrivate ?? tags.IsPrivate;
-
-                    if (await dbContext.SaveChangesAsync() > 0)
-                    {
-                        return "修改成功";
-                    }
-                    else
-                    {
-                        throw new Exception("修改失败");
-                    }
-                }
-                else
-                {
-                    throw new Exception("标签信息异常");
-                }
-            }
-        }
-
-        /// <summary>
-        /// 删除标签(管理)
+        /// 删除标签(需要用户ID)
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
@@ -232,6 +123,126 @@ namespace ArticleService.App
                 else
                 {
                     throw new Exception("删除失败");
+                }
+            }
+        }
+        /// <summary>
+        /// 获取所有标签
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public async Task<List<TagView>> GetAllTags()
+        {
+            using (var dbContext = contextFactory.CreateDbContext())
+            {
+                var tags = await dbContext.Tags.Select(t => new
+                {
+                    Id = t.Id,
+                    UserId = t.UserId,
+                    Name = t.Name,
+                    Color = t.Color,
+                    IsPrivate = t.IsPrivate,
+                    ArticleCount = t.ArticleTags.Count()
+
+                }).ToListAsync();
+                return tags.MapToList<TagView>();
+            }
+        }
+
+        /// <summary>
+        /// 获取所有公共标签
+        /// </summary>
+        /// <returns></returns>
+        public async Task<List<TagView>> GetPublicTags()
+        {
+            using (var dbContext = contextFactory.CreateDbContext())
+            {
+                var tags = await dbContext.Tags.Where(t => t.IsPrivate == 0).Select(t => new
+                {
+                    Id = t.Id,
+                    UserId = t.UserId,
+                    Name = t.Name,
+                    Color = t.Color,
+                    IsPrivate = t.IsPrivate,
+                    ArticleCount = t.ArticleTags.Count()
+                }).ToListAsync();
+                return tags.MapToList<TagView>();
+            }
+        }
+
+        /// <summary>
+        /// 获取用户标签
+        /// </summary>
+        /// <param name="uid"></param>
+        /// <returns></returns>
+        public async Task<List<TagView>> GetUserTags(int uid)
+        {
+            using (var dbContext = contextFactory.CreateDbContext())
+            {
+                var tags = await dbContext.Tags.Where(t => t.UserId == uid).Select(t => new
+                {
+                    Id = t.Id,
+                    UserId = t.UserId,
+                    Name = t.Name,
+                    Color = t.Color,
+                    IsPrivate = t.IsPrivate,
+                    ArticleCount = t.ArticleTags.Count()
+
+                }).ToListAsync();
+                return tags.MapToList<TagView>();
+            }
+        }
+
+        /// <summary>
+        /// 修改标签
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public async Task<string> UpdateTag(UpdateTagReq request)
+        {
+            using (var dbContext = contextFactory.CreateDbContext())
+            {
+                var tags = dbContext.Tags.FirstOrDefault(t => t.Id == request.Id);
+                if (tags != null)
+                {
+                    tags.Name = request.Name ?? tags.Name;
+                    tags.Color = request.Color ?? tags.Color;
+                    tags.UserId = request.UserId ?? tags.UserId;
+                    tags.IsPrivate = request.IsPrivate ?? tags.IsPrivate;
+                    await dbContext.SaveChangesAsync();
+                    return "修改成功";
+                }
+                else
+                {
+                    throw new Exception("标签信息异常");
+                }
+            }
+        }
+
+        /// <summary>
+        /// 更新标签(需要用户ID)
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="uid"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
+        public async Task<string> UpdateTag(UpdateTagReq request, int uid)
+        {
+            using (var dbContext = contextFactory.CreateDbContext())
+            {
+                var tags = dbContext.Tags.FirstOrDefault(t => t.UserId == uid && t.Id == request.Id);
+                if (tags != null)
+                {
+                    tags.Name = request.Name ?? tags.Name;
+                    tags.Color = request.Color ?? tags.Color;
+                    tags.IsPrivate = request.IsPrivate ?? tags.IsPrivate;
+                    await dbContext.SaveChangesAsync();
+                     return "修改成功";
+                }
+                else
+                {
+                    throw new Exception("标签信息异常");
                 }
             }
         }

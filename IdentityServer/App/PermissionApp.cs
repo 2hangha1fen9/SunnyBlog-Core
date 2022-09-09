@@ -241,12 +241,12 @@ namespace Service.IdentityService.App
         /// </summary>
         /// <param name="condidtion"></param>
         /// <returns></returns>
-        public async Task<PageList<PermissionView>> ListPermission(List<SearchCondition> condidtion, int pageIndex, int pageSize)
+        public async Task<PageList<PermissionView>> ListPermission(List<SearchCondition>? condidtion, int pageIndex, int pageSize)
         {
             using (var dbContext = contextFactory.CreateDbContext())
             {
                 var permissions = dbContext.Permissions.OrderBy(p => p.Service).AsQueryable();
-                if (condidtion.Count > 0)
+                if (condidtion?.Count > 0)
                 {
                     foreach (var con in condidtion)
                     {

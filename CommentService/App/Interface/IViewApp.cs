@@ -1,4 +1,5 @@
 ﻿using CommentService.Response;
+using Infrastructure;
 
 namespace CommentService.App.Interface
 {
@@ -6,7 +7,7 @@ namespace CommentService.App.Interface
     {
         Task AddArticleViewCount(int aid,int? uid = null,string? ip = null);
         Task<int> GetArticleViewCount(int aid);
-        Task<List<UserViewHistory>> GetUserView(int uid);
-        Task<List<UserViewHistory>> GetViewList();
+        Task<PageList<UserViewHistory>> GetUserView(int uid, List<SearchCondition>? condition, int pageIndex, int pageSize);
+        Task<PageList<UserViewHistory>> GetViewList(List<SearchCondition>? condition, int pageIndex, int pageSize);
     }
 }

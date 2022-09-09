@@ -169,7 +169,7 @@ namespace IdentityService.App
         /// </summary>
         /// <param name="condidtion"></param>
         /// <returns></returns>
-        public async Task<PageList<RoleView>> ListRole(List<SearchCondition> condidtion, int pageIndex, int pageSize)
+        public async Task<PageList<RoleView>> ListRole(List<SearchCondition>? condidtion, int pageIndex, int pageSize)
         {
             using (var dbContext = contextFactory.CreateDbContext())
             {

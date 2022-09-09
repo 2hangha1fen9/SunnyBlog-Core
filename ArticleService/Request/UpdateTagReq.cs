@@ -18,6 +18,10 @@ namespace ArticleService.Request
         /// </summary>
         public string? Color { get; set; }
         /// <summary>
+        /// 用户ID
+        /// </summary>
+        public int? UserId { get; set; }
+        /// <summary>
         /// 是否为私有标签
         /// </summary>
         public int? IsPrivate { get; set; }

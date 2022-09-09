@@ -19,6 +19,16 @@ namespace Infrastructure.Auth
 
         public int IsPublic { get; set; } = -1;
 
-        public string PolicyName { get; set; }
+        public string PolicyName
+        {
+            get
+            {
+                return PolicyName;
+            }
+            set
+            {
+                Policy = $"RBAC{value.ToString()}";
+            }
+        }
     }
 }

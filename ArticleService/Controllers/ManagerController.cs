@@ -22,7 +22,7 @@ namespace ArticleService.Controllers
         }
 
         /// <summary>
-        /// 删除文章
+        /// 删除文章(管理)
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
@@ -45,7 +45,7 @@ namespace ArticleService.Controllers
         }
 
         /// <summary>
-        /// 编辑文章
+        /// 编辑文章(管理)
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
@@ -69,7 +69,7 @@ namespace ArticleService.Controllers
         }
 
         /// <summary>
-        /// 删除标签
+        /// 删除标签(管理)
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
@@ -92,12 +92,11 @@ namespace ArticleService.Controllers
         }
 
         /// <summary>
-        /// 列出所有标签
+        /// 列出所有标签(管理)
         /// </summary>
         /// <returns></returns>
         [RBAC]
         [HttpGet]
-        [TypeFilter(typeof(RedisCache))]
         public async Task<Response<List<TagView>>> ListTag()
         {
             var result = new Response<List<TagView>>();
@@ -115,12 +114,11 @@ namespace ArticleService.Controllers
         }
 
         /// <summary>
-        /// 获取某个用户的标签
+        /// 获取某个用户的标签(管理)
         /// </summary>
         /// <returns></returns>
         [RBAC]
         [HttpGet]
-        [TypeFilter(typeof(RedisCache))]
         public async Task<Response<List<TagView>>> ListUserTag(int uid)
         {
             var result = new Response<List<TagView>>();
@@ -138,7 +136,7 @@ namespace ArticleService.Controllers
         }
 
         /// <summary>
-        /// 更新标签
+        /// 更新标签(管理)
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>

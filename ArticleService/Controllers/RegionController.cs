@@ -48,7 +48,6 @@ namespace ArticleService.Controllers
         /// <returns></returns>
         [RBAC]
         [HttpGet]
-        [TypeFilter(typeof(RedisCache))]
         public async Task<Response<List<RegionView>>> ListAll()
         {
             var result = new Response<List<RegionView>>();

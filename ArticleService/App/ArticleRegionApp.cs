@@ -95,7 +95,7 @@ namespace ArticleService.App
                 {
                     region.Name = request.Name ?? region.Name;
                     region.Description = request.Description ?? region.Description;
-                    region.ParentId = request.ParentId.HasValue && request.ParentId.Value != 0 ? request.ParentId.Value : null;
+                    region.ParentId = request.ParentId.HasValue && request.ParentId.Value != 0 && request.ParentId != request.Id ? request.ParentId.Value : null;
                     region.Status = request.Status ?? region.Status;
 
                     //保存修改
@@ -108,27 +108,6 @@ namespace ArticleService.App
                 }
                 throw new Exception("没有找到这分区");
             }
-        }
-
-        //
-        public bool IsValidUpdate(ArtRegion region,int parentId)
-        {
-            if(region.Id == region.ParentId.Value)
-            {
-                return false;
-            }
-            else
-            {
-                if (region.InverseParent.Count > 0)
-                {
-                    foreach (var item in region.InverseParent)
-                    {
-                        return IsValidUpdate(item, parentId);
-                    }
-                }
-
-            }
-
         }
     }
 }
