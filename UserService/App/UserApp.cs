@@ -116,6 +116,21 @@ namespace UserService.App
                         users = "Sex".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? users.Where(u => u.Sex == Convert.ToInt32(con.Value)) : users;
                         users = "Remark".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? users.Where(u => u.Remark.Contains(con.Value)) : users;
                         users = "Status".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? users.Where(u => u.Status == Convert.ToInt32(con.Value)) : users;
+                        //排序
+                        if (con.Sort != 0)
+                        {
+                            if ("RegisterTime".Equals(con.Key, StringComparison.OrdinalIgnoreCase))
+                            {
+                                if (con.Sort == -1)
+                                {
+                                    users = users.OrderByDescending(a => a.RegisterTime);
+                                }
+                                else
+                                {
+                                    users = users.OrderBy(a => a.RegisterTime);
+                                }
+                            }
+                        }
                     }
                 }
                 //对结果进行分页

@@ -182,6 +182,32 @@ namespace IdentityService.App
                         roles = "Name".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? roles.Where(r => r.Name.Contains(con.Value)) : roles;
                         roles = "Status".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? roles.Where(r => r.Status == Convert.ToInt32(con.Value)) : roles;
                         roles = "IsDefault".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? roles.Where(r => r.IsDefault == Convert.ToInt32(con.Value)) : roles;
+                        //排序
+                        if (con.Sort != 0)
+                        {
+                            if ("CreateTime".Equals(con.Key, StringComparison.OrdinalIgnoreCase))
+                            {
+                                if (con.Sort == -1)
+                                {
+                                    roles = roles.OrderByDescending(a => a.CreateTime);
+                                }
+                                else
+                                {
+                                    roles = roles.OrderBy(a => a.CreateTime);
+                                }
+                            }
+                            if ("UpdateTime".Equals(con.Key, StringComparison.OrdinalIgnoreCase))
+                            {
+                                if (con.Sort == -1)
+                                {
+                                    roles = roles.OrderByDescending(a => a.UpdateTime);
+                                }
+                                else
+                                {
+                                    roles = roles.OrderBy(a => a.UpdateTime);
+                                }
+                            }
+                        }
                     }
                 }
                 var rolePage = new PageList<RoleView>();

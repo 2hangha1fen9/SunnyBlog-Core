@@ -257,6 +257,32 @@ namespace Service.IdentityService.App
                         permissions = "Description".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? permissions.Where(p => p.Description.Contains(con.Value)) : permissions;
                         permissions = "Status".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? permissions.Where(p => p.Status == Convert.ToInt32(con.Value)) : permissions;
                         permissions = "IsPublic".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? permissions.Where(p => p.IsPublic == Convert.ToInt32(con.Value)) : permissions;
+                        //排序
+                        if (con.Sort != 0)
+                        {
+                            if ("CreateTime".Equals(con.Key, StringComparison.OrdinalIgnoreCase))
+                            {
+                                if (con.Sort == -1)
+                                {
+                                    permissions = permissions.OrderByDescending(a => a.CreateTime);
+                                }
+                                else
+                                {
+                                    permissions = permissions.OrderBy(a => a.CreateTime);
+                                }
+                            }
+                            if ("UpdateTime".Equals(con.Key, StringComparison.OrdinalIgnoreCase))
+                            {
+                                if (con.Sort == -1)
+                                {
+                                    permissions = permissions.OrderByDescending(a => a.UpdateTime);
+                                }
+                                else
+                                {
+                                    permissions = permissions.OrderBy(a => a.UpdateTime);
+                                }
+                            }
+                        }
                     }
                 }
                 //对结果分页

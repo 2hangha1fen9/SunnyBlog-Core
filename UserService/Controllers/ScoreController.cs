@@ -3,6 +3,7 @@ using Infrastructure.Auth;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using UserService.App.Interface;
+using UserService.Domain;
 using UserService.Request;
 
 namespace UserService.Controllers
@@ -42,6 +43,50 @@ namespace UserService.Controllers
             {
                 result.Status = 500;
                 result.Message = ex.InnerException?.Message ?? ex.Message;
+            }
+            return result;
+        }
+    
+        /// <summary>
+        /// 列出所有积分单位
+        /// </summary>
+        /// <returns></returns>
+        [RBAC]
+        [HttpGet]
+        public async Task<Response<List<ScoreUnit>>> ListUnit()
+        {
+            var result = new Response<List<ScoreUnit>>();
+            try
+            {
+                result.Result = await scoreApp.ListUnit();
+            }
+            catch (Exception ex)
+            {
+                result.Status = 500;
+                result.Message = ex.InnerException?.Message ?? ex.Message;
+                throw;
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// 设置积分单位
+        /// </summary>
+        /// <returns></returns>
+        [RBAC]
+        [HttpPut]
+        public async Task<Response<string>> SetUnit(string key,decimal value)
+        {
+            var result = new Response<string>();
+            try
+            {
+                result.Result = await scoreApp.SetUnit(key,value);
+            }
+            catch (Exception ex)
+            {
+                result.Status = 500;
+                result.Message = ex.InnerException?.Message ?? ex.Message;
+                throw;
             }
             return result;
         }

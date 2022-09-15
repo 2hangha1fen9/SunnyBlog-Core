@@ -54,6 +54,8 @@ namespace ArticleService.App
                     article.Title = request.Title ?? article.Title;
                     article.Summary = request.Summary ?? article.Summary;
                     article.Content = request.Content ?? article.Content;
+                    article.CodeStyle = request.CodeStyle ?? article.CodeStyle;
+                    article.ContentStyle = request.ContentStyle ?? article.ContentStyle;
                     article.RegionId = request.RegionId.HasValue && request.RegionId.Value != 0 ? request.RegionId.Value : null;
                     article.Status = request.Status ?? article.Status;
                     article.IsLock = request.isLock ?? article.IsLock;
@@ -97,6 +99,8 @@ namespace ArticleService.App
                     Id = a.Id,
                     Title = a.Title,
                     Content = a.Content,
+                    CodeStyle = a.CodeStyle,
+                    ContentStyle = a.ContentStyle,
                     Summary = a.Summary,
                     Photo = a.Photo,
                     RegionName = a.Region.Name,
@@ -185,6 +189,7 @@ namespace ArticleService.App
                 {
                     foreach (var con in condidtion)
                     {
+                        //条件过滤
                         articleMap = "Username".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.Username.Contains(con.Value)) : articleMap;
                         articleMap = "Title".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.Title.Contains(con.Value)) : articleMap;
                         articleMap = "Summary".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.Summary.Contains(con.Value)) : articleMap;
@@ -194,6 +199,32 @@ namespace ArticleService.App
                         articleMap = "Status".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.Status == Convert.ToInt32(con.Value)) : articleMap;
                         articleMap = "IsLock".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.IsLock == Convert.ToInt32(con.Value)) : articleMap;
                         articleMap = "CommentStatus".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.CommentStatus == Convert.ToInt32(con.Value)) : articleMap;
+                        //排序
+                        if(con.Sort != 0)
+                        {
+                            if ("CreateTime".Equals(con.Key, StringComparison.OrdinalIgnoreCase))
+                            {
+                                if(con.Sort == -1)
+                                {
+                                    articleMap = articleMap.OrderByDescending(a => a.CreateTime);
+                                }
+                                else
+                                {
+                                    articleMap = articleMap.OrderBy(a => a.CreateTime);
+                                }
+                            }
+                            if ("UpdateTime".Equals(con.Key, StringComparison.OrdinalIgnoreCase))
+                            {
+                                if (con.Sort == -1)
+                                {
+                                    articleMap = articleMap.OrderByDescending(a => a.UpdateTime);
+                                }
+                                else
+                                {
+                                    articleMap = articleMap.OrderBy(a => a.UpdateTime);
+                                }
+                            }
+                        }
                     }
                 }
                 //分页条件
@@ -230,6 +261,10 @@ namespace ArticleService.App
                 if (articleStatus != null && articleStatus.Value.HasValue)
                 {
                     article.Status = articleStatus.Value.Value;
+                    if(article.Status == -2)
+                    {
+                        throw new Exception("禁止发布文章");
+                    }
                 }
                 if (commentStatus != null && commentStatus.Value.HasValue)
                 {

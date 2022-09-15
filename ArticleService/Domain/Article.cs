@@ -27,6 +27,12 @@ namespace ArticleService.Domain
         [Required]
         [Column("content")]
         public string Content { get; set; }
+        [Column("codeStyle")]
+        [StringLength(20)]
+        public string CodeStyle { get; set; }
+        [Column("contentStyle")]
+        [StringLength(20)]
+        public string ContentStyle { get; set; }
         [Column("summary")]
         public string Summary { get; set; }
         [Column("photo")]

@@ -203,7 +203,23 @@ namespace CommentService.App
                         {
                             commentView = "Nick".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.Nick.Contains(con.Value)) : commentView;
                             commentView = "Content".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.Content.Contains(con.Value)) : commentView;
-                            commentView = "Username".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.Username.Contains(con.Value)) : commentView;                        }
+                            commentView = "Username".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.Username.Contains(con.Value)) : commentView;
+                            //排序
+                            if (con.Sort != 0)
+                            {
+                                if ("CreateTime".Equals(con.Key, StringComparison.OrdinalIgnoreCase))
+                                {
+                                    if (con.Sort == -1)
+                                    {
+                                        commentView = commentView.OrderByDescending(a => a.CreateTime);
+                                    }
+                                    else
+                                    {
+                                        commentView = commentView.OrderBy(a => a.CreateTime);
+                                    }
+                                }
+                            }
+                        }
                     }
                     //分页
                     var commentPage = new PageList<CommentView>();
@@ -256,6 +272,21 @@ namespace CommentService.App
                             commentView = "ArticleTitle".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.ArticleTitle.Contains(con.Value)) : commentView;
                             commentView = "Username".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.Username.Contains(con.Value)) : commentView;
                             commentView = "Status".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.Status == Convert.ToInt32(con.Value)) : commentView;
+                            //排序
+                            if (con.Sort != 0)
+                            {
+                                if ("CreateTime".Equals(con.Key, StringComparison.OrdinalIgnoreCase))
+                                {
+                                    if (con.Sort == -1)
+                                    {
+                                        commentView = commentView.OrderByDescending(a => a.CreateTime);
+                                    }
+                                    else
+                                    {
+                                        commentView = commentView.OrderBy(a => a.CreateTime);
+                                    }
+                                }
+                            }
                         }
                     }
                     //分页
@@ -311,6 +342,21 @@ namespace CommentService.App
                             commentView = "ArticleTitle".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.ArticleTitle.Contains(con.Value)) : commentView;
                             commentView = "Username".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.Username.Contains(con.Value)) : commentView;
                             commentView = "Status".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.Status == Convert.ToInt32(con.Value)) : commentView;
+                            //排序
+                            if (con.Sort != 0)
+                            {
+                                if ("CreateTime".Equals(con.Key, StringComparison.OrdinalIgnoreCase))
+                                {
+                                    if (con.Sort == -1)
+                                    {
+                                        commentView = commentView.OrderByDescending(a => a.CreateTime);
+                                    }
+                                    else
+                                    {
+                                        commentView = commentView.OrderBy(a => a.CreateTime);
+                                    }
+                                }
+                            }
                         }
                     }
                     //分页
@@ -365,6 +411,21 @@ namespace CommentService.App
                             commentView = "ArticleTitle".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.ArticleTitle.Contains(con.Value)) : commentView;
                             commentView = "Username".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.Username.Contains(con.Value)) : commentView;
                             commentView = "Status".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.Status == Convert.ToInt32(con.Value)) : commentView;
+                            //排序
+                            if (con.Sort != 0)
+                            {
+                                if ("CreateTime".Equals(con.Key, StringComparison.OrdinalIgnoreCase))
+                                {
+                                    if (con.Sort == -1)
+                                    {
+                                        commentView = commentView.OrderByDescending(a => a.CreateTime);
+                                    }
+                                    else
+                                    {
+                                        commentView = commentView.OrderBy(a => a.CreateTime);
+                                    }
+                                }
+                            }
                         }
                     }
                     //分页

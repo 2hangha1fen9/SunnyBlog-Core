@@ -18,6 +18,14 @@ namespace ArticleService.Request
         [Required(ErrorMessage = "文章内容不能为空")]
         public string Content { get; set; }
         /// <summary>
+        /// 代码块主题
+        /// </summary>
+        public string? CodeStyle { get; set; }
+        /// <summary>
+        /// 内容主题
+        /// </summary>
+        public string? ContentStyle { get; set; } 
+        /// <summary>
         /// 文章封面
         /// </summary>
         public string? Photo { get; set; }

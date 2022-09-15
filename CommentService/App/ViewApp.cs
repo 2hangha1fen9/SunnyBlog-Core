@@ -100,6 +100,21 @@ namespace CommentService.App
                         history = "Username".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? history.Where(u => u.Username != null && u.Username.Contains(con.Value)) : history;
                         history = "Nick".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? history.Where(u => u.Nick != null && u.Nick.Contains(con.Value)) : history;
                         history = "ArticleTitle".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? history.Where(u => u.ArticleTitle.Contains(con.Value)) : history;
+                        //排序
+                        if (con.Sort != 0)
+                        {
+                            if ("ViewTime".Equals(con.Key, StringComparison.OrdinalIgnoreCase))
+                            {
+                                if (con.Sort == -1)
+                                {
+                                    history = history.OrderByDescending(a => a.ViewTime);
+                                }
+                                else
+                                {
+                                    history = history.OrderBy(a => a.ViewTime);
+                                }
+                            }
+                        }
                     }
                 }
                 //对结果进行分页
@@ -148,6 +163,21 @@ namespace CommentService.App
                         history = "Username".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? history.Where(u => u.Username != null && u.Username.Contains(con.Value)) : history;
                         history = "Nick".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? history.Where(u => u.Nick != null && u.Nick.Contains(con.Value)) : history;
                         history = "ArticleTitle".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? history.Where(u => u.ArticleTitle.Contains(con.Value)) : history;
+                        //排序
+                        if (con.Sort != 0)
+                        {
+                            if ("ViewTime".Equals(con.Key, StringComparison.OrdinalIgnoreCase))
+                            {
+                                if (con.Sort == -1)
+                                {
+                                    history = history.OrderByDescending(a => a.ViewTime);
+                                }
+                                else
+                                {
+                                    history = history.OrderBy(a => a.ViewTime);
+                                }
+                            }
+                        }
                     }
                 }
                 //对结果进行分页

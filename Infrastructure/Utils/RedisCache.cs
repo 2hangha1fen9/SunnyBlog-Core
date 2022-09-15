@@ -51,17 +51,11 @@ namespace Infrastructure
                 var path = context.HttpContext.Request.Path.Value;
                 //获取查询参数
                 var query = context.HttpContext.Request.QueryString;
-                //获取body Hash
-                context.HttpContext.Request.EnableBuffering(); //让body可以被重复读取
-                using var bodyStream = new StreamReader(context.HttpContext.Request.Body);
-                var body = await bodyStream.ReadToEndAsync();
-                body = string.IsNullOrWhiteSpace(body) ? null : body.ShaEncrypt();
-                context.HttpContext.Request.Body.Seek(0, SeekOrigin.Begin);//重置流偏移量 
                 
                 //获取缓存键,默认按api路径缓存
                 if (string.IsNullOrWhiteSpace(CacheKey))
                 {
-                    CacheKey = $"{path}:{query}:{body}";
+                    CacheKey = $"{path}:{query}";
                 }
 
                 //从Redis中获取值

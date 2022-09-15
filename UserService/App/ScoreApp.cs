@@ -109,5 +109,37 @@ namespace UserService.App
                 }
             }
         }
+    
+        /// <summary>
+        /// 列出所有积分单位
+        /// </summary>
+        /// <returns></returns>
+        public async Task<List<ScoreUnit>> ListUnit()
+        {
+            using (var dbContext = contextFactory.CreateDbContext())
+            {
+                return await dbContext.ScoreUnits.ToListAsync();
+            }
+        }
+
+        /// <summary>
+        /// 更新积分单位
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public async Task<string> SetUnit(string key, decimal value)
+        {
+            using (var dbContext = contextFactory.CreateDbContext())
+            {
+                var units = await dbContext.ScoreUnits.FirstOrDefaultAsync(s => s.Name == key);
+                if (units != null)
+                {
+                    units.Value = value;
+                    await dbContext.SaveChangesAsync();
+                }
+                return "设置成功";
+            }
+        }
     }
 }

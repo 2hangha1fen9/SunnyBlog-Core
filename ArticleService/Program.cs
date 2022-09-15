@@ -17,6 +17,7 @@ using ArticleService.Rpc.Service;
 using static ArticleService.Rpc.Protos.gUser;
 using ArticleService.Rpc.Protos;
 using Microsoft.Extensions.FileProviders;
+using ArticleService.Domain;
 
 var builder = WebApplication.CreateBuilder(args);
 //Apollo配置中心
@@ -49,6 +50,7 @@ builder.Services.AddScoped<IArticleCategoryApp, ArticleCategoryApp>();
 builder.Services.AddScoped<IArticleRegionApp, ArticleRegionApp>();
 builder.Services.AddScoped<IArticleTagApp, ArticleTagApp>();
 builder.Services.AddScoped<IDrawingBedApp, DrawingBedApp>();
+builder.Services.AddScoped<ISettingApp, SettingApp>();
 //Redis客户端注册
 builder.Services.AddSingleton<IConnectionMultiplexer>(cm =>
 {

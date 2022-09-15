@@ -25,6 +25,14 @@ namespace ArticleService.Request
         /// </summary>
         public string? Content { get; set; }
         /// <summary>
+        /// 代码块主题
+        /// </summary>
+        public string? CodeStyle { get; set; }
+        /// <summary>
+        /// 内容主题
+        /// </summary>
+        public string? ContentStyle { get; set; }
+        /// <summary>
         /// 文章封面
         /// </summary>
         public string? Photo { get; set; }
