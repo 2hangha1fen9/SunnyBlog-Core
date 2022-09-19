@@ -18,6 +18,7 @@ using static ArticleService.Rpc.Protos.gUser;
 using ArticleService.Rpc.Protos;
 using Microsoft.Extensions.FileProviders;
 using ArticleService.Domain;
+using CommentService.Rpc.Protos;
 
 var builder = WebApplication.CreateBuilder(args);
 //Apollo配置中心
@@ -85,6 +86,10 @@ builder.Services.AddGrpcClient<gUser.gUserClient>(option =>
 {
     option.Address = new Uri(ServiceUrl.GetServiceUrlByName("UserService", builder.Configuration.GetSection("Consul").Get<ConsulServiceOptions>().ConsulAddress));
 });
+builder.Services.AddGrpcClient<gRank.gRankClient>(option =>
+{
+    option.Address = new Uri(ServiceUrl.GetServiceUrlByName("CommentService", builder.Configuration.GetSection("Consul").Get<ConsulServiceOptions>().ConsulAddress));
+});
 
 var app = builder.Build();
 
@@ -92,7 +97,7 @@ var app = builder.Build();
 app.UseConsul(builder.Configuration.GetSection("Consul").Get<ConsulServiceOptions>());
 
 //节点注册
-app.UsePermissionRegistrar<Program>(builder.Configuration.GetSection("Consul").Get<ConsulServiceOptions>().ConsulAddress);
+app.UsePermissionRegistrar<Program>(builder.Configuration.GetSection("Consul").Get<ConsulServiceOptions>().ConsulAddress).Wait();
 
 //rpc服务注册
 app.MapGrpcService<GArticleService>();

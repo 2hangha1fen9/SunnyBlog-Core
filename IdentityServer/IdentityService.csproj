@@ -46,6 +46,7 @@
 	<ItemGroup>
 		<Protobuf Include="Rpc\Protos\user.proto" GrpcServices="Client" />
 		<Protobuf Include="Rpc\Protos\endpoint.proto" GrpcServices="Server" />
+		<Protobuf Include="Rpc\Protos\role.proto" GrpcServices="Server" />
 	</ItemGroup>
 
 	<ProjectExtensions>

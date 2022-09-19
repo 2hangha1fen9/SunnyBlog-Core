@@ -21,8 +21,6 @@ namespace IdentityService.Rpc.Service
             this.contextFactory = contextFactory;
         }
 
-
-
         public override Task<Empty> RegisterEndpoint(Endpoints request, ServerCallContext context)
         {
             lock (obj) //只有一个线程能进行注册,避免数据库死锁

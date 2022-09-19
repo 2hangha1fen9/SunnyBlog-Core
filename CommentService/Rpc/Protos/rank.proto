@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+option csharp_namespace = "CommentService.Rpc.Protos";
+
+package sunnyblog;
+
+service gRank{
+	//获取文章排行数据
+	rpc GetArticleRank(RankCondidtion) returns(RankList);
+}
+
+message RankCondidtion{
+	string key=1;
+	int32 order=2;
+}
+
+message RankList{
+	repeated int32 ranks=1;
+}

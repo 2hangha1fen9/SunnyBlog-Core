@@ -1,0 +1,16 @@
+syntax = "proto3";
+
+option csharp_namespace = "IdentityService.Rpc.Protos";
+
+package sunnyblog;
+//导入类型
+import "google/protobuf/empty.proto";
+//角色绑定服务
+service gRole{
+	//绑定默认角色
+	rpc BindDefaultRole(BindDefaultRequest) returns(google.protobuf.Empty);
+}
+
+message BindDefaultRequest{
+	int32 uid = 1;
+}

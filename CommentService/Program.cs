@@ -5,6 +5,7 @@ using CommentService;
 using CommentService.App;
 using CommentService.App.Interface;
 using CommentService.Rpc.Protos;
+using CommentService.Rpc.Service;
 using Infrastructure;
 using Infrastructure.Auth;
 using Infrastructure.Consul;
@@ -61,7 +62,7 @@ builder.Services.AddAuthentication("Bearer")
     };
 });
 
-//gRPC服务注册
+//gRPC客户端注册
 builder.Services.AddGrpc();
 builder.Services.AddGrpcClient<gArticle.gArticleClient>(option =>
 {
@@ -76,7 +77,7 @@ builder.Services.AddGrpcClient<gUser.gUserClient>(option =>
 builder.Services.AddScoped<ICommentApp, CommentApp>();
 builder.Services.AddScoped<ILikeApp, LikeApp>();
 builder.Services.AddScoped<IViewApp, ViewApp>();
-builder.Services.AddScoped<ICountApp, CountApp>();
+builder.Services.AddScoped<IMetaApp, MetaApp>();
 
 var app = builder.Build();
 
@@ -84,14 +85,13 @@ var app = builder.Build();
 app.UseConsul(builder.Configuration.GetSection("Consul").Get<ConsulServiceOptions>());
 
 //节点注册
-app.UsePermissionRegistrar<Program>(builder.Configuration.GetSection("Consul").Get<ConsulServiceOptions>().ConsulAddress);
+app.UsePermissionRegistrar<Program>(builder.Configuration.GetSection("Consul").Get<ConsulServiceOptions>().ConsulAddress).Wait();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+//rpc服务注册
+app.MapGrpcService<GRankService>();
+
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 

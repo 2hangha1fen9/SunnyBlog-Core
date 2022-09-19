@@ -9,6 +9,8 @@ using Microsoft.EntityFrameworkCore;
 using ArticleService.Domain;
 using static ArticleService.Rpc.Protos.gUser;
 using System.Linq.Expressions;
+using static CommentService.Rpc.Protos.gRank;
+using CommentService.Rpc.Protos;
 
 namespace ArticleService.App
 {
@@ -18,6 +20,7 @@ namespace ArticleService.App
         private readonly IArticleTagApp articleTagApp;
         private readonly IArticleCategoryApp articleCategoryApp;
         private readonly gUserClient userRpc;
+        private readonly gRankClient rankRpc;
 
         public ArticleApp(IDbContextFactory<ArticleDBContext> contextFactory, IArticleTagApp articleTagApp, IArticleCategoryApp articleCategoryApp, gUserClient userRpc)
         {
@@ -202,6 +205,16 @@ namespace ArticleService.App
                         //排序
                         if(con.Sort != 0)
                         {
+                            //排行榜排序
+                            if ((new string[] { "ViewCount", "LikeCount", "CommentCount", "CollectionCount" }).FirstOrDefault(c => c.Equals(con.Key, StringComparison.OrdinalIgnoreCase)) != null)
+                            {
+                                var rank = (await rankRpc.GetArticleRankAsync(new RankCondidtion
+                                {
+                                    Key = con.Key,
+                                    Order = con.Sort ?? 1
+                                })).Ranks.Select(r => r).ToArray();
+                                articleMap = articleMap.OrderBy(a => Array.IndexOf(rank, a.Id));
+                            }
                             if ("CreateTime".Equals(con.Key, StringComparison.OrdinalIgnoreCase))
                             {
                                 if(con.Sort == -1)

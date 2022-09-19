@@ -14,6 +14,7 @@ using Com.Ctrip.Framework.Apollo.Enums;
 using Microsoft.Extensions.FileProviders;
 using UserService.Domain.config;
 using StackExchange.Redis;
+using IdentityService.Rpc.Protos;
 
 var builder = WebApplication.CreateBuilder(args);
 //Apollo≈‰÷√÷––ƒ
@@ -79,6 +80,10 @@ builder.Services.AddAuthentication("Bearer")
 
 //gRPC◊¢≤·
 builder.Services.AddGrpc();
+builder.Services.AddGrpcClient<gRole.gRoleClient>(option =>
+{
+    option.Address = new Uri(ServiceUrl.GetServiceUrlByName("IdentityService", builder.Configuration.GetSection("Consul").Get<ConsulServiceOptions>().ConsulAddress));
+});
 
 var app = builder.Build();
 
@@ -99,12 +104,8 @@ app.UseStaticFiles(new StaticFileOptions()
     RequestPath = "/api/avatar"
 });
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 

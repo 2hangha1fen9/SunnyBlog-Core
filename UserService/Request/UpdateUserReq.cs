@@ -17,6 +17,10 @@ namespace UserService.Request
         /// </summary>
         public string? Username { get; set; }
         /// <summary>
+        /// 密码
+        /// </summary>
+        public string? Password { get; set; }   
+        /// <summary>
         /// 用户昵称
         /// </summary>
         public string? Nick { get; set; }

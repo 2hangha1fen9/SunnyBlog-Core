@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
 	<PropertyGroup>
 		<TargetFramework>net6.0</TargetFramework>
@@ -9,6 +9,11 @@
 		<NoWarn>$(NoWarn);8618</NoWarn>
 		<NoWarn>$(NoWarn);8603</NoWarn>
 	</PropertyGroup>
+
+	<ItemGroup>
+	  <None Remove="Rpc\Protos\meta.proto" />
+	  <None Remove="Rpc\Protos\rank.proto" />
+	</ItemGroup>
 
 	<ItemGroup>
 		<PackageReference Include="Com.Ctrip.Framework.Apollo.Configuration" Version="2.7.0" />
@@ -31,6 +36,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<Protobuf Include="Rpc\Protos\rank.proto" GrpcServices="Client" />
 		<Protobuf Include="Rpc\Protos\user.proto" GrpcServices="Client" />
 		<Protobuf Include="Rpc\Protos\article.proto" GrpcServices="Server" />
 	</ItemGroup>

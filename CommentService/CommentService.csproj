@@ -20,6 +20,10 @@
 		</PackageReference>
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.8" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.8" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="6.0.8">
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		  <PrivateAssets>all</PrivateAssets>
+		</PackageReference>
 		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.8" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
 	</ItemGroup>
@@ -30,11 +34,11 @@
 
 	<ItemGroup>
 	  <Folder Include="Domain\" />
-	  <Folder Include="Rpc\Service\" />
 	</ItemGroup>
 	<ItemGroup>
 		<Protobuf Include="Rpc\Protos\article.proto" GrpcServices="Client" />
 		<Protobuf Include="Rpc\Protos\user.proto" GrpcServices="Client" />
+		<Protobuf Include="Rpc\Protos\rank.proto" GrpcServices="Server" />
 	</ItemGroup>
 
 	<ProjectExtensions>

@@ -98,6 +98,7 @@ app.UseConsul(builder.Configuration.GetSection("Consul").Get<ConsulServiceOption
 
 //gRPC服务映射
 app.MapGrpcService<GEndpointService>();
+app.MapGrpcService<GRoleService>(); 
 
 //注入授权服务Ids4
 app.UseIdentityServer();
@@ -105,11 +106,8 @@ app.UseIdentityServer();
 //节点注册
 app.UsePermissionRegistrar<Program>(builder.Configuration.GetSection("Consul").Get<ConsulServiceOptions>().ConsulAddress);
 
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 

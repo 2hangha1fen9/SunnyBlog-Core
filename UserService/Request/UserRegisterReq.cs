@@ -14,17 +14,15 @@ namespace UserService.Request
         /// 密码
         /// </summary>
         [Required(ErrorMessage = "密码不能为空")]
-        [StringLength(maximumLength: 20, MinimumLength = 6, ErrorMessage = "密码长度为6~20个字符")]
+        [StringLength(6, ErrorMessage = "密码不能少于6位")]
         public string Password { get; set; }
         /// <summary>
         /// 邮箱
         /// </summary>
-        [EmailAddress(ErrorMessage = "邮箱格式错误")]
         public string? Email { get; set; }
         /// <summary>
         /// 手机
         /// </summary>
-        [Phone(ErrorMessage = "手机号格式错误")]
         public string? Phone { get; set; }
         /// <summary>
         /// 验证码

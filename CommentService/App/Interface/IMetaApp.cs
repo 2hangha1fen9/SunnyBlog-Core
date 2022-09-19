@@ -4,8 +4,9 @@ namespace CommentService.App.Interface
     /// <summary>
     /// 文章数据统计
     /// </summary>
-    public interface ICountApp
+    public interface IMetaApp
     {
-        Task<ArticleCountView> GetArticleCount(int aid,int? uid = null);
+        Task<Meta> GetMeta(int aid, int? uid = null);
+        Task<List<Meta>> GetMetaList(int[] aids, int? uid = null);
     }
 }

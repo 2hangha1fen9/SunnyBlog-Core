@@ -11,6 +11,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <None Remove="Rpc\Protos\role.proto" />
 	  <None Remove="Rpc\Protos\user.proto" />
 	</ItemGroup>
 
@@ -35,7 +36,9 @@
 		<ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
 	</ItemGroup>
 	<ItemGroup>
+	  <Protobuf Include="Rpc\Protos\role.proto" GrpcServices="Server" />
 	  <Protobuf Include="Rpc\Protos\user.proto" GrpcServices="Server" />
+	  <Protobuf Include="Rpc\Protos\role.proto" GrpcServices="Client" />
 	</ItemGroup>
 	<ItemGroup>
 	  <Folder Include="static\avatar\" />

@@ -1,6 +1,6 @@
 ﻿namespace CommentService.Response
 {
-    public class ArticleCountView
+    public class Meta
     {
         /// <summary>
         /// 文章ID

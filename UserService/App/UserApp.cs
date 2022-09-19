@@ -8,6 +8,8 @@ using UserService.Domain;
 using UserService.Request.Request;
 using System.Linq;
 using StackExchange.Redis;
+using static IdentityService.Rpc.Protos.gRole;
+using IdentityService.Rpc.Protos;
 
 namespace UserService.App
 {
@@ -17,15 +19,17 @@ namespace UserService.App
         /// 数据库上下文
         /// </summary>
         private readonly IDbContextFactory<UserDBContext> contextFactory;
+        private readonly gRoleClient gRoleClient;
         /// <summary>
         /// Redis客户端,依赖注入
         /// </summary>
         private readonly IDatabase database;
 
-        public UserApp(IDbContextFactory<UserDBContext> context, IConnectionMultiplexer connection)
+        public UserApp(IDbContextFactory<UserDBContext> context, IConnectionMultiplexer connection,gRoleClient gRoleClient)
         {
             this.contextFactory = context;
             this.database = connection.GetDatabase();
+            this.gRoleClient = gRoleClient;
         }
 
         /// <summary>
@@ -203,10 +207,18 @@ namespace UserService.App
                         {
                             Nick = $"用户{user.Username}",
                             UserId = user.Id,
-                            Sex = -1,
                             RegisterTime = DateTime.Now
                         });
                         await dbContext.SaveChangesAsync();
+                        //绑定默认角色
+                        try
+                        {
+                            await gRoleClient.BindDefaultRoleAsync(new BindDefaultRequest { Uid = user.Id });
+                        }
+                        catch (Exception)
+                        {
+                            return "权限绑定失败,请联系网站管理员";
+                        }
                         return "注册成功";
                     }
                     else
@@ -437,6 +449,16 @@ namespace UserService.App
                 {
                     throw new Exception("添加失败");
                 }
+                //绑定默认角色
+                try
+                {
+                    await gRoleClient.BindDefaultRoleAsync(new BindDefaultRequest { Uid = user.Id });
+                }
+                catch (Exception)
+                {
+                    return "权限绑定失败,请联系网站管理员";
+                }
+
                 return "添加成功";
             }
         }
@@ -481,6 +503,7 @@ namespace UserService.App
                 if (user != null)
                 {
                     user.Username = request.Username ?? user.Username;
+                    user.Password = !string.IsNullOrWhiteSpace(request.Password) ? request.Password.ShaEncrypt() : user.Password;
                     user.Phone = request.Phone ?? user.Phone;
                     user.Email = request.Email ?? user.Email;
                     user.Status = request.Status ?? user.Status;

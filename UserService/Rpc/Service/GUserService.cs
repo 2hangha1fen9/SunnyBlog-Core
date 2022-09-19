@@ -40,7 +40,7 @@ namespace UserService.Rpc.Service
                     userResponse.Id = user.Id;
                     userResponse.Username = user.Username;
                     userResponse.Nick = user.Nick;
-                    userResponse.Photo = user.Photo;
+                    userResponse.Photo = user.Photo ?? "";
                 }
                 return userResponse;
             }
