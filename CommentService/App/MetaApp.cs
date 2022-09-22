@@ -1,5 +1,6 @@
 ﻿using CommentService.App.Interface;
 using CommentService.Response;
+using Infrastructure.Utils;
 using Microsoft.EntityFrameworkCore;
 using static ArticleService.Rpc.Protos.gArticle;
 
@@ -7,16 +8,10 @@ namespace CommentService.App
 {
     public class MetaApp : IMetaApp
     {
-        private readonly ILikeApp likeApp;
-        private readonly IViewApp viewApp;
-        private readonly ICommentApp commentApp;
         private readonly IDbContextFactory<CommentDBContext> contextFactory;
 
-        public MetaApp(ICommentApp commentApp, ILikeApp likeApp, IViewApp viewApp, IDbContextFactory<CommentDBContext> contextFactory)
+        public MetaApp(IDbContextFactory<CommentDBContext> contextFactory)
         {
-            this.commentApp = commentApp;
-            this.likeApp = likeApp;
-            this.viewApp = viewApp;
             this.contextFactory = contextFactory;
         }
 
@@ -26,40 +21,27 @@ namespace CommentService.App
         /// <param name="aid"></param>
         /// <param name="uid"></param>
         /// <returns></returns>
-        public async Task<Meta> GetMeta(int aid,int? uid = null)
+        public Meta GetMeta(int aid,int? uid = null)
         {
-            try
+            using (var dbContext = contextFactory.CreateDbContext())
             {
-                //统计文章数据
-                var commentCount = await commentApp.GetArticleCommentCount(aid);
-                var likeCount = await likeApp.GetArticleLikeCount(aid, 1);
-                var collectionCount = await likeApp.GetArticleLikeCount(aid, 2);
-                var viewCount = await viewApp.GetArticleViewCount(aid);
-                var isUserLike = 0;
-                var isUserCollection = 0;
-                if (uid.HasValue)
-                {
-                    //获取用户的点赞收藏记录
-                    var userLike = await likeApp.GetUserLike(uid.Value);
-                    //判断用户是否点赞
-                    isUserLike = userLike.FirstOrDefault(u => u.ArticleId == aid && u.Status == 1) != null ? 1 : 0;
-                    //判断用户是否收藏
-                    isUserCollection = userLike.FirstOrDefault(u => u.ArticleId == aid && u.Status == 2) != null ? 1 : 0;
-                }
-                var countView = new Meta()
-                {
-                    ArticleId = aid,
-                    CollectionCount = collectionCount,
-                    ViewCount = viewCount,
-                    CommentCount = commentCount,
-                    IsUserLike = isUserLike,
-                    IsUserCollection = isUserCollection,
-                };
-                return countView;
-            }
-            catch (Exception)
-            {
-                return null;
+                var sql = @$"
+                select 
+                    a.id as ArticleId,
+                    (select count(*) from [Views] v where v.articleId = a.Id) as ViewCount,
+                    (select count(*) from Likes l where l.articleId = a.Id and l.status = 1) as LikeCount,
+                    (select count(*) from Likes l where l.articleId = a.id and l.status = 2) as CollectionCount,
+                    (select count(*) from Comments c where c.articleId = a.id) as CommentCount,
+                    ({(uid.HasValue ? $"select count(*) from Likes l where l.articleId = a.Id and l.status = 1 and l.userId = {uid.Value}" : "select 0")}) as IsUserLike,
+                    ({(uid.HasValue ? $"select count(*) from Likes l where l.articleId = a.Id and l.status = 2 and l.userId = {uid.Value}" : "select 0")}) as IsUserCollection
+                from 
+                article as a 
+                where a.id = {aid}
+                group by a.id
+                ";
+                var metaList = dbContext.Database.SqlQuery<Meta>(sql);
+
+                return metaList.FirstOrDefault();
             }
         }
 
@@ -69,11 +51,12 @@ namespace CommentService.App
         /// <param name="aids"></param>
         /// <param name="uid"></param>
         /// <returns></returns>
-        public async Task<List<Meta>> GetMetaList(int[] aids,int?uid = null)
+        public List<Meta> GetMetaList(int[] aids,int?uid = null)
         {
-            using (var dbContent = contextFactory.CreateDbContext())
+            using (var dbContext = contextFactory.CreateDbContext())
             {
-                var commentList = await dbContent.Comments.ToListAsync();
+                //ef太慢了
+                /*var commentList = await dbContent.Comments.ToListAsync();
                 var likeList = await dbContent.Likes.ToListAsync();
                 var viewList = await dbContent.Views.ToListAsync();
                 var metas = from a in aids
@@ -97,8 +80,24 @@ namespace CommentService.App
                     {
                         metaList.Add(m);
                     }
-                }
-                return metaList;
+                }*/
+                var sql = @$"
+                select 
+                    a.id as ArticleId,
+                    (select count(*) from [Views] v where v.articleId = a.Id) as ViewCount,
+                    (select count(*) from Likes l where l.articleId = a.Id and l.status = 1) as LikeCount,
+                    (select count(*) from Likes l where l.articleId = a.id and l.status = 2) as CollectionCount,
+                    (select count(*) from Comments c where c.articleId = a.id) as CommentCount,
+                    ({(uid.HasValue ? $"select count(*) from Likes l where l.articleId = a.Id and l.status = 1 and l.userId = {uid.Value}" : "select 0")}) as IsUserLike,
+                    ({(uid.HasValue ? $"select count(*) from Likes l where l.articleId = a.Id and l.status = 2 and l.userId = {uid.Value}" : "select 0")}) as IsUserCollection
+                from 
+                article as a 
+                where a.id in({string.Join(',', aids)})
+                group by a.id
+                ";
+                var metaList = dbContext.Database.SqlQuery<Meta>(sql);
+
+                return metaList.ToList();
             }
         }
     }

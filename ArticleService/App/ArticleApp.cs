@@ -18,16 +18,19 @@ namespace ArticleService.App
     {
         private readonly IDbContextFactory<ArticleDBContext> contextFactory;
         private readonly IArticleTagApp articleTagApp;
+        private readonly IArticleRegionApp articleRegionApp;
         private readonly IArticleCategoryApp articleCategoryApp;
         private readonly gUserClient userRpc;
         private readonly gRankClient rankRpc;
 
-        public ArticleApp(IDbContextFactory<ArticleDBContext> contextFactory, IArticleTagApp articleTagApp, IArticleCategoryApp articleCategoryApp, gUserClient userRpc)
+        public ArticleApp(IDbContextFactory<ArticleDBContext> contextFactory, IArticleTagApp articleTagApp, IArticleCategoryApp articleCategoryApp, gUserClient userRpc, IArticleRegionApp articleRegionApp, gRankClient rankRpc)
         {
             this.contextFactory = contextFactory;
             this.articleTagApp = articleTagApp;
             this.articleCategoryApp = articleCategoryApp;
             this.userRpc = userRpc;
+            this.articleRegionApp = articleRegionApp;
+            this.rankRpc = rankRpc;
         }
 
         /// <summary>
@@ -196,24 +199,34 @@ namespace ArticleService.App
                         articleMap = "Username".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.Username.Contains(con.Value)) : articleMap;
                         articleMap = "Title".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.Title.Contains(con.Value)) : articleMap;
                         articleMap = "Summary".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.Summary.Contains(con.Value)) : articleMap;
-                        articleMap = "Region".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.RegionName.Contains(con.Value)) : articleMap;
-                        articleMap = "Tag".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.Tags.Where(t => t.Name.Contains(con.Value)).Count() > 0) : articleMap;
+                        articleMap = "Tag".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.Tags.Where(t => t.Name == con.Value).Count() > 0) : articleMap;
                         articleMap = "Category".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.Categorys.Where(c => c.Name.Contains(con.Value)).Count() > 0) : articleMap;
                         articleMap = "Status".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.Status == Convert.ToInt32(con.Value)) : articleMap;
                         articleMap = "IsLock".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.IsLock == Convert.ToInt32(con.Value)) : articleMap;
                         articleMap = "CommentStatus".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.CommentStatus == Convert.ToInt32(con.Value)) : articleMap;
+                        //分区过滤
+                        if("Region".Equals(con.Key, StringComparison.OrdinalIgnoreCase))
+                        {
+                            //获取所有与之相关的分区
+                            var filterRegion = await articleRegionApp.GetRegions(con.Value);
+                            //和离线数据查询需要将结果输出
+                            var tempArticleMap = articleMap.ToList();
+                            articleMap = tempArticleMap.Where(a => filterRegion.FirstOrDefault(r => r.Id == a.RegionId) != null).AsQueryable();
+                        }
                         //排序
-                        if(con.Sort != 0)
+                        if (con.Sort != 0)
                         {
                             //排行榜排序
-                            if ((new string[] { "ViewCount", "LikeCount", "CommentCount", "CollectionCount" }).FirstOrDefault(c => c.Equals(con.Key, StringComparison.OrdinalIgnoreCase)) != null)
+                            if ((new string[] { "Hot","ViewCount", "LikeCount", "CommentCount", "CollectionCount" }).FirstOrDefault(c => c.Equals(con.Key, StringComparison.OrdinalIgnoreCase)) != null)
                             {
+                                //和离线数据查询需要将结果输出
+                                var tempArticleMap = articleMap.ToList();
                                 var rank = (await rankRpc.GetArticleRankAsync(new RankCondidtion
                                 {
                                     Key = con.Key,
                                     Order = con.Sort ?? 1
                                 })).Ranks.Select(r => r).ToArray();
-                                articleMap = articleMap.OrderBy(a => Array.IndexOf(rank, a.Id));
+                                articleMap = tempArticleMap.OrderBy(a => Array.IndexOf(rank, a.Id)).AsQueryable();
                             }
                             if ("CreateTime".Equals(con.Key, StringComparison.OrdinalIgnoreCase))
                             {
@@ -238,12 +251,22 @@ namespace ArticleService.App
                                 }
                             }
                         }
+                        else
+                        {
+                            //默认时间排序
+                            articleMap = articleMap.OrderByDescending(a => a.CreateTime);
+                        }
                     }
+                }
+                else
+                {
+                    //默认时间排序
+                    articleMap = articleMap.OrderByDescending(a => a.CreateTime);
                 }
                 //分页条件
                 var articlePage = new PageList<ArticleListView>();
                 articleMap = articlePage.Pagination(pageIndex, pageSize, articleMap);
-                articlePage.Page = (await articleMap.ToListAsync()).MapToList<ArticleListView>();
+                articlePage.Page = articleMap.MapToList<ArticleListView>();
                 //填充文章的分页用户信息
                 foreach (var page in articlePage.Page)
                 {

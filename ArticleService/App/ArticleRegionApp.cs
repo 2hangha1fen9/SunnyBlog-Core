@@ -63,7 +63,7 @@ namespace ArticleService.App
         /// 列出分区分区
         /// </summary>
         /// <returns></returns>
-        public async Task<List<RegionView>> GetRegions(bool isAll = false)
+        public async Task<List<RegionView>> GetRegions(string? key = null,bool isAll = false)
         {
             using (var dbContext = contextFactory.CreateDbContext())
             {
@@ -75,6 +75,14 @@ namespace ArticleService.App
                 else
                 {
                     regions = await dbContext.ArtRegions.Where(ar => ar.Status == 1).ToListAsync();
+                }
+
+                //深度过滤条件,会过滤出相关的分区(线性的)
+                if (!string.IsNullOrWhiteSpace(key))
+                {
+                    var result = new List<ArtRegion>();
+                    RecursiveFilter(regions.ToList(),result, key);
+                    return result.MapToList<RegionView>();
                 }
                 return regions.Where(c => c.ParentId == null).MapToList<RegionView>();
             }
@@ -107,6 +115,55 @@ namespace ArticleService.App
                     return "更新成功";
                 }
                 throw new Exception("没有找到这分区");
+            }
+        }
+
+        /// <summary>
+        /// 递归搜索所有分区
+        /// </summary>
+        /// <param name="regions">待搜索的关键字</param>
+        /// <param name="key">搜索关键字</param>
+        /// <param name="result">搜索结果</param>
+        /// <param name="findState">当前搜索状态</param>
+        /// <returns></returns>
+        public void RecursiveFilter(List<ArtRegion> regions,List<ArtRegion> result, string key,bool findState = false)
+        {
+            //搜索链被切断终止搜索
+            if (regions == null)
+            {
+                return;
+            }
+            foreach (var region in regions)
+            {
+                //根元素没有被搜索才能进行搜索
+                if (region.Status != 200 && (key.Equals(region.Name, StringComparison.OrdinalIgnoreCase) || key.Equals(region.Parent?.Name, StringComparison.OrdinalIgnoreCase)))
+                {
+                    result.Add(new ArtRegion
+                    {
+                        Id = region.Id,
+                        Name = region.Name,
+                        Description = region.Description,
+                        Status = region.Status
+                    });
+
+                    //如果当前元素为查询到的根元素,则标记为已搜索
+                    if (key.Equals(region.Name, StringComparison.OrdinalIgnoreCase))
+                    {
+                        region.Status = 200;
+                    }
+                    findState = true; //匹配到了目标,则可以替换搜索关键字,深度搜索子元素
+                }
+                else
+                {
+                    findState = false;
+                }
+
+                //如果有子集分区则继续查询
+                if (region?.InverseParent?.Count > 0)
+                {
+                    //如果当前为元素已搜索则切断搜索链
+                    RecursiveFilter(region.Status != 200 ? region.InverseParent.ToList() : null, result, findState ? region.Name : key, findState);
+                }
             }
         }
     }

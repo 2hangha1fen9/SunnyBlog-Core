@@ -25,7 +25,7 @@ namespace CommentService.Controllers
         /// <returns></returns>
         [RBAC(IsPublic = 1)]
         [HttpGet]
-        public async Task<Response<Meta>> GetArticleMeta(int aid)
+        public  Response<Meta> GetArticleMeta(int aid)
         {
             var result = new Response<Meta>();
             try
@@ -33,11 +33,11 @@ namespace CommentService.Controllers
                 var userId = HttpContext.User.Claims?.FirstOrDefault(c => c.Type == "user_id")?.Value;
                 if (string.IsNullOrWhiteSpace(userId))
                 {
-                    result.Result = await countApp.GetMeta(aid);
+                    result.Result = countApp.GetMeta(aid);
                 }
                 else
                 {
-                    result.Result = await countApp.GetMeta(aid, Convert.ToInt32(userId));
+                    result.Result = countApp.GetMeta(aid, Convert.ToInt32(userId));
                 }
             }
             catch (Exception ex)
@@ -55,7 +55,7 @@ namespace CommentService.Controllers
         /// <returns></returns>
         [RBAC(IsPublic = 1)]
         [HttpPost]
-        public async Task<Response<List<Meta>>> GetArticleMetaList(int[] aids)
+        public Response<List<Meta>> GetArticleMetaList(int[] aids)
         {
             var result = new Response<List<Meta>>();
             try
@@ -63,11 +63,11 @@ namespace CommentService.Controllers
                 var userId = HttpContext.User.Claims?.FirstOrDefault(c => c.Type == "user_id")?.Value;
                 if (string.IsNullOrWhiteSpace(userId))
                 {
-                    result.Result = await countApp.GetMetaList(aids);
+                    result.Result = countApp.GetMetaList(aids);
                 }
                 else
                 {
-                    result.Result = await countApp.GetMetaList(aids, Convert.ToInt32(userId));
+                    result.Result = countApp.GetMetaList(aids, Convert.ToInt32(userId));
                 }
             }
             catch (Exception ex)

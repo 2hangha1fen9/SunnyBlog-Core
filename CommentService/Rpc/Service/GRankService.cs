@@ -29,7 +29,7 @@ namespace CommentService.Rpc.Service
             //获取所有文章id
             var articleIds = (await aritlceRpc.GetArticleListAsync(new Empty())).Infos.Select(a => a.Id).ToArray();
             //获取所有文章元数据
-            var metaList = await metaApp.GetMetaList(articleIds);
+            var metaList = metaApp.GetMetaList(articleIds);
             //针对不同的排序条件进行排序
             if ("ViewCount".Equals(request.Key, StringComparison.OrdinalIgnoreCase))
             {
@@ -73,6 +73,18 @@ namespace CommentService.Rpc.Service
                 else
                 {
                     metaList = metaList.OrderBy(m => m.CollectionCount).ToList();
+                }
+            }
+            else if ("Hot".Equals(request.Key, StringComparison.OrdinalIgnoreCase)){
+                if (request.Order == -1)
+                {
+                    //热度计算
+                    // 点赞+收藏*0.4+评论*0.4+浏览*0.2
+                    metaList = metaList.OrderByDescending(m => m.LikeCount + Convert.ToDouble(m.ViewCount) * 0.2 + Convert.ToDouble(m.CommentCount) * 0.4 + Convert.ToDouble(m.CollectionCount) * 0.4).ToList();
+                }
+                else
+                {
+                    metaList = metaList.OrderBy(m => m.LikeCount + Convert.ToDouble(m.ViewCount) * 0.2 + Convert.ToDouble(m.CommentCount) * 0.4 + Convert.ToDouble(m.CollectionCount) * 0.4).ToList();
                 }
             }
             //仅返回id序列

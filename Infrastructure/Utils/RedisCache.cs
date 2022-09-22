@@ -33,7 +33,7 @@ namespace Infrastructure
         /// </summary>
         private readonly IDatabase database;
 
-        public RedisCache(IConnectionMultiplexer connection,string? CacheKey = "", int? Expiration = 360,int? databaseNum = 1)
+        public RedisCache(IConnectionMultiplexer connection,string? CacheKey = "", int? Expiration = -1,int? databaseNum = 1)
         {
             this.Expiration = Expiration.Value;
             this.CacheKey = CacheKey;
@@ -75,7 +75,7 @@ namespace Infrastructure
                     var content = ((ObjectResult)result.Result).Value;
                     //序列化
                     var json = JsonConvert.SerializeObject(content, jsonConfig);
-                    await database.StringSetAsync(CacheKey, json, TimeSpan.FromSeconds(Expiration));
+                    await database.StringSetAsync(CacheKey, json, Expiration != -1 ? TimeSpan.FromSeconds(Expiration) : null);
                 }
             }
             catch (Exception ex)

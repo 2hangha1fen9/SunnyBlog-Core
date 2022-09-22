@@ -6,7 +6,7 @@ namespace CommentService.App.Interface
     /// </summary>
     public interface IMetaApp
     {
-        Task<Meta> GetMeta(int aid, int? uid = null);
-        Task<List<Meta>> GetMetaList(int[] aids, int? uid = null);
+        Meta GetMeta(int aid, int? uid = null);
+        List<Meta> GetMetaList(int[] aids, int? uid = null);
     }
 }

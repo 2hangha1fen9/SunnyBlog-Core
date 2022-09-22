@@ -9,6 +9,7 @@ using Microsoft.EntityFrameworkCore;
 namespace ArticleService.Domain
 {
     [Table("Article")]
+    [Index("CreateTime", Name = "IX_Article")]
     public partial class Article
     {
         public Article()

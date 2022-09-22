@@ -26,12 +26,12 @@ namespace ArticleService.Controllers
         [RBAC(IsPublic = 1)]
         [HttpGet]
         [TypeFilter(typeof(RedisCache))]
-        public async Task<Response<List<RegionView>>> List()
+        public async Task<Response<List<RegionView>>> List(string? key)
         {
             var result = new Response<List<RegionView>>();
             try
             {
-                var regions = await articleRegionApp.GetRegions();
+                var regions = await articleRegionApp.GetRegions(key);
                 result.Result = regions;
             }
             catch (Exception ex)
@@ -48,12 +48,12 @@ namespace ArticleService.Controllers
         /// <returns></returns>
         [RBAC]
         [HttpGet]
-        public async Task<Response<List<RegionView>>> ListAll()
+        public async Task<Response<List<RegionView>>> ListAll(string? key)
         {
             var result = new Response<List<RegionView>>();
             try
             {
-                var regions = await articleRegionApp.GetRegions(true);
+                var regions = await articleRegionApp.GetRegions(key,true);
                 result.Result = regions;
             }
             catch (Exception ex)
