@@ -46,6 +46,10 @@
         /// </summary>
         public decimal Score { get; set; }
         /// <summary>
+        /// 粉丝
+        /// </summary>
+        public int Fans { get; set; }
+        /// <summary>
         /// 头像
         /// </summary>
         public string? Photo { get; set; }
@@ -53,5 +57,6 @@
         /// 状态
         /// </summary>
         public int Status { get; set; }
+
     }
 }

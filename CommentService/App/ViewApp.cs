@@ -97,9 +97,9 @@ namespace CommentService.App
                     foreach (var con in condition)
                     {
 
-                        history = "Username".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? history.Where(u => u.Username != null && u.Username.Contains(con.Value)) : history;
-                        history = "Nick".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? history.Where(u => u.Nick != null && u.Nick.Contains(con.Value)) : history;
-                        history = "ArticleTitle".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? history.Where(u => u.ArticleTitle.Contains(con.Value)) : history;
+                        history = "Username".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? history.Where(u => u.Username != null && u.Username.Contains(con.Value, StringComparison.OrdinalIgnoreCase)) : history;
+                        history = "Nick".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? history.Where(u => u.Nick != null && u.Nick.Contains(con.Value, StringComparison.OrdinalIgnoreCase)) : history;
+                        history = "ArticleTitle".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? history.Where(u => u.ArticleTitle.Contains(con.Value, StringComparison.OrdinalIgnoreCase)) : history;
                         //排序
                         if (con.Sort != 0)
                         {

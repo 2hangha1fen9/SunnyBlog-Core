@@ -11,6 +11,7 @@ using static ArticleService.Rpc.Protos.gUser;
 using System.Linq.Expressions;
 using static CommentService.Rpc.Protos.gRank;
 using CommentService.Rpc.Protos;
+using Google.Protobuf.WellKnownTypes;
 
 namespace ArticleService.App
 {
@@ -103,6 +104,7 @@ namespace ArticleService.App
                 var article = await dbContext.Articles.Select(a => new
                 {
                     Id = a.Id,
+                    UserId = a.UserId,  
                     Title = a.Title,
                     Content = a.Content,
                     CodeStyle = a.CodeStyle,
@@ -152,22 +154,29 @@ namespace ArticleService.App
             using (var dbContext = contextFactory.CreateDbContext())
             {
                 //创建数据映射
-                var article = dbContext.Articles.AsQueryable();
+                var articleQuery = dbContext.Articles.Include(a => a.ArticleTags)
+                                                    .ThenInclude(at => at.Tag)
+                                                    .Include(a => a.ArtCategories)
+                                                    .ThenInclude(ac => ac.Category)
+                                                    .Include(a => a.Region).AsQueryable();
                 //使用前置条件,判断是否是只需要用户的文章,还是用户自己个人的文章,还是所有文章
                 if (predict != null)
                 {
-                    article = article.Where(predict);
+                    articleQuery = articleQuery.Where(predict);
                 }
-                var articleMap = article.Select(a => new
-                {
+                //查询所有文章
+                var articleList = await articleQuery.ToListAsync();
+                var userList = (await userRpc.GetUserListAsync(new Empty())).UserInfo.ToList();
+                var articleMap = articleList.Join(userList,a => a.UserId,u => u.Id,(a,u) => new
+                { 
                     Id = a.Id,
-                    UserId = a.UserId,
-                    Nick = "",
-                    Username = "",
+                    UserId = 1,
+                    Nick = u.Nick,
+                    Username = u.Username,
                     Title = a.Title,
                     Summary = a.Summary,
                     Photo = a.Photo,
-                    RegionName = a.Region.Name,
+                    RegionName = a.Region?.Name,
                     RegionId = a.RegionId,
                     Tags = a.ArticleTags.Select(at => new TagView()
                     {
@@ -196,11 +205,11 @@ namespace ArticleService.App
                     foreach (var con in condidtion)
                     {
                         //条件过滤
-                        articleMap = "Username".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.Username.Contains(con.Value)) : articleMap;
-                        articleMap = "Title".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.Title.Contains(con.Value)) : articleMap;
-                        articleMap = "Summary".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.Summary.Contains(con.Value)) : articleMap;
+                        articleMap = "Username".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.Username.Contains(con.Value,StringComparison.OrdinalIgnoreCase)) : articleMap;
+                        articleMap = "Title".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.Title.Contains(con.Value,StringComparison.OrdinalIgnoreCase)) : articleMap;
+                        articleMap = "Summary".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.Summary.Contains(con.Value,StringComparison.OrdinalIgnoreCase)) : articleMap;
                         articleMap = "Tag".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.Tags.Where(t => t.Name == con.Value).Count() > 0) : articleMap;
-                        articleMap = "Category".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.Categorys.Where(c => c.Name.Contains(con.Value)).Count() > 0) : articleMap;
+                        articleMap = "Category".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.Categorys.Where(c => c.Name.Contains(con.Value,StringComparison.OrdinalIgnoreCase)).Count() > 0) : articleMap;
                         articleMap = "Status".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.Status == Convert.ToInt32(con.Value)) : articleMap;
                         articleMap = "IsLock".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.IsLock == Convert.ToInt32(con.Value)) : articleMap;
                         articleMap = "CommentStatus".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.CommentStatus == Convert.ToInt32(con.Value)) : articleMap;
@@ -265,16 +274,8 @@ namespace ArticleService.App
                 }
                 //分页条件
                 var articlePage = new PageList<ArticleListView>();
-                articleMap = articlePage.Pagination(pageIndex, pageSize, articleMap);
+                articleMap = articlePage.Pagination(pageIndex, pageSize, articleMap.AsQueryable());
                 articlePage.Page = articleMap.MapToList<ArticleListView>();
-                //填充文章的分页用户信息
-                foreach (var page in articlePage.Page)
-                {
-                    //获取用户
-                    var user = await userRpc.GetUserByIDAsync(new UserInfoRequest() { Id = page.UserId });
-                    page.Nick = user.Nick;
-                    page.Username = user.Username;
-                }
                 return articlePage;
             }
         }

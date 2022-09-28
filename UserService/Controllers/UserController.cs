@@ -45,6 +45,29 @@ namespace UserService.Controllers
         }
 
         /// <summary>
+        /// 根据ID获取用户信息
+        /// </summary>
+        /// <param name="uid"></param>
+        /// <returns></returns>
+        [HttpGet]
+        [RBAC(IsPublic = 1)]
+        public async Task<Response<UserView>> GetUser(int uid)
+        {
+            var result = new Response<UserView>();
+            try
+            {
+                var users = await userApp.GetUserById(uid);
+                result.Result = users;
+            }
+            catch (Exception ex)
+            {
+                result.Status = 500;
+                result.Message = ex.InnerException?.Message ?? ex.Message;
+            }
+            return result;
+        }
+
+        /// <summary>
         /// 列出当前登录者的用户详情
         /// </summary>
         /// <returns></returns>

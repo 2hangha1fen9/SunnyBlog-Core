@@ -10,6 +10,10 @@
         /// </summary>
         public int Id { get; set; }
         /// <summary>
+        /// 用户ID
+        /// </summary>
+        public int UserId { get; set; }
+        /// <summary>
         /// 文章标题
         /// </summary>
         public string Title { get; set; }

@@ -81,23 +81,27 @@ namespace CommentService.App
                         metaList.Add(m);
                     }
                 }*/
-                var sql = @$"
-                select 
-                    a.id as ArticleId,
-                    (select count(*) from [Views] v where v.articleId = a.Id) as ViewCount,
-                    (select count(*) from Likes l where l.articleId = a.Id and l.status = 1) as LikeCount,
-                    (select count(*) from Likes l where l.articleId = a.id and l.status = 2) as CollectionCount,
-                    (select count(*) from Comments c where c.articleId = a.id) as CommentCount,
-                    ({(uid.HasValue ? $"select count(*) from Likes l where l.articleId = a.Id and l.status = 1 and l.userId = {uid.Value}" : "select 0")}) as IsUserLike,
-                    ({(uid.HasValue ? $"select count(*) from Likes l where l.articleId = a.Id and l.status = 2 and l.userId = {uid.Value}" : "select 0")}) as IsUserCollection
-                from 
-                article as a 
-                where a.id in({string.Join(',', aids)})
-                group by a.id
-                ";
-                var metaList = dbContext.Database.SqlQuery<Meta>(sql);
+                if(aids.Length > 0)
+                {
+                    var sql = @$"
+                    select 
+                        a.id as ArticleId,
+                        (select count(*) from [Views] v where v.articleId = a.Id) as ViewCount,
+                        (select count(*) from Likes l where l.articleId = a.Id and l.status = 1) as LikeCount,
+                        (select count(*) from Likes l where l.articleId = a.id and l.status = 2) as CollectionCount,
+                        (select count(*) from Comments c where c.articleId = a.id) as CommentCount,
+                        ({(uid.HasValue ? $"select count(*) from Likes l where l.articleId = a.Id and l.status = 1 and l.userId = {uid.Value}" : "select 0")}) as IsUserLike,
+                        ({(uid.HasValue ? $"select count(*) from Likes l where l.articleId = a.Id and l.status = 2 and l.userId = {uid.Value}" : "select 0")}) as IsUserCollection
+                    from 
+                    article as a 
+                    where a.id in({string.Join(',', aids)})
+                    group by a.id
+                    ";
+                    var metaList = dbContext.Database.SqlQuery<Meta>(sql);
 
-                return metaList.ToList();
+                    return metaList.ToList();
+                }
+                return new List<Meta>();
             }
         }
     }

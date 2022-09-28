@@ -43,9 +43,13 @@ namespace UserService.App
             {
                 var user = await context.Users.Where(u => u.Id == id).Select(u => new
                 {
+                    Id = u.Id,
+                    Username = u.Username,
                     Nick = u.UserDetail.Nick,
                     Remark = u.UserDetail.Remark,
                     Photo = u.Photo,
+                    Sex = u.UserDetail.Sex,
+                    Fans = u.UserFollowWatches.Count(),
                 }).FirstOrDefaultAsync();
                 var userView = user.MapTo<UserView>();
                 return userView;
@@ -63,17 +67,22 @@ namespace UserService.App
             {
                 var users = context.Users.Select(u => new
                 {
+                    Id = u.Id,
+                    Username = u.Username,
                     Nick = u.UserDetail.Nick,
                     Remark = u.UserDetail.Remark,
                     Photo = u.Photo,
+                    Sex = u.UserDetail.Sex,
+                    Fans = u.UserFollowWatches.Count(),
                 });
                 //判断是否有条件
                 if (condition?.Count > 0)
                 {
                     foreach (var con in condition)
                     {
-                        users = "nick".Equals(con.Key,StringComparison.OrdinalIgnoreCase) ? users.Where(u => u.Nick.Contains(con.Value)) : users;
-                        users = "remark".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? users.Where(u => u.Remark.Contains(con.Value)) : users;
+                        users = "username".Equals(con.Key,StringComparison.OrdinalIgnoreCase) ? users.Where(u => u.Username.Contains(con.Value, StringComparison.OrdinalIgnoreCase)) : users;
+                        users = "nick".Equals(con.Key,StringComparison.OrdinalIgnoreCase) ? users.Where(u => u.Nick.Contains(con.Value, StringComparison.OrdinalIgnoreCase)) : users;
+                        users = "remark".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? users.Where(u => u.Remark.Contains(con.Value, StringComparison.OrdinalIgnoreCase)) : users;
                     }
                 }
                 //对结果进行分页
@@ -105,6 +114,7 @@ namespace UserService.App
                     Remark = u.UserDetail.Remark,
                     Photo = u.Photo,
                     Score = u.UserDetail == null ? 0.0m : u.UserDetail.Score,
+                    Fans = u.UserFollowWatches.Count(),
                     Status = u.Status
                 });
                 //判断是否有条件
@@ -113,12 +123,12 @@ namespace UserService.App
                     foreach (var con in condition)
                     {
                         users = "Id".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? users.Where(u => u.Id == Convert.ToInt32(con.Value)) : users;
-                        users = "Username".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? users.Where(u => u.Username.Contains(con.Value)) : users;
-                        users = "Nick".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? users.Where(u => u.Nick.Contains(con.Value)) : users;
-                        users = "Phone".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? users.Where(u => u.Phone.Contains(con.Value)) : users;
-                        users = "Email".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? users.Where(u => u.Email.Contains(con.Value)) : users;
+                        users = "Username".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? users.Where(u => u.Username.Contains(con.Value, StringComparison.OrdinalIgnoreCase)) : users;
+                        users = "Nick".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? users.Where(u => u.Nick.Contains(con.Value, StringComparison.OrdinalIgnoreCase)) : users;
+                        users = "Phone".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? users.Where(u => u.Phone.Contains(con.Value, StringComparison.OrdinalIgnoreCase)) : users;
+                        users = "Email".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? users.Where(u => u.Email.Contains(con.Value, StringComparison.OrdinalIgnoreCase)) : users;
                         users = "Sex".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? users.Where(u => u.Sex == Convert.ToInt32(con.Value)) : users;
-                        users = "Remark".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? users.Where(u => u.Remark.Contains(con.Value)) : users;
+                        users = "Remark".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? users.Where(u => u.Remark.Contains(con.Value, StringComparison.OrdinalIgnoreCase)) : users;
                         users = "Status".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? users.Where(u => u.Status == Convert.ToInt32(con.Value)) : users;
                         //排序
                         if (con.Sort != 0)
@@ -167,6 +177,7 @@ namespace UserService.App
                     Remark = u.UserDetail.Remark,
                     Photo = u.Photo,
                     Score = u.UserDetail == null ? 0.0m : u.UserDetail.Score,
+                    Fans = u.UserFollowWatches.Count(),
                     Status = u.Status
                 }).FirstOrDefaultAsync(u => u.Id == id);
                 var userView = user.MapTo<UserDetailView>();

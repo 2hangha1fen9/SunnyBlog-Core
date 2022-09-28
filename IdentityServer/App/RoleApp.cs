@@ -179,7 +179,7 @@ namespace IdentityService.App
                     foreach (var con in condidtion)
                     {
                         roles = "Id".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? roles.Where(r => r.Id == Convert.ToInt32(con.Value)) : roles;
-                        roles = "Name".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? roles.Where(r => r.Name.Contains(con.Value)) : roles;
+                        roles = "Name".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? roles.Where(r => r.Name.Contains(con.Value, StringComparison.OrdinalIgnoreCase)) : roles;
                         roles = "Status".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? roles.Where(r => r.Status == Convert.ToInt32(con.Value)) : roles;
                         roles = "IsDefault".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? roles.Where(r => r.IsDefault == Convert.ToInt32(con.Value)) : roles;
                         //排序

@@ -157,7 +157,7 @@ namespace ArticleService.App
         {
             using (var dbContext = contextFactory.CreateDbContext())
             {
-                var tags = await dbContext.Tags.Where(t => t.IsPrivate == 0).Select(t => new
+                var tags = await dbContext.Tags.Where(t => t.IsPrivate == 1).Select(t => new
                 {
                     Id = t.Id,
                     UserId = t.UserId,

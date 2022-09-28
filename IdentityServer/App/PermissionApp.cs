@@ -251,10 +251,10 @@ namespace Service.IdentityService.App
                     foreach (var con in condidtion)
                     {
                         permissions = "Id".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? permissions.Where(p => p.Id == Convert.ToInt32(con.Value)) : permissions; 
-                        permissions = "Service".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? permissions.Where(p => p.Service.Contains(con.Value)) : permissions; 
-                        permissions = "Controller".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? permissions.Where(p => p.Controller.Contains(con.Value)) : permissions; 
-                        permissions = "Action".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? permissions.Where(p => p.Action.Contains(con.Value)) : permissions; 
-                        permissions = "Description".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? permissions.Where(p => p.Description.Contains(con.Value)) : permissions;
+                        permissions = "Service".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? permissions.Where(p => p.Service.Contains(con.Value, StringComparison.OrdinalIgnoreCase)) : permissions; 
+                        permissions = "Controller".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? permissions.Where(p => p.Controller.Contains(con.Value, StringComparison.OrdinalIgnoreCase)) : permissions; 
+                        permissions = "Action".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? permissions.Where(p => p.Action.Contains(con.Value, StringComparison.OrdinalIgnoreCase)) : permissions; 
+                        permissions = "Description".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? permissions.Where(p => p.Description.Contains(con.Value, StringComparison.OrdinalIgnoreCase)) : permissions;
                         permissions = "Status".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? permissions.Where(p => p.Status == Convert.ToInt32(con.Value)) : permissions;
                         permissions = "IsPublic".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? permissions.Where(p => p.IsPublic == Convert.ToInt32(con.Value)) : permissions;
                         //排序

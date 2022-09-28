@@ -68,6 +68,7 @@ namespace UserService.App
                 var follows = dbContext.UserFollows.Where(f => f.UserId == id).Select(f => new
                 {
                     Id = f.UserId,
+                    Username = f.User.Username,
                     Nick = f.Watch.UserDetail.Nick,
                     Remark = f.Watch.UserDetail.Remark,
                     Photo = f.Watch.Photo
@@ -77,8 +78,9 @@ namespace UserService.App
                 {
                     foreach (var con in condidtion)
                     {
-                        follows = "Nick".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? follows.Where(f => f.Nick.Contains(con.Value)) : follows;
-                        follows = "Remark".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? follows.Where(f => f.Remark.Contains(con.Value)) : follows;
+                        follows = "Username".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? follows.Where(f => f.Username.Contains(con.Value, StringComparison.OrdinalIgnoreCase)) : follows;
+                        follows = "Nick".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? follows.Where(f => f.Nick.Contains(con.Value, StringComparison.OrdinalIgnoreCase)) : follows;
+                        follows = "Remark".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? follows.Where(f => f.Remark.Contains(con.Value, StringComparison.OrdinalIgnoreCase)) : follows;
                     }
                 }
                 var followView = (await follows.ToListAsync()).MapToList<FollowView>();

@@ -9,6 +9,10 @@
         /// <summary>
         /// 昵称
         /// </summary>
+        public string Username { get; set; }
+        /// <summary>
+        /// 昵称
+        /// </summary>
         public string Nick { get; set; }
         /// <summary>
         /// 备注
