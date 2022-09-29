@@ -11,6 +11,7 @@ using Infrastructure.Auth;
 using Infrastructure.Consul;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using StackExchange.Redis;
 using System.Reflection;
@@ -78,6 +79,7 @@ builder.Services.AddScoped<ICommentApp, CommentApp>();
 builder.Services.AddScoped<ILikeApp, LikeApp>();
 builder.Services.AddScoped<IViewApp, ViewApp>();
 builder.Services.AddScoped<IMetaApp, MetaApp>();
+builder.Services.AddScoped<IDrawingBedApp, DrawingBedApp>();
 
 var app = builder.Build();
 
@@ -86,6 +88,13 @@ app.UseConsul(builder.Configuration.GetSection("Consul").Get<ConsulServiceOption
 
 //节点注册
 app.UsePermissionRegistrar<Program>(builder.Configuration.GetSection("Consul").Get<ConsulServiceOptions>().ConsulAddress).Wait();
+
+//开启静态文件访问
+app.UseStaticFiles(new StaticFileOptions()
+{
+    FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "static", "picture")),
+    RequestPath = "/api/picture"
+});
 
 //rpc服务注册
 app.MapGrpcService<GRankService>();

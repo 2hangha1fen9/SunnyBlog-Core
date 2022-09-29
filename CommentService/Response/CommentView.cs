@@ -22,6 +22,10 @@
         /// </summary>
         public string Nick { get; set; }
         /// <summary>
+        /// 用户昵称
+        /// </summary>
+        public string Username { get; set; }
+        /// <summary>
         /// 用户头像
         /// </summary>
         public string Photo { get; set; }

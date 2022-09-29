@@ -34,6 +34,7 @@
 
 	<ItemGroup>
 	  <Folder Include="Domain\" />
+	  <Folder Include="static\picture\" />
 	</ItemGroup>
 	<ItemGroup>
 		<Protobuf Include="Rpc\Protos\article.proto" GrpcServices="Client" />

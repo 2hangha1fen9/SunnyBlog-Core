@@ -118,7 +118,8 @@ namespace ArticleService.App
                         Id = at.TagId,
                         UserId = at.Tag.UserId,
                         Name = at.Tag.Name,
-                        Color = at.Tag.Color
+                        Color = at.Tag.Color,
+                        ArticleCount = at.Tag.ArticleTags.Count(),
                     }),
                     Categorys = a.ArtCategories.Select(c => new CategoryView()
                     {
@@ -183,7 +184,8 @@ namespace ArticleService.App
                         Id = at.TagId,
                         UserId = at.Tag.UserId,
                         Name = at.Tag.Name,
-                        Color = at.Tag.Color
+                        Color = at.Tag.Color,
+                        ArticleCount = at.Tag.ArticleTags.Count(),
                     }),
                     Categorys = a.ArtCategories.Select(c => new CategoryView()
                     {

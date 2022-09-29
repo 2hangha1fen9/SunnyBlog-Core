@@ -3,6 +3,7 @@ using CommentService.App.Interface;
 using CommentService.Domain;
 using CommentService.Request;
 using CommentService.Response;
+using CommentService.Rpc.Protos;
 using Google.Protobuf.WellKnownTypes;
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
@@ -182,28 +183,17 @@ namespace CommentService.App
                 {
                     //调用rpc获取用户列表
                     var userList = (await userRpc.GetUserListAsync(new Empty())).UserInfo.ToList();
-                    var commentView = commentList.Join(userList,c => c.UserId,u => u.Id,(c,u) => new
-                    {
-                        Id = c.Id,
-                        ArticleId = c.ArticleId,
-                        UserId = u.Id,
-                        Nick = u.Nick,
-                        Username = u.Username,
-                        Photo = u.Photo,
-                        Content = c.Content,
-                        CreateTime = c.CreateTime,
-                        ParentId = c.ParentId,
-                        InverseParent = c.InverseParent.MapToList<CommentView>()
-                    }).Where(c => c.ParentId == null).AsQueryable();
+                    var commentView = commentList.Where(c => c.ParentId == null).MapToList<CommentView>();
 
+                    FillUserInfo(commentView, userList);
                     //条件筛选
                     if (condidtion?.Count > 0)
                     {
                         foreach (var con in condidtion)
                         {
-                            commentView = "Nick".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.Nick.Contains(con.Value)) : commentView;
-                            commentView = "Content".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.Content.Contains(con.Value)) : commentView;
-                            commentView = "Username".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.Username.Contains(con.Value)) : commentView;
+                            commentView = "Nick".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.Nick.Contains(con.Value)).ToList() : commentView;
+                            commentView = "Content".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.Content.Contains(con.Value)).ToList() : commentView;
+                            commentView = "Username".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.Username.Contains(con.Value)).ToList() : commentView;
                             //排序
                             if (con.Sort != 0)
                             {
@@ -211,20 +201,29 @@ namespace CommentService.App
                                 {
                                     if (con.Sort == -1)
                                     {
-                                        commentView = commentView.OrderByDescending(a => a.CreateTime);
+                                        commentView = commentView.OrderByDescending(a => a.CreateTime).ToList();
                                     }
                                     else
                                     {
-                                        commentView = commentView.OrderBy(a => a.CreateTime);
+                                        commentView = commentView.OrderBy(a => a.CreateTime).ToList();
                                     }
                                 }
                             }
+                            else
+                            {
+                                //默认时间排序
+                                commentView = commentView.OrderByDescending(a => a.CreateTime).ToList();
+                            }
                         }
+                    }
+                    else
+                    {
+                        //默认时间排序
+                        commentView = commentView.OrderByDescending(a => a.CreateTime).ToList();
                     }
                     //分页
                     var commentPage = new PageList<CommentView>();
-                    commentView = commentPage.Pagination(pageIndex, pageSize, commentView);
-                    commentPage.Page = commentView.MapToList<CommentView>();
+                    commentPage.Page = commentPage.Pagination(pageIndex, pageSize, commentView.AsQueryable()).ToList();
                     return commentPage;
                 }
                 return null;
@@ -513,6 +512,24 @@ namespace CommentService.App
             {
                 var count = await dbContext.Comments.CountAsync(c => c.ArticleId == aid);
                 return count;
+            }
+        }
+
+        public void FillUserInfo(List<CommentView> comments,List<UserInfoResponse> users)
+        {
+            foreach (var comment in comments)
+            {
+                var u = users.FirstOrDefault(u => u.Id == comment.UserId);
+                if(u != null)
+                {
+                    comment.Username = u.Username;
+                    comment.Nick = u.Nick;
+                    comment.Photo = u.Photo;
+                }
+                if(comment.InverseParent.Count > 0)
+                {
+                    FillUserInfo(comment.InverseParent, users);
+                }
             }
         }
     }
