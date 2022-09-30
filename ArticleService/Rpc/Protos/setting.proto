@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+option csharp_namespace = "ArticleService.Rpc.Protos";
+package sunnyblog;
+import "google/protobuf/empty.proto";
+service gSetting{
+	//获取所有设置项
+	rpc GetGlobalSetting(google.protobuf.Empty) returns(SettingList);
+}
+
+message Setting{
+	int32 id=1;
+	string option=2;
+	int32 value=3;
+}
+
+message SettingList{
+	repeated Setting settings=1;
+}

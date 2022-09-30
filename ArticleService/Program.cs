@@ -101,6 +101,7 @@ app.UsePermissionRegistrar<Program>(builder.Configuration.GetSection("Consul").G
 
 //rpc服务注册
 app.MapGrpcService<GArticleService>();
+app.MapGrpcService<GSettingService>();
 
 //开启静态文件访问
 app.UseStaticFiles(new StaticFileOptions()

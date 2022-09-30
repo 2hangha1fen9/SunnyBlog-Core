@@ -39,6 +39,7 @@
 		<Protobuf Include="Rpc\Protos\rank.proto" GrpcServices="Client" />
 		<Protobuf Include="Rpc\Protos\user.proto" GrpcServices="Client" />
 		<Protobuf Include="Rpc\Protos\article.proto" GrpcServices="Server" />
+		<Protobuf Include="Rpc\Protos\setting.proto" GrpcServices="Server" />
 	</ItemGroup>
 
 	<ItemGroup>

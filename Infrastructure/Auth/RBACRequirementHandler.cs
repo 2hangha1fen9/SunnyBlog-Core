@@ -65,11 +65,6 @@ namespace Infrastructure.Auth
                 List<Permission> permissionsList;
                 try
                 {
-                    //没有查询到任何权限也查询公共权限
-                    if(permissions.Count() < 0)
-                    {
-                        throw new Exception();
-                    }
                     permissionsList = JsonConvert.DeserializeObject<List<Permission>>(permissions);
                 }
                 catch (Exception)//尝试查询公共权限

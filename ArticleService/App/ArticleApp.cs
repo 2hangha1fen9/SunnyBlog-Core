@@ -297,7 +297,7 @@ namespace ArticleService.App
                 //获取全局文章设置
                 var articleStatus = await dbContext.GlobalSettings.FirstOrDefaultAsync(g => g.Option == "ArticleStatus");
                 var commentStatus = await dbContext.GlobalSettings.FirstOrDefaultAsync(g => g.Option == "CommentStatus");
-                if (articleStatus != null && articleStatus.Value.HasValue)
+                if (articleStatus != null && articleStatus.Value.HasValue && articleStatus.Value != 1)
                 {
                     article.Status = articleStatus.Value.Value;
                     if(article.Status == -2)
@@ -305,7 +305,7 @@ namespace ArticleService.App
                         throw new Exception("禁止发布文章");
                     }
                 }
-                if (commentStatus != null && commentStatus.Value.HasValue)
+                if (commentStatus != null && commentStatus.Value.HasValue && commentStatus.Value != 1)
                 {
                     article.CommentStatus = commentStatus.Value.Value;
                 }

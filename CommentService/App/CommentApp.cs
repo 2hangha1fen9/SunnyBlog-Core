@@ -9,6 +9,7 @@ using Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using StackExchange.Redis;
 using static ArticleService.Rpc.Protos.gArticle;
+using static ArticleService.Rpc.Protos.gSetting;
 using static CommentService.Rpc.Protos.gUser;
 
 namespace CommentService.App
@@ -18,12 +19,14 @@ namespace CommentService.App
         private readonly IDbContextFactory<CommentDBContext> contextFactory;
         private readonly gArticleClient articleRpc;
         private readonly gUserClient userRpc;
+        private readonly gSettingClient settingRpc;
 
-        public CommentApp(IDbContextFactory<CommentDBContext> contextFactory, gArticleClient articleRpc, gUserClient userRpc)
+        public CommentApp(IDbContextFactory<CommentDBContext> contextFactory, gArticleClient articleRpc, gUserClient userRpc, gSettingClient settingRpc)
         {
             this.contextFactory = contextFactory;
             this.articleRpc = articleRpc;
             this.userRpc = userRpc;
+            this.settingRpc = settingRpc;
         }
 
         /// <summary>
@@ -36,13 +39,23 @@ namespace CommentService.App
         {
             using (var dbContext = contextFactory.CreateDbContext())
             {
+                var comment = request.MapTo<Comment>();
                 //获取文章状态,判断文章是否可以评论
                 var articleInfo = await articleRpc.GetArticleInfoAsync(new ArticleId() { Id = request.ArticleId });
-                var comment = request.MapTo<Comment>();
+                //获取全局设置
+                var commentStatus = (await settingRpc.GetGlobalSettingAsync(new Empty())).Settings.FirstOrDefault(s => s.Option == "CommentStatus");
+                if (commentStatus != null && commentStatus.Value != 1)
+                {
+                    articleInfo.CommentStatus = commentStatus.Value;
+                    if(articleInfo.CommentStatus == -1)
+                    {
+                        return "作者没有开通评论";
+                    }
+                }
                 comment.UserId = uid;
                 comment.CreateTime = DateTime.Now;
                 comment.Status = articleInfo.CommentStatus;
-                if (articleInfo.CommentStatus != -1 || articleInfo.Status == 1 || articleInfo.IsLock == 1)
+                if (articleInfo.CommentStatus != -1 && articleInfo.Status == 1 && articleInfo.IsLock == 1)
                 {
                     await dbContext.Comments.AddAsync(comment);
                     if (await dbContext.SaveChangesAsync() < 0)
@@ -51,7 +64,7 @@ namespace CommentService.App
                     }
                     return articleInfo.CommentStatus == 1 ? "评论成功" : "评论成功,需要作者审核后展示";
                 }
-                throw new Exception("作者没有开通评论");
+                return "作者没有开通评论";
             }
         }
 
@@ -286,7 +299,17 @@ namespace CommentService.App
                                     }
                                 }
                             }
+                            else
+                            {
+                                //默认时间排序
+                                commentView = commentView.OrderByDescending(a => a.CreateTime);
+                            }
                         }
+                    }
+                    else
+                    {
+                        //默认时间排序
+                        commentView = commentView.OrderByDescending(a => a.CreateTime);
                     }
                     //分页
                     var commentPage = new PageList<CommentListView>();
@@ -356,7 +379,17 @@ namespace CommentService.App
                                     }
                                 }
                             }
+                            else
+                            {
+                                //默认时间排序
+                                commentView = commentView.OrderByDescending(a => a.CreateTime);
+                            }
                         }
+                    }
+                    else
+                    {
+                        //默认时间排序
+                        commentView = commentView.OrderByDescending(a => a.CreateTime);
                     }
                     //分页
                     var commentPage = new PageList<CommentListView>();
@@ -425,7 +458,17 @@ namespace CommentService.App
                                     }
                                 }
                             }
+                            else
+                            {
+                                //默认时间排序
+                                commentView = commentView.OrderByDescending(a => a.CreateTime);
+                            }
                         }
+                    }
+                    else
+                    {
+                        //默认时间排序
+                        commentView = commentView.OrderByDescending(a => a.CreateTime);
                     }
                     //分页
                     var commentPage = new PageList<CommentListView>();

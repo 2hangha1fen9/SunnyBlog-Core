@@ -11,6 +11,10 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+	  <None Remove="Rpc\Protos\setting.proto" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="Com.Ctrip.Framework.Apollo.Configuration" Version="2.7.0" />
 		<PackageReference Include="Grpc.AspNetCore" Version="2.48.0" />
 		<PackageReference Include="Grpc.AspNetCore.Server.ClientFactory" Version="2.48.0" />
@@ -37,6 +41,7 @@
 	  <Folder Include="static\picture\" />
 	</ItemGroup>
 	<ItemGroup>
+		<Protobuf Include="Rpc\Protos\setting.proto" GrpcServices="Client" />
 		<Protobuf Include="Rpc\Protos\article.proto" GrpcServices="Client" />
 		<Protobuf Include="Rpc\Protos\user.proto" GrpcServices="Client" />
 		<Protobuf Include="Rpc\Protos\rank.proto" GrpcServices="Server" />

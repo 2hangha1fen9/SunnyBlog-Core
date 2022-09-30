@@ -73,6 +73,10 @@ builder.Services.AddGrpcClient<gUser.gUserClient>(option =>
 {
     option.Address = new Uri(ServiceUrl.GetServiceUrlByName("UserService", builder.Configuration.GetSection("Consul").Get<ConsulServiceOptions>().ConsulAddress));
 });
+builder.Services.AddGrpcClient<gSetting.gSettingClient>(option =>
+{
+    option.Address = new Uri(ServiceUrl.GetServiceUrlByName("ArticleService", builder.Configuration.GetSection("Consul").Get<ConsulServiceOptions>().ConsulAddress));
+});
 
 //ЗўЮёзЂВс
 builder.Services.AddScoped<ICommentApp, CommentApp>();
