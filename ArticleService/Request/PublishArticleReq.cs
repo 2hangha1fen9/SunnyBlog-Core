@@ -40,7 +40,7 @@ namespace ArticleService.Request
         /// <summary>
         /// 文章分类
         /// </summary>
-        public List<int>? Categorys { get; set; }
+        public int? CategoryId { get; set; }
         /// <summary>
         /// 文章状态-1待审核1已发布2私有3回收站
         /// </summary>

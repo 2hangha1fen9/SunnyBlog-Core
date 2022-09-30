@@ -10,6 +10,7 @@ namespace ArticleService.Domain
 {
     [Table("ArtRegion")]
     [Index("Id", "ParentId", Name = "IX_ArtRegion")]
+    [Index("Name", Name = "IX_ArtRegion_1", IsUnique = true)]
     public partial class ArtRegion
     {
         public ArtRegion()

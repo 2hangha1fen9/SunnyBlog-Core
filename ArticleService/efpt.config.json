@@ -31,10 +31,6 @@
          "ObjectType": 0
       },
       {
-         "Name": "[dbo].[Category]",
-         "ObjectType": 0
-      },
-      {
          "Name": "[dbo].[GlobalSetting]",
          "ObjectType": 0
       },

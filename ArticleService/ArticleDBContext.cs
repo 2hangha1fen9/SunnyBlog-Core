@@ -10,7 +10,6 @@ namespace ArticleService
 {
     public partial class ArticleDBContext : DbContext
     {
-
         public ArticleDBContext(DbContextOptions<ArticleDBContext> options)
             : base(options)
         {
@@ -20,7 +19,6 @@ namespace ArticleService
         public virtual DbSet<ArtRegion> ArtRegions { get; set; }
         public virtual DbSet<Article> Articles { get; set; }
         public virtual DbSet<ArticleTag> ArticleTags { get; set; }
-        public virtual DbSet<Category> Categories { get; set; }
         public virtual DbSet<GlobalSetting> GlobalSettings { get; set; }
         public virtual DbSet<Tag> Tags { get; set; }
 
@@ -28,16 +26,10 @@ namespace ArticleService
         {
             modelBuilder.Entity<ArtCategory>(entity =>
             {
-                entity.HasOne(d => d.Article)
-                    .WithMany(p => p.ArtCategories)
-                    .HasForeignKey(d => d.ArticleId)
-                    .HasConstraintName("FK_ArtCategory_Article");
-
-                entity.HasOne(d => d.Category)
-                    .WithMany(p => p.ArtCategories)
-                    .HasForeignKey(d => d.CategoryId)
-                    .OnDelete(DeleteBehavior.ClientSetNull)
-                    .HasConstraintName("FK_ArtCategory_Category");
+                entity.HasOne(d => d.Parent)
+                    .WithMany(p => p.InverseParent)
+                    .HasForeignKey(d => d.ParentId)
+                    .HasConstraintName("FK_Category_Category");
             });
 
             modelBuilder.Entity<ArtRegion>(entity =>
@@ -68,6 +60,12 @@ namespace ArticleService
                     .HasDefaultValueSql("((1))")
                     .HasComment("-1待审核1已发布2私有3回收站");
 
+                entity.HasOne(d => d.Category)
+                    .WithMany(p => p.Articles)
+                    .HasForeignKey(d => d.CategoryId)
+                    .OnDelete(DeleteBehavior.SetNull)
+                    .HasConstraintName("FK_Article_Category");
+
                 entity.HasOne(d => d.Region)
                     .WithMany(p => p.Articles)
                     .HasForeignKey(d => d.RegionId)
@@ -86,14 +84,6 @@ namespace ArticleService
                     .WithMany(p => p.ArticleTags)
                     .HasForeignKey(d => d.TagId)
                     .HasConstraintName("FK_ArticleTag_Tags");
-            });
-
-            modelBuilder.Entity<Category>(entity =>
-            {
-                entity.HasOne(d => d.Parent)
-                    .WithMany(p => p.InverseParent)
-                    .HasForeignKey(d => d.ParentId)
-                    .HasConstraintName("FK_Category_Category");
             });
 
             modelBuilder.Entity<Tag>(entity =>

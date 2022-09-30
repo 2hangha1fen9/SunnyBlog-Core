@@ -81,7 +81,7 @@ namespace ArticleService.Controllers
             try
             {
                 var userId = HttpContext.User.Claims?.FirstOrDefault(c => c.Type == "user_id")?.Value;
-                result.Result = await articleCategoryApp.AddCategory(request, Convert.ToInt32(userId));
+                result.Result = await articleCategoryApp.CreateCategory(request, Convert.ToInt32(userId));
             }
             catch (Exception ex)
             {
@@ -99,13 +99,13 @@ namespace ArticleService.Controllers
         [RBAC]
         [HttpDelete]
         [TypeFilter(typeof(RedisFlush), Arguments = new object[] { new string[] { "*category*" } })]
-        public async Task<Response<string>> Delete(List<DelCategoryReq> request)
+        public async Task<Response<string>> Delete(int cid)
         {
             var result = new Response<string>();
             try
             {
                 var userId = HttpContext.User.Claims?.FirstOrDefault(c => c.Type == "user_id")?.Value;
-                result.Result = await articleCategoryApp.DeletelCategory(request, Convert.ToInt32(userId));
+                result.Result = await articleCategoryApp.DeleteCategory(cid, Convert.ToInt32(userId));
             }
             catch (Exception ex)
             {

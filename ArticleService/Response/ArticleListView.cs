@@ -48,7 +48,11 @@
         /// <summary>
         /// 文章分类
         /// </summary>
-        public List<CategoryView> Categorys { get; set; }
+        public int CategoryId { get; set; }
+        /// <summary>
+        /// 文章分类
+        /// </summary>
+        public string CategoryName { get; set; }
         /// <summary>
         /// 文章状态
         /// </summary>

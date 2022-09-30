@@ -45,9 +45,9 @@ namespace ArticleService.Request
         /// </summary>
         public int? RegionId { get; set; }
         /// <summary>
-        /// 文章分类
+        /// 文章分类Id
         /// </summary>
-        public List<int>? Categorys { get; set; }
+        public int? CategoryId { get; set; }
         /// <summary>
         /// 文章状态-1待审核1已发布2私有3回收站
         /// </summary>

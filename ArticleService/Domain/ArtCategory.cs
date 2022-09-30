@@ -9,22 +9,34 @@ using Microsoft.EntityFrameworkCore;
 namespace ArticleService.Domain
 {
     [Table("ArtCategory")]
-    [Index("ArticleId", "CategoryId", Name = "IX_ArtCategory_1", IsUnique = true)]
+    [Index("Name", "UserId", Name = "IX_ArtCategory", IsUnique = true)]
+    [Index("Id", "ParentId", Name = "IX_Category", IsUnique = true)]
     public partial class ArtCategory
     {
+        public ArtCategory()
+        {
+            Articles = new HashSet<Article>();
+            InverseParent = new HashSet<ArtCategory>();
+        }
+
         [Key]
         [Column("id")]
         public int Id { get; set; }
-        [Column("categoryId")]
-        public int CategoryId { get; set; }
-        [Column("articleId")]
-        public int ArticleId { get; set; }
+        [Required]
+        [Column("name")]
+        [StringLength(50)]
+        public string Name { get; set; }
+        [Column("userId")]
+        public int UserId { get; set; }
+        [Column("parentId")]
+        public int? ParentId { get; set; }
 
-        [ForeignKey("ArticleId")]
-        [InverseProperty("ArtCategories")]
-        public virtual Article Article { get; set; }
-        [ForeignKey("CategoryId")]
-        [InverseProperty("ArtCategories")]
-        public virtual Category Category { get; set; }
+        [ForeignKey("ParentId")]
+        [InverseProperty("InverseParent")]
+        public virtual ArtCategory Parent { get; set; }
+        [InverseProperty("Category")]
+        public virtual ICollection<Article> Articles { get; set; }
+        [InverseProperty("Parent")]
+        public virtual ICollection<ArtCategory> InverseParent { get; set; }
     }
 }

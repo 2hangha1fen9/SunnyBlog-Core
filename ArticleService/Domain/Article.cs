@@ -14,7 +14,6 @@ namespace ArticleService.Domain
     {
         public Article()
         {
-            ArtCategories = new HashSet<ArtCategory>();
             ArticleTags = new HashSet<ArticleTag>();
         }
 
@@ -43,6 +42,8 @@ namespace ArticleService.Domain
         public int UserId { get; set; }
         [Column("regionId")]
         public int? RegionId { get; set; }
+        [Column("categoryId")]
+        public int? CategoryId { get; set; }
         /// <summary>
         /// -1待审核1已发布2私有3回收站
         /// </summary>
@@ -63,11 +64,12 @@ namespace ArticleService.Domain
         [Column("isLock")]
         public int IsLock { get; set; }
 
+        [ForeignKey("CategoryId")]
+        [InverseProperty("Articles")]
+        public virtual ArtCategory Category { get; set; }
         [ForeignKey("RegionId")]
         [InverseProperty("Articles")]
         public virtual ArtRegion Region { get; set; }
-        [InverseProperty("Article")]
-        public virtual ICollection<ArtCategory> ArtCategories { get; set; }
         [InverseProperty("Article")]
         public virtual ICollection<ArticleTag> ArticleTags { get; set; }
     }
