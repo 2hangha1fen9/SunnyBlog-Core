@@ -58,12 +58,11 @@ namespace ArticleService
 
                 entity.Property(e => e.Status)
                     .HasDefaultValueSql("((1))")
-                    .HasComment("-1待审核1已发布2私有3回收站");
+                    .HasComment("-1待审核1已发布2私有3回收站4草稿");
 
                 entity.HasOne(d => d.Category)
                     .WithMany(p => p.Articles)
                     .HasForeignKey(d => d.CategoryId)
-                    .OnDelete(DeleteBehavior.SetNull)
                     .HasConstraintName("FK_Article_Category");
 
                 entity.HasOne(d => d.Region)

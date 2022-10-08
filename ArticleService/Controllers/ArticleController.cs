@@ -103,7 +103,6 @@ namespace ArticleService.Controllers
         /// <returns></returns>
         [RBAC]
         [HttpGet]
-        [TypeFilter(typeof(RedisCache))]
         public async Task<Response<PageList<ArticleListView>>> My(string? condition = null, int? pageIndex = 1, int? pageSize = 10)
         {
             var result = new Response<PageList<ArticleListView>>();

@@ -26,7 +26,7 @@ builder.Host.ConfigureAppConfiguration((context, builder) =>
             .AddNamespace("CommentService", ConfigFileFormat.Json);
 });
 // Add services to the container.
-
+builder.WebHost.UseUrls("https://*:8083");
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();

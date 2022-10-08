@@ -47,7 +47,7 @@ namespace ArticleService.App
                 //查询文章
                 if (uid.HasValue)
                 {
-                    article = await dbContext.Articles.FirstOrDefaultAsync(a => a.Id == request.Id && a.UserId == uid && a.IsLock == 0);
+                    article = await dbContext.Articles.FirstOrDefaultAsync(a => a.Id == request.Id && a.UserId == uid && a.IsLock == 1);
                 }
                 else
                 {
@@ -158,7 +158,7 @@ namespace ArticleService.App
                 var articleMap = articleList.Join(userList,a => a.UserId,u => u.Id,(a,u) => new
                 { 
                     Id = a.Id,
-                    UserId = 1,
+                    UserId = a.UserId,
                     Nick = u.Nick,
                     Username = u.Username,
                     Title = a.Title,
@@ -193,7 +193,14 @@ namespace ArticleService.App
                         articleMap = "Summary".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.Summary.Contains(con.Value,StringComparison.OrdinalIgnoreCase)) : articleMap;
                         articleMap = "Tag".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.Tags.Where(t => t.Name == con.Value).Count() > 0) : articleMap;
                         articleMap = "Category".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.CategoryName.Contains(con.Value,StringComparison.OrdinalIgnoreCase)): articleMap;
-                        articleMap = "CategoryId".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.CategoryId == Convert.ToInt32(con.Value)) : articleMap;
+                        if("CategoryId".Equals(con.Key, StringComparison.OrdinalIgnoreCase) && con.Value != null)
+                        {
+                            articleMap =  articleMap.Where(a => a.CategoryId == Convert.ToInt32(con.Value));
+                        }
+                        else if("CategoryId".Equals(con.Key, StringComparison.OrdinalIgnoreCase))
+                        {
+                            articleMap = articleMap.Where(a => a.CategoryId == null);
+                        }
                         articleMap = "Status".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.Status == Convert.ToInt32(con.Value)) : articleMap;
                         articleMap = "IsLock".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.IsLock == Convert.ToInt32(con.Value)) : articleMap;
                         articleMap = "CommentStatus".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.CommentStatus == Convert.ToInt32(con.Value)) : articleMap;
@@ -300,7 +307,7 @@ namespace ArticleService.App
                 }
                 //添加文章标签
                 articleTagApp.AddArticleTag(article.Id, request.Tags);
-                return "发布成功";
+                return $"{article.Id}";
             }
         }
 
@@ -342,7 +349,17 @@ namespace ArticleService.App
                     var a = articles.FirstOrDefault(a => a.Id == aid.Id && a.UserId == uid);
                     if (a != null)
                     {
-                        dbContext.Entry(a).State = EntityState.Deleted;
+                        if (a.Status == 3)
+                        {
+                            //如果已经在回收站则直接删除
+                            dbContext.Entry(a).State = EntityState.Deleted;
+                        }
+                        else
+                        {
+                            //第一次先进行逻辑删除
+                            a.Status = 3;
+                            dbContext.Entry(a).State = EntityState.Modified;
+                        }
                     }
                 }
                 if (await dbContext.SaveChangesAsync() < 0)

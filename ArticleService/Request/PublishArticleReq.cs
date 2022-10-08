@@ -15,8 +15,7 @@ namespace ArticleService.Request
         /// <summary>
         /// 文章内容摘要
         /// </summary>
-        [Required(ErrorMessage = "文章内容不能为空")]
-        public string Content { get; set; }
+        public string? Content { get; set; }
         /// <summary>
         /// 代码块主题
         /// </summary>

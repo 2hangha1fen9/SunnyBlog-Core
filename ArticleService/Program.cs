@@ -31,6 +31,7 @@ builder.Host.ConfigureAppConfiguration((context, builder) =>
 });
 // Add services to the container.
 
+builder.WebHost.UseUrls("https://*:8082");
 builder.Services.AddControllers().AddNewtonsoftJson(option =>
 {
     //忽略序列化循环引用

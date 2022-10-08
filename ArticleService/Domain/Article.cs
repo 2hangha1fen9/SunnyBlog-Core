@@ -24,7 +24,6 @@ namespace ArticleService.Domain
         [Column("title")]
         [StringLength(100)]
         public string Title { get; set; }
-        [Required]
         [Column("content")]
         public string Content { get; set; }
         [Column("codeStyle")]
@@ -45,7 +44,7 @@ namespace ArticleService.Domain
         [Column("categoryId")]
         public int? CategoryId { get; set; }
         /// <summary>
-        /// -1待审核1已发布2私有3回收站
+        /// -1待审核1已发布2私有3回收站4草稿
         /// </summary>
         [Column("status")]
         public int Status { get; set; }

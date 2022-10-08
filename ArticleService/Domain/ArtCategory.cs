@@ -9,8 +9,7 @@ using Microsoft.EntityFrameworkCore;
 namespace ArticleService.Domain
 {
     [Table("ArtCategory")]
-    [Index("Name", "UserId", Name = "IX_ArtCategory", IsUnique = true)]
-    [Index("Id", "ParentId", Name = "IX_Category", IsUnique = true)]
+    [Index("Name", "UserId", "ParentId", Name = "IX_ArtCategory", IsUnique = true)]
     public partial class ArtCategory
     {
         public ArtCategory()

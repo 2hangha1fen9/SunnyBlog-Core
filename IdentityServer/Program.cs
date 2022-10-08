@@ -29,7 +29,7 @@ builder.Host.ConfigureAppConfiguration((context, builder) =>
         .AddNamespace("IdentityService", ConfigFileFormat.Json);
 });
 
-
+builder.WebHost.UseUrls("https://*:8000");
 // Add services to the container.
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

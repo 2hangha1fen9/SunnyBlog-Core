@@ -48,7 +48,6 @@ namespace ArticleService.Controllers
         /// <returns></returns>
         [RBAC]
         [HttpGet]
-        [TypeFilter(typeof(RedisCache))]
         public async Task<Response<List<TagView>>> My()
         {
             var result = new Response<List<TagView>>();

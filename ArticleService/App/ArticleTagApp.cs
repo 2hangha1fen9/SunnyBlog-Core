@@ -72,7 +72,7 @@ namespace ArticleService.App
                 {
                     throw new Exception("标签添加失败");
                 }
-                return "添加成功";
+                return $"{tag.Id}";
             }
         }
 
@@ -179,7 +179,7 @@ namespace ArticleService.App
         {
             using (var dbContext = contextFactory.CreateDbContext())
             {
-                var tags = await dbContext.Tags.Where(t => t.UserId == uid).Select(t => new
+                var tags = await dbContext.Tags.Where(t => t.UserId == uid || t.IsPrivate == 1).Select(t => new
                 {
                     Id = t.Id,
                     UserId = t.UserId,

@@ -33,7 +33,7 @@ namespace ArticleService.App
                     if (category != null)
                     {
                         category.Name = request.Name ?? category.Name;
-                        category.ParentId = request.ParentId;
+                        category.ParentId = request.ParentId.HasValue && request.ParentId.Value != 0 ? request.ParentId.Value : null;
                         dbContext.Entry(category).State = EntityState.Modified;
                         await dbContext.SaveChangesAsync();
                     }
@@ -55,14 +55,19 @@ namespace ArticleService.App
         {
             using (var dbContext = contextFactory.CreateDbContext())
             {
-                var category = request.MapTo<ArtCategory>();
+                var category = await dbContext.ArtCategories.FirstOrDefaultAsync(t => t.UserId == uid && request.Name == t.Name && t.ParentId == request.ParentId);
+                if(category != null)
+                {
+                    throw new Exception("目录已存在");
+                }
+                category = request.MapTo<ArtCategory>();
                 category.UserId = uid;
                 dbContext.ArtCategories.Add(category);
                 if (await dbContext.SaveChangesAsync() < 0)
                 {
                     throw new Exception("添加失败");
                 }
-                return "添加成功";
+                return $"{category.Id}";
             }
         }
 
@@ -73,17 +78,25 @@ namespace ArticleService.App
         /// <param name="uid"></param>
         public async Task<string> DeleteCategory(int cid, int uid)
         {
-            using (var dbContext = contextFactory.CreateDbContext())
+            try
             {
-                //查询分类
-                var category = await dbContext.ArtCategories.FirstOrDefaultAsync(c => c.Id == cid && c.UserId == uid);
-                dbContext.ArtCategories.Remove(category);
-                if (await dbContext.SaveChangesAsync() < 0)
+                using (var dbContext = contextFactory.CreateDbContext())
                 {
-                    throw new Exception("删除失败");
+                    //查询分类
+                    var category = await dbContext.ArtCategories.FirstOrDefaultAsync(c => c.Id == cid && c.UserId == uid);
+                    dbContext.ArtCategories.Remove(category);
+                    if (await dbContext.SaveChangesAsync() < 0)
+                    {
+                        throw new Exception("删除失败");
+                    }
+                    return "删除成功";
                 }
-                return "删除成功";
             }
+            catch (Exception)
+            {
+                throw new Exception("目录下还有数据(包含回收站)");
+            }
+            
         }
 
         /// <summary>
