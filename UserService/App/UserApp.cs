@@ -194,10 +194,9 @@ namespace UserService.App
         {
             using (var dbContext = contextFactory.CreateDbContext())
             {
+                var a = await dbContext.Users.FirstOrDefaultAsync(u => u.Username == request.Username || u.Phone == request.Phone || u.Email == request.Email);
                 //查询用户是否存在
-                if (await dbContext.Users.FirstOrDefaultAsync(u => u.Username == request.Username ||
-                                                                   (u.Phone ?? "-1") == request.Phone ||
-                                                                   (u.Email ?? "-1") == request.Email) != null)
+                if (a != null)
                 {
                     throw new Exception("用户已存在");
                 }

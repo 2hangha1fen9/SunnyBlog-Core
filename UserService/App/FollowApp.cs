@@ -1,5 +1,8 @@
 ﻿using Infrastructure;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
+using StackExchange.Redis;
 using UserService.App.Interface;
 using UserService.Domain;
 using UserService.Response;
@@ -12,49 +15,20 @@ namespace UserService.App
         /// 数据库上下文工厂
         /// </summary>
         private readonly IDbContextFactory<UserDBContext> contextFactory;
-        public FollowApp(IDbContextFactory<UserDBContext> contextFactory)
+        private readonly IDatabase cache;
+        /// <summary>
+        /// 序列化配置
+        /// </summary>
+        private readonly JsonSerializerSettings jsonConfig;
+        public FollowApp(IDbContextFactory<UserDBContext> contextFactory, IConnectionMultiplexer connection)
         {
             this.contextFactory = contextFactory;
+            this.cache = connection.GetDatabase(2);
+            this.jsonConfig = new JsonSerializerSettings();
+            this.jsonConfig.ContractResolver = new CamelCasePropertyNamesContractResolver(); //启用小驼峰格式
+            this.jsonConfig.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
         }
 
-        /// <summary>
-        /// 取消关注
-        /// </summary>
-        /// <param name="id">用户ID</param>
-        /// <param name="sbId">被关注ID</param>
-        /// <returns></returns>
-        public async Task<string> CancelFollowSb(int id, int sbId)
-        {
-            try
-            {
-                using (var dbContext = contextFactory.CreateDbContext())
-                {
-                    var follow = await dbContext.UserFollows.FirstOrDefaultAsync(f => f.UserId == id && f.WatchId == sbId);
-                    ;
-                    if (follow != null)
-                    {
-                        dbContext.UserFollows.Remove(follow);
-                        if (await dbContext.SaveChangesAsync() > 0)
-                        {
-                            return "取消成功";
-                        }
-                        else
-                        {
-                            throw new Exception("取消失败");
-                        }
-                    }
-                    else
-                    {
-                        throw new Exception("还没有关注");
-                    }
-                }
-            }
-            catch (Exception)
-            {
-                throw new Exception("请求错误");
-            }
-
-        }
 
         /// <summary>
         /// 关注列表
@@ -67,7 +41,8 @@ namespace UserService.App
             {
                 var follows = dbContext.UserFollows.Where(f => f.UserId == id).Select(f => new
                 {
-                    Id = f.UserId,
+                    Id = f.Id,
+                    UserId = f.UserId,
                     Username = f.User.Username,
                     Nick = f.Watch.UserDetail.Nick,
                     Remark = f.Watch.UserDetail.Remark,
@@ -89,40 +64,118 @@ namespace UserService.App
         }
 
         /// <summary>
-        /// 关注某人
+        /// 获取关注通知信息
+        /// </summary>
+        /// <param name="uid"></param>
+        /// <returns></returns>
+        public async Task<List<FollowView>> GetFollowMessage(int uid)
+        {
+            using (var dbContext = contextFactory.CreateDbContext())
+            {
+                List<FollowView> followList = new List<FollowView>();
+                var followKeys = await cache.ScriptEvaluateAsync(LuaScript.Prepare($"local res = redis.call('KEYS','followNotify:{uid}*') return res"));
+                if (!followKeys.IsNull)
+                {
+                    var userList = await dbContext.Users.Include(u => u.UserDetail).ToListAsync();
+                    //获取所有的值
+                    RedisKey[] keys = (RedisKey[])followKeys;
+                    var values = await cache.StringGetAsync(keys);
+                    foreach (var item in values)
+                    {
+                        var follow = JsonConvert.DeserializeObject<UserFollow>(item);
+                        var user = userList.FirstOrDefault(u => u.Id == follow.UserId);
+                        if (user != null)
+                        {
+                            followList.Add(new FollowView
+                            {
+                                Id = follow.Id,
+                                UserId = user.Id,
+                                Username = user.Username,
+                                Nick = user.UserDetail.Nick,
+                                Remark = user.UserDetail.Remark,
+                                Photo = user.Photo
+                            });
+                        }
+                    }
+                }
+                return followList;
+            }
+        }
+
+        /// <summary>
+        /// 删除关注信息
+        /// </summary>
+        /// <param name="cid"></param>
+        /// <param name="uid"></param>
+        /// <param name="isAll"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public async Task<string> DeleteFollowMessage(int uid,int fid,bool isAll)
+        {
+            //已读全部
+            if (isAll)
+            {
+                var followKeys = await cache.ScriptEvaluateAsync(LuaScript.Prepare($"local res = redis.call('KEYS','followNotify:{uid}*') return res"));
+                if (!followKeys.IsNull)
+                {
+                    RedisKey[] k = (RedisKey[])followKeys;
+                    await this.cache.KeyDeleteAsync(k);
+                }
+            }
+            else
+            {
+                await cache.KeyDeleteAsync($"followNotify:{uid}:{fid}");
+            }
+
+            return "操作成功";
+        }
+
+        /// <summary>
+        /// 关注/取消某人
         /// </summary>
         /// <param name="id">用户ID</param>
         /// <param name="sbId">被关注用户ID</param>
         /// <returns></returns>
         public async Task<string> FollowSb(int id, int sbId)
         {
-            try
+            using (var dbContext = contextFactory.CreateDbContext())
             {
-                using (var dbContext = contextFactory.CreateDbContext())
+                if (id == sbId)
                 {
-                    if (id == sbId)
-                    {
-                        return "不能关注自己";
-                    }
-                    var follow = new UserFollow()
+                    throw new Exception("不能关注自己");
+                }
+                var follow = await dbContext.UserFollows.FirstOrDefaultAsync(f => f.UserId == id && f.WatchId == sbId);
+                var message = "";
+                if (follow == null)
+                {
+                    follow = new UserFollow
                     {
                         UserId = id,
                         WatchId = sbId,
                     };
-                    await dbContext.AddAsync(follow);
-                    if (await dbContext.SaveChangesAsync() > 0)
+                    dbContext.UserFollows.Add(follow);
+                    message = "关注成功";
+                }
+                else
+                {
+                    dbContext.UserFollows.Remove(follow);
+                    message = "取消关注成功";
+                }
+
+                if ((await dbContext.SaveChangesAsync()) > 0)
+                {
+                    if(message == "关注成功")
                     {
-                        return "关注成功";
-                    }
-                    else
-                    {
-                        throw new Exception("关注失败");
+                        //推送消息
+                        await cache.StringSetAsync($"followNotify:{sbId}:{follow.Id}", JsonConvert.SerializeObject(follow, jsonConfig));
                     }
                 }
-            }
-            catch (Exception)
-            {
-                throw new Exception("请求错误");
+                else
+                {
+                    throw new Exception("操作失败");
+                }
+
+                return message;
             }
         }
 

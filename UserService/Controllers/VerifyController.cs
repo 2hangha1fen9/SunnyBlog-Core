@@ -1,4 +1,5 @@
 ﻿using Infrastructure;
+using Infrastructure.Auth;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using UserService.App.Interface;
@@ -26,6 +27,7 @@ namespace UserService.Controllers
         /// <param name="receiver"></param>
         /// <returns></returns>
         [HttpPost]
+        [RBAC(IsPublic = 1)]
         public async Task<Response<string>> SendVCode(SendVCodeReq request)
         {
             var result = new Response<string>();

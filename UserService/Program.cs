@@ -85,6 +85,12 @@ builder.Services.AddGrpcClient<gRole.gRoleClient>(option =>
 {
     option.Address = new Uri(ServiceUrl.GetServiceUrlByName("IdentityService", builder.Configuration.GetSection("Consul").Get<ConsulServiceOptions>().ConsulAddress));
 });
+//Redis¿Í»§¶Ë×¢²á
+builder.Services.AddSingleton<IConnectionMultiplexer>(cm =>
+{
+    var conStr = builder.Configuration.GetValue<string>("RedisServer");
+    return ConnectionMultiplexer.Connect(conStr);
+});
 
 var app = builder.Build();
 

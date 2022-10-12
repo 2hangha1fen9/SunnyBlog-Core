@@ -2,10 +2,11 @@
 {
     public class FollowView
     {
+        public int Id { get; set; }
         /// <summary>
         /// 用户Id
         /// </summary>
-        public string Id { get; set; }
+        public int UserId { get; set; }
         /// <summary>
         /// 昵称
         /// </summary>

@@ -77,7 +77,7 @@ namespace ArticleService.Controllers
         /// 列出用户发布的文章列表
         /// </summary>
         /// <returns></returns>
-        [RBAC]
+        [RBAC(IsPublic = 1)]
         [HttpGet]
         [TypeFilter(typeof(RedisCache))]
         public async Task<Response<PageList<ArticleListView>>> User(int uid,string? condition = null, int? pageIndex = 1, int? pageSize = 10)

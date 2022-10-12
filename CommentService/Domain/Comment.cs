@@ -34,11 +34,6 @@ namespace CommentService.Domain
         public int Status { get; set; }
         [Column("parentId")]
         public int? ParentId { get; set; }
-        /// <summary>
-        /// 1已读-1未读
-        /// </summary>
-        [Column("isRead")]
-        public int IsRead { get; set; }
 
         [ForeignKey("ParentId")]
         [InverseProperty("InverseParent")]

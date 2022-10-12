@@ -196,6 +196,28 @@ namespace CommentService.Controllers
         }
 
         /// <summary>
+        /// 获取用户未读评论
+        /// </summary>
+        /// <returns></returns>
+        [RBAC]
+        [HttpGet]
+        public async Task<Response<List<CommentListView>>> MyUnread()
+        {
+            var result = new Response<List<CommentListView>>();
+            try
+            {
+                var userId = HttpContext.User.Claims?.FirstOrDefault(c => c.Type == "user_id")?.Value;
+                result.Result = await commentApp.GetUserUnreadComment(Convert.ToInt32(userId));
+            }
+            catch (Exception ex)
+            {
+                result.Status = 500;
+                result.Message = ex.InnerException?.Message ?? ex.Message;
+            }
+            return result;
+        }
+
+        /// <summary>
         /// 列出所有评论
         /// </summary>
         /// <returns></returns>
@@ -223,14 +245,14 @@ namespace CommentService.Controllers
         /// <param name="cid"></param>
         /// <returns></returns>
         [RBAC]
-        [HttpPut]
-        public async Task<Response<string>> Read(int cid)
+        [HttpDelete]
+        public async Task<Response<string>> Read(int cid,bool? isAll = false)
         {
             var result = new Response<string>();
             try
             {
                 var userId = HttpContext.User.Claims?.FirstOrDefault(c => c.Type == "user_id")?.Value;
-                result.Result = await commentApp.ReadComment(cid, Convert.ToInt32(userId));
+                result.Result = await commentApp.ReadComment(cid, Convert.ToInt32(userId),isAll.Value);
             }
             catch (Exception ex)
             {

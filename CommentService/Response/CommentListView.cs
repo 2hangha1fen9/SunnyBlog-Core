@@ -27,6 +27,10 @@
         /// </summary>
         public string Nick { get; set; }
         /// <summary>
+        /// 用户头像
+        /// </summary>
+        public string? Photo { get; set; }
+        /// <summary>
         /// 用户昵称
         /// </summary>
         public string Username { get; set; }
@@ -38,9 +42,5 @@
         /// 发表时间
         /// </summary>
         public DateTime CreateTime { get; set; }
-        /// <summary>
-        /// 1已读0未读
-        /// </summary>
-        public int IsRead { get; set; }
     }
 }

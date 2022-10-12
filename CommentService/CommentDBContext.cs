@@ -10,6 +10,10 @@ namespace CommentService
 {
     public partial class CommentDBContext : DbContext
     {
+        public CommentDBContext()
+        {
+        }
+
         public CommentDBContext(DbContextOptions<CommentDBContext> options)
             : base(options)
         {
@@ -25,10 +29,6 @@ namespace CommentService
             {
                 entity.Property(e => e.CreateTime).HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.IsRead)
-                    .HasDefaultValueSql("((-1))")
-                    .HasComment("1已读-1未读");
-
                 entity.Property(e => e.Status)
                     .HasDefaultValueSql("((1))")
                     .HasComment("1审核通过-1未审核");
@@ -43,7 +43,7 @@ namespace CommentService
             {
                 entity.Property(e => e.Status)
                     .HasDefaultValueSql("((1))")
-                    .HasComment("1点赞2收藏");
+                    .HasComment("1点赞2收藏 3点赞又收藏");
             });
 
             modelBuilder.Entity<View>(entity =>

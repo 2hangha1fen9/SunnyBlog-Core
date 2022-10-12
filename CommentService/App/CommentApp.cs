@@ -7,6 +7,8 @@ using CommentService.Rpc.Protos;
 using Google.Protobuf.WellKnownTypes;
 using Infrastructure;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using StackExchange.Redis;
 using static ArticleService.Rpc.Protos.gArticle;
 using static ArticleService.Rpc.Protos.gSetting;
@@ -20,13 +22,22 @@ namespace CommentService.App
         private readonly gArticleClient articleRpc;
         private readonly gUserClient userRpc;
         private readonly gSettingClient settingRpc;
+        private readonly IDatabase cache;
+        /// <summary>
+        /// 序列化配置
+        /// </summary>
+        private readonly JsonSerializerSettings jsonConfig;
 
-        public CommentApp(IDbContextFactory<CommentDBContext> contextFactory, gArticleClient articleRpc, gUserClient userRpc, gSettingClient settingRpc)
+        public CommentApp(IDbContextFactory<CommentDBContext> contextFactory, IConnectionMultiplexer connection, gArticleClient articleRpc, gUserClient userRpc, gSettingClient settingRpc)
         {
             this.contextFactory = contextFactory;
             this.articleRpc = articleRpc;
             this.userRpc = userRpc;
             this.settingRpc = settingRpc;
+            this.cache = connection.GetDatabase(2);
+            this.jsonConfig = new JsonSerializerSettings();
+            this.jsonConfig.ContractResolver = new CamelCasePropertyNamesContractResolver(); //启用小驼峰格式
+            this.jsonConfig.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
         }
 
         /// <summary>
@@ -54,13 +65,45 @@ namespace CommentService.App
                 }
                 comment.UserId = uid;
                 comment.CreateTime = DateTime.Now;
-                comment.Status = articleInfo.CommentStatus;
+                //作者评论不受策略影响
+                if(articleInfo.UserId == comment.UserId)
+                {
+                    comment.Status = 1;
+                }
+                else
+                {
+                    comment.Status = articleInfo.CommentStatus;
+                }
+
+                //判断是否可以评论
                 if (articleInfo.CommentStatus != -1 && articleInfo.Status == 1 && articleInfo.IsLock == 1)
                 {
                     await dbContext.Comments.AddAsync(comment);
                     if (await dbContext.SaveChangesAsync() < 0)
                     {
                         throw new Exception("评论失败");
+                    }
+                    //将评论存放在消息通知中
+                    if (comment.ParentId.HasValue)
+                    {
+                        //子评论通知父评论
+                        var parentComment = await dbContext.Comments.FirstOrDefaultAsync(c => c.Id == request.ParentId.Value);
+                        if(parentComment != null && parentComment.UserId != comment.UserId)
+                        {
+                            //通知对方
+                            await cache.StringSetAsync($"commentNotify:{parentComment.UserId}:{comment.Id}", JsonConvert.SerializeObject(comment, jsonConfig));
+                            //删除对应通知
+                            await ReadComment(comment.ParentId.Value, comment.UserId);
+                        }
+                    }
+                    else
+                    {
+                        //作者自己评论不发送通知
+                        if(articleInfo.UserId != comment.UserId)
+                        {
+                            //没有子评论通知文章作者
+                            await cache.StringSetAsync($"commentNotify:{articleInfo.UserId}:{comment.Id}", JsonConvert.SerializeObject(comment, jsonConfig));
+                        }
                     }
                     return articleInfo.CommentStatus == 1 ? "评论成功" : "评论成功,需要作者审核后展示";
                 }
@@ -257,7 +300,7 @@ namespace CommentService.App
                 {
                     //调用rpc获取用户列表
                     var userList = (await userRpc.GetUserListAsync(new Empty())).UserInfo.ToList();
-                    //嗲用rpc获取文章列表
+                    //调用rpc获取文章列表
                     var articleList = (await articleRpc.GetArticleListAsync(new Empty())).Infos.ToList();
                     var commentView = (from c in comment
                                       join u in userList on c.UserId equals u.Id
@@ -270,6 +313,7 @@ namespace CommentService.App
                                           UserId = u.Id,
                                           Content = c.Content,
                                           Nick = u.Nick,
+                                          Photo = u.Photo,
                                           Username = u.Username,
                                           Status = c.Status,
                                           CreateTime = c.CreateTime
@@ -349,6 +393,7 @@ namespace CommentService.App
                                            UserId = u.Id,
                                            Content = c.Content,
                                            Nick = u.Nick,
+                                           Photo = u.Photo,
                                            Username = u.Username,
                                            Status = c.Status,
                                            CreateTime = c.CreateTime
@@ -428,6 +473,7 @@ namespace CommentService.App
                                            UserId = u.Id,
                                            Content = c.Content,
                                            Nick = u.Nick,
+                                           Photo = u.Photo,
                                            Username = u.Username,
                                            Status = c.Status,
                                            CreateTime = c.CreateTime
@@ -481,29 +527,80 @@ namespace CommentService.App
         }
 
         /// <summary>
+        /// 获取用户未读评论
+        /// </summary>
+        /// <param name="uid"></param>
+        /// <returns></returns>
+        public async Task<List<CommentListView>> GetUserUnreadComment(int uid)
+        {
+            using (var dbContext = contextFactory.CreateDbContext())
+            {
+                List<CommentListView> commentListViews = new List<CommentListView>();
+                //获取所有未读评论缓存键
+                var commentKeys = await cache.ScriptEvaluateAsync(LuaScript.Prepare($"local res = redis.call('KEYS','commentNotify:{uid}*') return res"));
+                if (!commentKeys.IsNull)
+                {
+                    //调用rpc获取用户列表
+                    var userList = (await userRpc.GetUserListAsync(new Empty())).UserInfo.ToList();
+                    //调用rpc获取用户的文章列表
+                    var articleList = (await articleRpc.GetArticleListAsync(new Empty())).Infos.ToList();
+                    //获取所有的值
+                    RedisKey[] keys = (RedisKey[])commentKeys;
+                    var values = await cache.StringGetAsync(keys);
+                    foreach (var item in values)
+                    {
+                        //将值序列化为对象
+                        var comment = JsonConvert.DeserializeObject<Comment>(item);
+                        var article = articleList.FirstOrDefault(a => a.Id == comment.ArticleId);
+                        var user = userList.FirstOrDefault(u => u.Id == comment.UserId);
+                        if (article != null && user != null)
+                        {
+                            commentListViews.Add(new CommentListView
+                            {
+                                Id = comment.Id,
+                                ArticleId = article.Id,
+                                ArticleTitle = article.Title,
+                                UserId = user.Id,
+                                Content = comment.Content,
+                                Nick = user.Nick,
+                                Username = user.Username,
+                                Photo = user.Photo,
+                                Status = comment.Status,
+                                CreateTime = comment.CreateTime
+                            });
+                        }
+                    }
+                }
+                return commentListViews;
+            }
+        }
+
+        /// <summary>
         /// 已读评论
         /// </summary>
         /// <param name="cid"></param>
         /// <param name="uid"></param>
+        /// <param name="isAll"></param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        public async Task<string> ReadComment(int cid,int uid)
+        public async Task<string> ReadComment(int cid,int uid,bool isAll = false)
         {
-            using (var dbContext = contextFactory.CreateDbContext())
+            //已读全部
+            if (isAll)
             {
-                var comment = await dbContext.Comments.Where(c => c.Id == cid && c.UserId == uid).FirstOrDefaultAsync();
-                if (comment != null)
+                var commentKeys = await cache.ScriptEvaluateAsync(LuaScript.Prepare($"local res = redis.call('KEYS','commentNotify:{uid}*') return res"));
+                if (!commentKeys.IsNull)
                 {
-                    comment.IsRead = 1;
-                    dbContext.Comments.Update(comment);
-                    if (await dbContext.SaveChangesAsync() < 0)
-                    {
-                        throw new Exception("操作失败");
-                    }
-                    return "操作成功";
+                    RedisKey[] k = (RedisKey[])commentKeys;
+                    await this.cache.KeyDeleteAsync(k);
                 }
-                throw new Exception("找不到此条评论");
             }
+            else
+            {
+                await cache.KeyDeleteAsync($"commentNotify:{uid}:{cid}");
+            }
+            
+            return "操作成功";
         }
 
         /// <summary>
@@ -518,20 +615,21 @@ namespace CommentService.App
             using (var dbContext = contextFactory.CreateDbContext())
             {
                 var comment = await dbContext.Comments.FirstOrDefaultAsync(c => c.Id == cid);
-                if (uid.HasValue) //是否需要验证文章所属用户
-                {
-                    //查询评论的这篇文章是否是作者的
-                    var article = await articleRpc.GetArticleInfoAsync(new ArticleId { Id = cid });
-                    if(article == null || article.Id != comment.ArticleId)
-                    {
-                        throw new Exception("找不到此条评论");
-                    }
-                }
                 
                 if (comment != null)
                 {
+                    if (uid.HasValue) //是否需要验证文章所属用户
+                    {
+                        //查询评论的这篇文章是否是作者的
+                        var article = await articleRpc.GetArticleInfoAsync(new ArticleId { Id = comment.ArticleId });
+                        if (article == null)
+                        {
+                            throw new Exception("找不到此条评论");
+                        }
+                    }
+
+
                     comment.Status = 1;
-                    comment.IsRead = 1;
                     dbContext.Comments.Update(comment);
                     if (await dbContext.SaveChangesAsync() < 0)
                     {
@@ -558,6 +656,7 @@ namespace CommentService.App
             }
         }
 
+        //填充用户信息
         public void FillUserInfo(List<CommentView> comments,List<UserInfoResponse> users)
         {
             foreach (var comment in comments)

@@ -60,6 +60,11 @@ namespace Infrastructure
                     {
                         endpoint.IsPublic = rbac.IsPublic;
                     }
+                    else
+                    {
+                        endpoint.IsPublic = -1;
+                    }
+
                     endpoints.Endpoint.Add(endpoint); //添加对象
                 }
             }

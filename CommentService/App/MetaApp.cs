@@ -29,11 +29,11 @@ namespace CommentService.App
                 select 
                     a.id as ArticleId,
                     (select count(*) from [Views] v where v.articleId = a.Id) as ViewCount,
-                    (select count(*) from Likes l where l.articleId = a.Id and l.status = 1) as LikeCount,
-                    (select count(*) from Likes l where l.articleId = a.id and l.status = 2) as CollectionCount,
+                    (select count(*) from Likes l where l.articleId = a.Id and (l.status = 1 or l.status = 3)) as LikeCount,
+                    (select count(*) from Likes l where l.articleId = a.id and (l.status = 2 or l.status = 3)) as CollectionCount,
                     (select count(*) from Comments c where c.articleId = a.id) as CommentCount,
-                    ({(uid.HasValue ? $"select count(*) from Likes l where l.articleId = a.Id and l.status = 1 and l.userId = {uid.Value}" : "select 0")}) as IsUserLike,
-                    ({(uid.HasValue ? $"select count(*) from Likes l where l.articleId = a.Id and l.status = 2 and l.userId = {uid.Value}" : "select 0")}) as IsUserCollection
+                    ({(uid.HasValue ? $"select count(*) from Likes l where l.articleId = a.Id and (l.status = 1 or l.status = 3) and l.userId = {uid.Value}" : "select 0")}) as IsUserLike,
+                    ({(uid.HasValue ? $"select count(*) from Likes l where l.articleId = a.Id and (l.status = 2 or l.status = 3) and l.userId = {uid.Value}" : "select 0")}) as IsUserCollection
                 from 
                 article as a 
                 where a.id = {aid}
@@ -87,11 +87,11 @@ namespace CommentService.App
                     select 
                         a.id as ArticleId,
                         (select count(*) from [Views] v where v.articleId = a.Id) as ViewCount,
-                        (select count(*) from Likes l where l.articleId = a.Id and l.status = 1) as LikeCount,
-                        (select count(*) from Likes l where l.articleId = a.id and l.status = 2) as CollectionCount,
+                        (select count(*) from Likes l where l.articleId = a.Id and (l.status = 1 or l.status = 3)) as LikeCount,
+                        (select count(*) from Likes l where l.articleId = a.id and (l.status = 2 or l.status = 3)) as CollectionCount,
                         (select count(*) from Comments c where c.articleId = a.id) as CommentCount,
-                        ({(uid.HasValue ? $"select count(*) from Likes l where l.articleId = a.Id and l.status = 1 and l.userId = {uid.Value}" : "select 0")}) as IsUserLike,
-                        ({(uid.HasValue ? $"select count(*) from Likes l where l.articleId = a.Id and l.status = 2 and l.userId = {uid.Value}" : "select 0")}) as IsUserCollection
+                        ({(uid.HasValue ? $"select count(*) from Likes l where l.articleId = a.Id and (l.status = 1 or l.status = 3) and l.userId = {uid.Value}" : "select 0")}) as IsUserLike,
+                        ({(uid.HasValue ? $"select count(*) from Likes l where l.articleId = a.Id and (l.status = 2 or l.status = 3) and l.userId = {uid.Value}" : "select 0")}) as IsUserCollection
                     from 
                     article as a 
                     where a.id in({string.Join(',', aids)})

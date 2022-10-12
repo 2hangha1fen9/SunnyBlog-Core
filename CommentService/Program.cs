@@ -84,6 +84,12 @@ builder.Services.AddScoped<ILikeApp, LikeApp>();
 builder.Services.AddScoped<IViewApp, ViewApp>();
 builder.Services.AddScoped<IMetaApp, MetaApp>();
 builder.Services.AddScoped<IDrawingBedApp, DrawingBedApp>();
+//Redis¿Í»§¶Ë×¢²á
+builder.Services.AddSingleton<IConnectionMultiplexer>(cm =>
+{
+    var conStr = builder.Configuration.GetValue<string>("RedisServer");
+    return ConnectionMultiplexer.Connect(conStr);
+});
 
 var app = builder.Build();
 
