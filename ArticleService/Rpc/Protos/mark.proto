@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+option csharp_namespace = "CommentService.Rpc.Protos";
+
+package sunnyblog;
+
+service gMark{
+	rpc GetUserLike(RequestInfo) returns(ArticleIdList);
+}
+
+message RequestInfo{
+	int32 uid=1;
+	int32 type=2;
+}
+
+message ArticleIdList{
+	repeated int32 ids=1;
+}

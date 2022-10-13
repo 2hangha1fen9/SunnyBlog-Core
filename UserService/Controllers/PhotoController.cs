@@ -18,13 +18,13 @@ namespace UserService.Controllers
         }
 
         /// <summary>
-        /// 上传头像
+        /// 上传头像/封面
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
         [RBAC]
         [HttpPut]
-        public async Task<Response<UploadResult>> Upload([FromForm]UploadPhotoReq request,[FromQuery]int? uid = null)
+        public async Task<Response<UploadResult>> Upload([FromForm]UploadPhotoReq request,[FromQuery]int? uid = null,[FromQuery]string? type = "photo")
         {
             var result = new Response<UploadResult>();
             try
@@ -37,7 +37,8 @@ namespace UserService.Controllers
                     userId = uid.Value;
                 }
 
-                result.Result = await photoApp.UploadPhoto(request,userId);
+                result.Result = await photoApp.UploadPhoto(request, userId,type);
+
             }
             catch (Exception ex)
             {

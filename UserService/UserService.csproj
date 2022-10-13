@@ -42,6 +42,7 @@
 	</ItemGroup>
 	<ItemGroup>
 	  <Folder Include="static\avatar\" />
+	  <Folder Include="static\cover\" />
 	</ItemGroup>
 	<ItemGroup>
 	  <Reference Include="System.Drawing.Common">

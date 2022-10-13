@@ -10,6 +10,7 @@ namespace ArticleService.App.Interface
     {
         Task<ArticleView> GetArticle(int id, bool allScope = false);
         Task<PageList<ArticleListView>> GetArticleList(List<SearchCondition>? condidtion, Expression<Func<Article, bool>> predict, int pageIndex, int pageSize);
+        Task<PageList<ArticleListView>> GetUserLikeArticle(int uid, bool isLike, List<SearchCondition>? condidtion, int pageIndex, int pageSize);
         Task<string> RemoveArticle(List<DelArticleReq> request);
         Task<string> RemoveArticle(List<DelArticleReq> request, int uid);
         Task<string> EditorArticle(EditorArticleReq request, int? uid);

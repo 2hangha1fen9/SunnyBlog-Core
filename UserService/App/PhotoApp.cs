@@ -19,12 +19,12 @@ namespace UserService.App
         }
 
         /// <summary>
-        /// 上传用户头像
+        /// 上传用户头像/封面
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public async Task<UploadResult> UploadPhoto(UploadPhotoReq request,int id)
+        public async Task<UploadResult> UploadPhoto(UploadPhotoReq request,int id,string type)
         {
             try
             {
@@ -43,20 +43,44 @@ namespace UserService.App
                     //将路径写入数据库
                     using (var dbContext = contextFactory.CreateDbContext())
                     {
-                        //保存数据
-                        var user = await dbContext.Users.FirstOrDefaultAsync(x => x.Id == id);
-                        if (user != null)
-                        {
-                            user.Photo = $"/avatar/{id}{fileExtension}";
-                            await dbContext.SaveChangesAsync();
-                            return new UploadResult()
+                        if(type == "photo"){
+                            //保存数据
+                            var user = await dbContext.Users.FirstOrDefaultAsync(x => x.Id == id);
+                            if (user != null)
                             {
-                                Path = $"/avatar/{id}{fileExtension}"
-                            };
+                                user.Photo = $"/avatar/{id}{fileExtension}";
+                                await dbContext.SaveChangesAsync();
+                                return new UploadResult()
+                                {
+                                    Path = $"/avatar/{id}{fileExtension}"
+                                };
+                            }
+                            else
+                            {
+                                throw new Exception("用户信息保存错误");
+                            }
+                        }
+                        else if (type == "cover")
+                        {
+                            //保存数据
+                            var user = await dbContext.UserDetails.FirstOrDefaultAsync(x => x.UserId == id);
+                            if (user != null)
+                            {
+                                user.Cover = $"/cover/{id}{fileExtension}";
+                                await dbContext.SaveChangesAsync();
+                                return new UploadResult()
+                                {
+                                    Path = $"/cover/{id}{fileExtension}"
+                                };
+                            }
+                            else
+                            {
+                                throw new Exception("用户信息保存错误");
+                            }
                         }
                         else
                         {
-                            throw new Exception("用户信息保存错误");
+                            throw new Exception("上传类型错误");
                         }
                     }
                 }

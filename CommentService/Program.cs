@@ -108,6 +108,7 @@ app.UseStaticFiles(new StaticFileOptions()
 
 //rpc·þÎñ×¢²á
 app.MapGrpcService<GRankService>();
+app.MapGrpcService<GMarkService>();
 
 app.UseSwagger();
 app.UseSwaggerUI();

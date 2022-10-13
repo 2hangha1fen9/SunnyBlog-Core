@@ -8,5 +8,6 @@ namespace CommentService.App.Interface
     {
         Meta GetMeta(int aid, int? uid = null);
         List<Meta> GetMetaList(int[] aids, int? uid = null);
+        Task<UserMeta> GetUserMeta(int uid);
     }
 }

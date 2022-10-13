@@ -1,5 +1,7 @@
 ﻿using CommentService.App.Interface;
 using CommentService.Response;
+using Google.Protobuf.WellKnownTypes;
+using Infrastructure;
 using Infrastructure.Utils;
 using Microsoft.EntityFrameworkCore;
 using static ArticleService.Rpc.Protos.gArticle;
@@ -9,10 +11,11 @@ namespace CommentService.App
     public class MetaApp : IMetaApp
     {
         private readonly IDbContextFactory<CommentDBContext> contextFactory;
-
-        public MetaApp(IDbContextFactory<CommentDBContext> contextFactory)
+        private readonly gArticleClient articleRpc;
+        public MetaApp(IDbContextFactory<CommentDBContext> contextFactory, gArticleClient articleRpc)
         {
             this.contextFactory = contextFactory;
+            this.articleRpc = articleRpc;
         }
 
         /// <summary>
@@ -102,6 +105,31 @@ namespace CommentService.App
                     return metaList.ToList();
                 }
                 return new List<Meta>();
+            }
+        }
+    
+        /// <summary>
+        /// 获取用户的互动数据
+        /// </summary>
+        /// <param name="uid"></param>
+        /// <returns></returns>
+        public async Task<UserMeta> GetUserMeta(int uid)
+        {
+            using (var dbContext = contextFactory.CreateDbContext())
+            {
+                //查询用户的文章
+                var aids = (await articleRpc.GetArticleListAsync(new Empty())).Infos.Where(a => a.UserId == uid).Select(a => a.Id).ToArray();
+                var articleMetas = GetMetaList(aids);
+                var userMeta = new UserMeta
+                {
+                    UserId = uid,
+                    ViewCount = articleMetas.Sum(m => m.ViewCount),
+                    LikeCount = articleMetas.Sum(m => m.LikeCount),
+                    CommentCount = articleMetas.Sum(m => m.CommentCount),
+                    CollectionCount = articleMetas.Sum(m => m.CollectionCount)
+                };
+
+                return userMeta;
             }
         }
     }

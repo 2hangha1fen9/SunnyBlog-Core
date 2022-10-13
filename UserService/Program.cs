@@ -110,6 +110,12 @@ app.UseStaticFiles(new StaticFileOptions()
     FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "static","avatar")),
     RequestPath = "/api/avatar"
 });
+//开启静态文件访问
+app.UseStaticFiles(new StaticFileOptions()
+{
+    FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "static", "cover")),
+    RequestPath = "/api/cover"
+});
 
 app.UseSwagger();
 app.UseSwaggerUI();

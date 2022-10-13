@@ -48,8 +48,10 @@ namespace UserService.App
                     Nick = u.UserDetail.Nick,
                     Remark = u.UserDetail.Remark,
                     Photo = u.Photo,
+                    Cover = u.UserDetail.Cover,
                     Sex = u.UserDetail.Sex,
                     Fans = u.UserFollowWatches.Count(),
+                    Follows = u.UserFollowUsers.Count(),
                 }).FirstOrDefaultAsync();
                 var userView = user.MapTo<UserView>();
                 return userView;
@@ -74,6 +76,7 @@ namespace UserService.App
                     Photo = u.Photo,
                     Sex = u.UserDetail.Sex,
                     Fans = u.UserFollowWatches.Count(),
+                    Follows = u.UserFollowUsers.Count(),
                 });
                 //判断是否有条件
                 if (condition?.Count > 0)
@@ -115,6 +118,7 @@ namespace UserService.App
                     Photo = u.Photo,
                     Score = u.UserDetail == null ? 0.0m : u.UserDetail.Score,
                     Fans = u.UserFollowWatches.Count(),
+                    Follows = u.UserFollowUsers.Count(),
                     Status = u.Status
                 });
                 //判断是否有条件
@@ -178,6 +182,7 @@ namespace UserService.App
                     Photo = u.Photo,
                     Score = u.UserDetail == null ? 0.0m : u.UserDetail.Score,
                     Fans = u.UserFollowWatches.Count(),
+                    Follows = u.UserFollowUsers.Count(),
                     Status = u.Status
                 }).FirstOrDefaultAsync(u => u.Id == id);
                 var userView = user.MapTo<UserDetailView>();

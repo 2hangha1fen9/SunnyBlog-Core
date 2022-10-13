@@ -23,6 +23,10 @@
         /// </summary>
         public string Photo { get; set; }
         /// <summary>
+        /// 封面
+        /// </summary>
+        public string Cover { get; set; }
+        /// <summary>
         /// 性别
         /// </summary>
         public int Sex { get; set; }
@@ -30,5 +34,9 @@
         /// 粉丝
         /// </summary>
         public int Fans { get; set; }
+        /// <summary>
+        /// 关注数
+        /// </summary>
+        public int Follows { get; set; }
     }
 }

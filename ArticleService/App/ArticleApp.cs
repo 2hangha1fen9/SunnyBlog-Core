@@ -12,6 +12,7 @@ using System.Linq.Expressions;
 using static CommentService.Rpc.Protos.gRank;
 using CommentService.Rpc.Protos;
 using Google.Protobuf.WellKnownTypes;
+using static CommentService.Rpc.Protos.gMark;
 
 namespace ArticleService.App
 {
@@ -22,14 +23,16 @@ namespace ArticleService.App
         private readonly IArticleRegionApp articleRegionApp;
         private readonly gUserClient userRpc;
         private readonly gRankClient rankRpc;
+        private readonly gMarkClient markRpc;
 
-        public ArticleApp(IDbContextFactory<ArticleDBContext> contextFactory, IArticleTagApp articleTagApp, gUserClient userRpc, IArticleRegionApp articleRegionApp, gRankClient rankRpc)
+        public ArticleApp(IDbContextFactory<ArticleDBContext> contextFactory, IArticleTagApp articleTagApp, gUserClient userRpc, IArticleRegionApp articleRegionApp, gRankClient rankRpc, gMarkClient markRpc)
         {
             this.contextFactory = contextFactory;
             this.articleTagApp = articleTagApp;
             this.userRpc = userRpc;
             this.articleRegionApp = articleRegionApp;
             this.rankRpc = rankRpc;
+            this.markRpc = markRpc;
         }
 
         /// <summary>
@@ -231,6 +234,145 @@ namespace ArticleService.App
                             if ("CreateTime".Equals(con.Key, StringComparison.OrdinalIgnoreCase))
                             {
                                 if(con.Sort == -1)
+                                {
+                                    articleMap = articleMap.OrderByDescending(a => a.CreateTime);
+                                }
+                                else
+                                {
+                                    articleMap = articleMap.OrderBy(a => a.CreateTime);
+                                }
+                            }
+                            if ("UpdateTime".Equals(con.Key, StringComparison.OrdinalIgnoreCase))
+                            {
+                                if (con.Sort == -1)
+                                {
+                                    articleMap = articleMap.OrderByDescending(a => a.UpdateTime);
+                                }
+                                else
+                                {
+                                    articleMap = articleMap.OrderBy(a => a.UpdateTime);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            //默认时间排序
+                            articleMap = articleMap.OrderByDescending(a => a.CreateTime);
+                        }
+                    }
+                }
+                else
+                {
+                    //默认时间排序
+                    articleMap = articleMap.OrderByDescending(a => a.CreateTime);
+                }
+                //分页条件
+                var articlePage = new PageList<ArticleListView>();
+                articleMap = articlePage.Pagination(pageIndex, pageSize, articleMap.AsQueryable());
+                articlePage.Page = articleMap.MapToList<ArticleListView>();
+                return articlePage;
+            }
+        }
+
+        /// <summary>
+        /// 获取用户的点赞/收藏文章
+        /// </summary>
+        /// <param name="condidtion"></param>
+        /// <param name="predict"></param>
+        /// <param name="pageIndex"></param>
+        /// <param name="pageSize"></param>
+        /// <returns></returns>
+        public async Task<PageList<ArticleListView>> GetUserLikeArticle(int uid,bool isLike,List<SearchCondition>? condidtion, int pageIndex, int pageSize)
+        {
+            using (var dbContext = contextFactory.CreateDbContext())
+            {
+                //创建数据映射
+                var articleQuery = dbContext.Articles.Include(a => a.ArticleTags)
+                                                    .ThenInclude(at => at.Tag)
+                                                    .Include(a => a.Category)
+                                                    .Include(a => a.Region).AsQueryable();
+                //查询所有文章
+                var articleList = await articleQuery.ToListAsync();
+                var userList = (await userRpc.GetUserListAsync(new Empty())).UserInfo.ToList();
+                //获取用户点赞的文章id
+                var likeIds = (await markRpc.GetUserLikeAsync(new RequestInfo { Uid = uid,Type = isLike ? 1 : 0})).Ids.ToList();
+                articleList = articleList.Where(a => likeIds.IndexOf(a.Id) >= 0).ToList();
+                var articleMap = articleList.Join(userList, a => a.UserId, u => u.Id, (a, u) => new
+                {
+                    Id = a.Id,
+                    UserId = a.UserId,
+                    Nick = u.Nick,
+                    Username = u.Username,
+                    Title = a.Title,
+                    Summary = a.Summary,
+                    Photo = a.Photo,
+                    RegionName = a.Region?.Name,
+                    RegionId = a.RegionId,
+                    Tags = a.ArticleTags.Select(at => new TagView()
+                    {
+                        Id = at.TagId,
+                        UserId = at.Tag.UserId,
+                        Name = at.Tag.Name,
+                        Color = at.Tag.Color,
+                        ArticleCount = at.Tag.ArticleTags.Count(),
+                    }),
+                    CategoryId = a.CategoryId,
+                    CategoryName = a.Category?.Name,
+                    Status = a.Status,
+                    IsLock = a.IsLock,
+                    CommentStatus = a.CommentStatus,
+                    CreateTime = a.CreateTime,
+                    UpdateTime = a.UpdateTime,
+                });
+                //筛选条件
+                if (condidtion?.Count > 0)
+                {
+                    foreach (var con in condidtion)
+                    {
+                        //条件过滤
+                        articleMap = "Username".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.Username.Contains(con.Value, StringComparison.OrdinalIgnoreCase)) : articleMap;
+                        articleMap = "Title".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.Title.Contains(con.Value, StringComparison.OrdinalIgnoreCase)) : articleMap;
+                        articleMap = "Summary".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.Summary.Contains(con.Value, StringComparison.OrdinalIgnoreCase)) : articleMap;
+                        articleMap = "Tag".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.Tags.Where(t => t.Name == con.Value).Count() > 0) : articleMap;
+                        articleMap = "Category".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.CategoryName.Contains(con.Value, StringComparison.OrdinalIgnoreCase)) : articleMap;
+                        if ("CategoryId".Equals(con.Key, StringComparison.OrdinalIgnoreCase) && con.Value != null)
+                        {
+                            articleMap = articleMap.Where(a => a.CategoryId == Convert.ToInt32(con.Value));
+                        }
+                        else if ("CategoryId".Equals(con.Key, StringComparison.OrdinalIgnoreCase))
+                        {
+                            articleMap = articleMap.Where(a => a.CategoryId == null);
+                        }
+                        articleMap = "Status".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.Status == Convert.ToInt32(con.Value)) : articleMap;
+                        articleMap = "IsLock".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.IsLock == Convert.ToInt32(con.Value)) : articleMap;
+                        articleMap = "CommentStatus".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.CommentStatus == Convert.ToInt32(con.Value)) : articleMap;
+                        //分区过滤
+                        if ("Region".Equals(con.Key, StringComparison.OrdinalIgnoreCase))
+                        {
+                            //获取所有与之相关的分区
+                            var filterRegion = await articleRegionApp.GetRegions(con.Value);
+                            //和离线数据查询需要将结果输出
+                            var tempArticleMap = articleMap.ToList();
+                            articleMap = tempArticleMap.Where(a => filterRegion.FirstOrDefault(r => r.Id == a.RegionId) != null).AsQueryable();
+                        }
+                        //排序
+                        if (con.Sort != 0)
+                        {
+                            //排行榜排序
+                            if ((new string[] { "Hot", "ViewCount", "LikeCount", "CommentCount", "CollectionCount" }).FirstOrDefault(c => c.Equals(con.Key, StringComparison.OrdinalIgnoreCase)) != null)
+                            {
+                                //和离线数据查询需要将结果输出
+                                var tempArticleMap = articleMap.ToList();
+                                var rank = (await rankRpc.GetArticleRankAsync(new RankCondidtion
+                                {
+                                    Key = con.Key,
+                                    Order = con.Sort ?? 1
+                                })).Ranks.Select(r => r).ToArray();
+                                articleMap = tempArticleMap.OrderBy(a => Array.IndexOf(rank, a.Id)).AsQueryable();
+                            }
+                            if ("CreateTime".Equals(con.Key, StringComparison.OrdinalIgnoreCase))
+                            {
+                                if (con.Sort == -1)
                                 {
                                     articleMap = articleMap.OrderByDescending(a => a.CreateTime);
                                 }

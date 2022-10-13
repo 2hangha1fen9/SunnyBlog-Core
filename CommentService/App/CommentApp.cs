@@ -656,6 +656,25 @@ namespace CommentService.App
             }
         }
 
+        /// <summary>
+        /// 获取用户文章的评论总数
+        /// </summary>
+        /// <param name="uid"></param>
+        /// <returns></returns>
+        public async Task<int> GetUserCommentCount(int uid)
+        {
+            using (var dbContext = contextFactory.CreateDbContext())
+            {
+                //查询所有文章
+                var articles = (await articleRpc.GetArticleListAsync(new Empty())).Infos.Where(a => a.UserId == uid);
+                var comments = await dbContext.Comments.ToListAsync();
+                //查询用户的总访问数
+                var count = (from a in articles join c in comments on a.Id equals c.ArticleId select a.Id).Count();
+
+                return count;
+            }
+        }
+
         //填充用户信息
         public void FillUserInfo(List<CommentView> comments,List<UserInfoResponse> users)
         {

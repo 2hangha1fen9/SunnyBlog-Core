@@ -7,6 +7,6 @@ namespace UserService.App.Interface
 {
     public interface IPhotoApp
     {
-        Task<UploadResult> UploadPhoto(UploadPhotoReq request,int id);
+        Task<UploadResult> UploadPhoto(UploadPhotoReq request, int id, string type);
     }
 }

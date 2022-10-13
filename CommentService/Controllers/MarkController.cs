@@ -92,7 +92,7 @@ namespace CommentService.Controllers
         /// 获取用户的点赞/收藏记录
         /// </summary>
         /// <returns></returns>
-        [RBAC]
+        [RBAC(IsPublic = 1)]
         [HttpGet]
         public async Task<Response<List<LikeView>>> List(int uid, bool isLike)
         {

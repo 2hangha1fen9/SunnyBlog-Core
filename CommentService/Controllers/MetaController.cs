@@ -25,7 +25,7 @@ namespace CommentService.Controllers
         /// <returns></returns>
         [RBAC(IsPublic = 1)]
         [HttpGet]
-        public  Response<Meta> GetArticleMeta(int aid)
+        public Response<Meta> GetArticleMeta(int aid)
         {
             var result = new Response<Meta>();
             try
@@ -69,6 +69,28 @@ namespace CommentService.Controllers
                 {
                     result.Result = countApp.GetMetaList(aids, Convert.ToInt32(userId));
                 }
+            }
+            catch (Exception ex)
+            {
+                result.Status = 500;
+                result.Message = ex.InnerException?.Message ?? ex.Message;
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// 获取用户的总访问量评论数点赞量
+        /// </summary>
+        /// <param name="uid"></param>
+        /// <returns></returns>
+        [RBAC(IsPublic = 1)]
+        [HttpGet]
+        public async Task<Response<UserMeta>> GetUserMeta(int uid)
+        {
+            var result = new Response<UserMeta>();
+            try
+            {
+                result.Result = await countApp.GetUserMeta(uid);
             }
             catch (Exception ex)
             {

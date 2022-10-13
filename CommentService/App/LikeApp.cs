@@ -133,7 +133,7 @@ namespace CommentService.App
                                     Nick = u.Nick,
                                     Photo = u.Photo,
                                     Username = u.Username,
-                                });
+                                }).ToList();
                 return likeView.MapToList<LikeView>();
             }
         }

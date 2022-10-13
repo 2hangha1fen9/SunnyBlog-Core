@@ -98,6 +98,30 @@ namespace ArticleService.Controllers
         }
 
         /// <summary>
+        /// 列出用户点赞/收藏的文章
+        /// </summary>
+        /// <returns></returns>
+        [RBAC(IsPublic = 1)]
+        [HttpGet]
+        public async Task<Response<PageList<ArticleListView>>> UserLike(int uid,bool isLike = true, string? condition = null, int? pageIndex = 1, int? pageSize = 10)
+        {
+            var result = new Response<PageList<ArticleListView>>();
+            try
+            {
+                List<SearchCondition> con = SequenceConverter.ConvertToCondition(condition);
+                var article = await articleApp.GetUserLikeArticle(uid,isLike,con, pageIndex.Value, pageSize.Value);
+                result.Result = article;
+            }
+            catch (Exception ex)
+            {
+                result.Status = 500;
+                result.Message = ex.InnerException?.Message ?? ex.Message;
+            }
+            return result;
+        }
+
+
+        /// <summary>
         /// 列出我的文章列表
         /// </summary>
         /// <returns></returns>

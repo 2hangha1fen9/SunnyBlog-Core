@@ -8,6 +8,7 @@
    "ModelNamespace": "",
    "OutputContextPath": ".",
    "OutputPath": "Domain",
+   "PreserveCasingWithRegex": true,
    "ProjectRootNamespace": "UserService",
    "Schemas": null,
    "SelectedHandlebarsLanguage": 0,
@@ -34,7 +35,7 @@
          "ObjectType": 0
       }
    ],
-   "UiHint": "zhang.SunnyBlog.dbo",
+   "UiHint": "ZHANG.SunnyBlog",
    "UseBoolPropertiesWithoutDefaultSql": false,
    "UseDatabaseNames": false,
    "UseDbContextSplitting": false,
@@ -51,5 +52,6 @@
    "UseNodaTime": false,
    "UseNullableReferences": false,
    "UseSchemaFolders": false,
-   "UseSpatial": false
+   "UseSpatial": false,
+   "UseT4": false
 }

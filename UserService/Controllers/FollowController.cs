@@ -45,11 +45,11 @@ namespace UserService.Controllers
         }
         
         /// <summary>
-        /// 查看用户的关注列表
+        /// 查看用户的关注列表/粉丝列表
         /// </summary>
         [HttpGet]
         [TypeFilter(typeof(RedisCache))]
-        public async Task<Response<List<FollowView>>> List(int id, string? condidtion = null)
+        public async Task<Response<List<FollowView>>> List(int id,bool? fans = false, string? condidtion = null)
         {
             var result = new Response<List<FollowView>>();
             try
@@ -57,7 +57,7 @@ namespace UserService.Controllers
                 List<SearchCondition> con = new List<SearchCondition>();
                 try { con = JsonConvert.DeserializeObject<List<SearchCondition>>(condidtion); }
                 catch (Exception) { }
-                result.Result = await followApp.FollowList(con, id);
+                result.Result = await followApp.FollowList(con, id,fans.Value);
             }
             catch (Exception ex)
             {

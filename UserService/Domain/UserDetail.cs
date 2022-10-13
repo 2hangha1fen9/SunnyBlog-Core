@@ -19,7 +19,7 @@ namespace UserService.Domain
         [StringLength(50)]
         public string Nick { get; set; }
         /// <summary>
-        /// 1男0女
+        /// 1男-1女0未知
         /// </summary>
         [Column("sex")]
         public int? Sex { get; set; }
@@ -32,6 +32,9 @@ namespace UserService.Domain
         public string Remark { get; set; }
         [Column("score", TypeName = "decimal(18, 1)")]
         public decimal Score { get; set; }
+        [Column("cover")]
+        [StringLength(200)]
+        public string Cover { get; set; }
 
         [ForeignKey("UserId")]
         [InverseProperty("UserDetail")]

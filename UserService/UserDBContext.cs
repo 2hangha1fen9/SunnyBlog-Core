@@ -37,7 +37,7 @@ namespace UserService
 
                 entity.Property(e => e.RegisterTime).HasDefaultValueSql("(getdate())");
 
-                entity.Property(e => e.Sex).HasComment("1男0女");
+                entity.Property(e => e.Sex).HasComment("1男-1女0未知");
 
                 entity.HasOne(d => d.User)
                     .WithOne(p => p.UserDetail)

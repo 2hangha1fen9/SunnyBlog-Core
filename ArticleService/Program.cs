@@ -91,6 +91,10 @@ builder.Services.AddGrpcClient<gRank.gRankClient>(option =>
 {
     option.Address = new Uri(ServiceUrl.GetServiceUrlByName("CommentService", builder.Configuration.GetSection("Consul").Get<ConsulServiceOptions>().ConsulAddress));
 });
+builder.Services.AddGrpcClient<gMark.gMarkClient>(option =>
+{
+    option.Address = new Uri(ServiceUrl.GetServiceUrlByName("CommentService", builder.Configuration.GetSection("Consul").Get<ConsulServiceOptions>().ConsulAddress));
+});
 
 var app = builder.Build();
 

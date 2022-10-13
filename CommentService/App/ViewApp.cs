@@ -34,13 +34,31 @@ namespace CommentService.App
         {
             using (var dbContext = contextFactory.CreateDbContext())
             {
-                var view = new View()
+                var view = await dbContext.Views.FirstOrDefaultAsync(v => v.ArticleId == aid && v.UserId == uid.Value && v.Ip == ip);
+                if(view == null)
                 {
-                    ArticleId = aid,
-                    UserId = uid,
-                    Ip = ip
-                };
-                dbContext.Views.Add(view);
+                    view = new View()
+                    {
+                        ArticleId = aid,
+                        UserId = uid,
+                        Ip = ip
+                    };
+                    dbContext.Views.Add(view);
+                }
+                else
+                {
+                    if(view.ViewTime.Month != DateTime.Now.Month && view.ViewTime.Day != DateTime.Now.Day)
+                    {
+                        view = new View()
+                        {
+                            ArticleId = aid,
+                            UserId = uid,
+                            Ip = ip
+                        };
+                        dbContext.Views.Add(view);
+                    }
+                }
+               
                 await dbContext.SaveChangesAsync();
             }
         }
@@ -55,6 +73,25 @@ namespace CommentService.App
             using(var dbContext = contextFactory.CreateDbContext())
             {
                 var count = await dbContext.Views.CountAsync(v => v.ArticleId == aid);
+                return count;
+            }
+        }
+
+        /// <summary>
+        /// 获取用户文章的总访问数
+        /// </summary>
+        /// <param name="uid"></param>
+        /// <returns></returns>
+        public async Task<int> GetUserViewCount(int uid)
+        {
+            using (var dbContext = contextFactory.CreateDbContext())
+            {
+                //查询所有文章
+                var articles = (await articleRpc.GetArticleListAsync(new Empty())).Infos.Where(a => a.UserId == uid);
+                var views = await dbContext.Views.ToListAsync();
+                //查询用户的总访问数
+                var count = (from a in articles join v in views on a.Id equals v.ArticleId select a.Id).Count();
+
                 return count;
             }
         }
@@ -142,13 +179,14 @@ namespace CommentService.App
 
                 var history = (from v in views
                               join a in article on v.ArticleId equals a.Id
-                              join u in users on v.UserId equals u.Id
+                              join u in users on v.UserId equals u.Id into joinUser
+                              from user in joinUser.DefaultIfEmpty()
                               select new UserViewHistory
                               {
                                   Id = v.Id,
-                                  UserId = v.UserId,
-                                  Username = u.Username,
-                                  Nick = u.Nick,
+                                  UserId = user == null ? null : user.Id,
+                                  Username = user == null ? null : user.Username,
+                                  Nick = user == null ? null : user.Nick,
                                   ArticleId = v.ArticleId,
                                   ArticleTitle = a.Title,
                                   Ip = v.Ip,

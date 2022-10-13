@@ -35,18 +35,18 @@ namespace UserService.App
         /// </summary>
         /// <param name="id">用户ID</param>
         /// <returns></returns>
-        public async Task<List<FollowView>> FollowList(List<SearchCondition> condidtion, int id)
+        public async Task<List<FollowView>> FollowList(List<SearchCondition> condidtion, int id,bool fans)
         {
             using (var dbContext = contextFactory.CreateDbContext())
             {
-                var follows = dbContext.UserFollows.Where(f => f.UserId == id).Select(f => new
+                var follows = dbContext.UserFollows.Where(f => fans ? f.WatchId == id : f.UserId == id).Select(f => new
                 {
                     Id = f.Id,
-                    UserId = f.UserId,
-                    Username = f.User.Username,
-                    Nick = f.Watch.UserDetail.Nick,
-                    Remark = f.Watch.UserDetail.Remark,
-                    Photo = f.Watch.Photo
+                    UserId = fans ? f.UserId : f.WatchId,
+                    Username = fans ? f.User.Username : f.Watch.Username,
+                    Nick = fans ? f.User.UserDetail.Nick : f.Watch.UserDetail.Nick,
+                    Remark = fans ? f.User.UserDetail.Remark : f.Watch.UserDetail.Remark,
+                    Photo = fans ? f.User.Photo : f.Watch.Photo
                 });
                 //筛选条件
                 if (condidtion.Count > 0)
@@ -62,6 +62,7 @@ namespace UserService.App
                 return followView;
             }
         }
+
 
         /// <summary>
         /// 获取关注通知信息
