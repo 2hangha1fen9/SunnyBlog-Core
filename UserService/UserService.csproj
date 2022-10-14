@@ -27,6 +27,7 @@
 		<PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.8" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.8" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.8" />
+		<PackageReference Include="SkyAPM.Agent.AspNetCore" Version="2.1.0" />
 		<PackageReference Include="StackExchange.Redis" Version="2.6.48" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
 		<PackageReference Include="System.Drawing.Common" Version="6.0.0" />
@@ -48,6 +49,11 @@
 	  <Reference Include="System.Drawing.Common">
 	    <HintPath>O:\VisualStudio\Package\system.drawing.common\5.0.0\ref\netcoreapp3.0\System.Drawing.Common.dll</HintPath>
 	  </Reference>
+	</ItemGroup>
+	<ItemGroup>
+	  <Content Update="skyapm.json">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
 	</ItemGroup>
 	<ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" properties_4launchsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
 </Project>

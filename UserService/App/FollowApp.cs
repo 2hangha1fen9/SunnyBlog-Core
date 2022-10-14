@@ -35,7 +35,7 @@ namespace UserService.App
         /// </summary>
         /// <param name="id">用户ID</param>
         /// <returns></returns>
-        public async Task<List<FollowView>> FollowList(List<SearchCondition> condidtion, int id,bool fans)
+        public async Task<PageList<FollowView>> FollowList(int id,bool fans, List<SearchCondition>? condidtion, int pageIndex, int pageSize)
         {
             using (var dbContext = contextFactory.CreateDbContext())
             {
@@ -58,8 +58,11 @@ namespace UserService.App
                         follows = "Remark".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? follows.Where(f => f.Remark.Contains(con.Value, StringComparison.OrdinalIgnoreCase)) : follows;
                     }
                 }
-                var followView = (await follows.ToListAsync()).MapToList<FollowView>();
-                return followView;
+                //分页条件
+                var followPage = new PageList<FollowView>();
+                follows = followPage.Pagination(pageIndex, pageSize, follows.AsQueryable());
+                followPage.Page = (await follows.ToListAsync()).MapToList<FollowView>();
+                return followPage;
             }
         }
 

@@ -49,15 +49,15 @@ namespace UserService.Controllers
         /// </summary>
         [HttpGet]
         [TypeFilter(typeof(RedisCache))]
-        public async Task<Response<List<FollowView>>> List(int id,bool? fans = false, string? condidtion = null)
+        public async Task<Response<PageList<FollowView>>> List(int id,bool? fans = false, string? condidtion = null, int? pageIndex = 1, int? pageSize = 10)
         {
-            var result = new Response<List<FollowView>>();
+            var result = new Response<PageList<FollowView>>();
             try
             {
                 List<SearchCondition> con = new List<SearchCondition>();
                 try { con = JsonConvert.DeserializeObject<List<SearchCondition>>(condidtion); }
                 catch (Exception) { }
-                result.Result = await followApp.FollowList(con, id,fans.Value);
+                result.Result = await followApp.FollowList( id,fans.Value,con, pageIndex.Value,pageSize.Value);
             }
             catch (Exception ex)
             {

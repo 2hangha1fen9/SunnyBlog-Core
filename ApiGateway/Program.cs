@@ -5,6 +5,7 @@ using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
 using Ocelot.Provider.Consul;
 using Ocelot.Provider.Polly;
+using SkyApm.Utilities.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 //Apollo配置中心
@@ -39,7 +40,6 @@ builder.Services.AddCors(option =>
 });
 //注册服务.同时注册服务发现和流量控制
 builder.Services.AddOcelot(builder.Configuration).AddConsul().AddPolly();
-
 var app = builder.Build();
 
 

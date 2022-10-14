@@ -15,6 +15,7 @@ using Microsoft.Extensions.FileProviders;
 using UserService.Domain.config;
 using StackExchange.Redis;
 using IdentityService.Rpc.Protos;
+using SkyApm.Utilities.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
 //Apollo≈‰÷√÷––ƒ

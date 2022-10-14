@@ -7,6 +7,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include="SkyAPM.Agent.AspNetCore" Version="2.1.0" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
 	</ItemGroup>
 	<ItemGroup>
@@ -21,6 +22,11 @@
 	</ItemGroup>
 	<ItemGroup>
 	  <Folder Include="Controllers\" />
+	</ItemGroup>
+	<ItemGroup>
+	  <Content Update="skyapm.json">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </Content>
 	</ItemGroup>
 
 	<ProjectExtensions>
