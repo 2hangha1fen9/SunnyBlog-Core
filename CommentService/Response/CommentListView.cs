@@ -35,7 +35,7 @@
         /// </summary>
         public string Username { get; set; }
         /// <summary>
-        /// 评论状态 1审核通过0未审核
+        /// 评论状态 1审核通过2需要审核-1禁止评论
         /// </summary>
         public int Status { get; set; }
         /// <summary>

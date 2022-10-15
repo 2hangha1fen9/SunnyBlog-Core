@@ -38,5 +38,13 @@
         /// 关注数
         /// </summary>
         public int Follows { get; set; }
+        /// <summary>
+        /// 用户留言版
+        /// </summary>
+        public string Message { get; set; }
+        /// <summary>
+        /// 注册时间
+        /// </summary>
+        public DateTime RegisterTime { get; set; }
     }
 }

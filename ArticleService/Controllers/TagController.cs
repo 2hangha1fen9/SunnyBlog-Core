@@ -66,6 +66,28 @@ namespace ArticleService.Controllers
         }
 
         /// <summary>
+        /// 列出用户的标签
+        /// </summary>
+        /// <returns></returns>
+        [RBAC(IsPublic = 1)]
+        [HttpGet]
+        public async Task<Response<List<TagView>>> UserTag(int uid)
+        {
+            var result = new Response<List<TagView>>();
+            try
+            {
+                var tags = await articleTagApp.GetUserTags(uid);
+                result.Result = tags.Where(t => t.UserId == uid).ToList();
+            }
+            catch (Exception ex)
+            {
+                result.Status = 500;
+                result.Message = ex.InnerException?.Message ?? ex.Message;
+            }
+            return result;
+        }
+
+        /// <summary>
         /// 创建标签
         /// </summary>
         /// <returns></returns>

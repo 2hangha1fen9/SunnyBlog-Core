@@ -134,7 +134,7 @@ namespace CommentService.App
                     }
                     await dbContext.SaveChangesAsync();
                     dbContext.Comments.Remove(comment);
-                    if (await dbContext.SaveChangesAsync() < 0)
+                    if ((await dbContext.SaveChangesAsync()) < 0)
                     {
                         throw new Exception("评论删除失败");
                     }
@@ -214,9 +214,9 @@ namespace CommentService.App
                         await dbContext.SaveChangesAsync();
                         dbContext.Comments.Remove(comment);
 
-                        if (await dbContext.SaveChangesAsync() < 0)
+                        if ((await dbContext.SaveChangesAsync()) > 0)
                         {
-                            throw new Exception("评论删除失败");
+                            await ReadComment(cid, uid); //删除对应评论消息
                         }
                         return "删除成功";
                     }
@@ -247,9 +247,9 @@ namespace CommentService.App
                     {
                         foreach (var con in condidtion)
                         {
-                            commentView = "Nick".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.Nick.Contains(con.Value)).ToList() : commentView;
-                            commentView = "Content".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.Content.Contains(con.Value)).ToList() : commentView;
-                            commentView = "Username".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.Username.Contains(con.Value)).ToList() : commentView;
+                            commentView = "Nick".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.Nick.Contains(con.Value, StringComparison.OrdinalIgnoreCase) || c.Username.Contains(con.Value, StringComparison.OrdinalIgnoreCase)).ToList() : commentView;
+                            commentView = "Content".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.Content.Contains(con.Value, StringComparison.OrdinalIgnoreCase)).ToList() : commentView;
+                            commentView = "Username".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.Username.Contains(con.Value, StringComparison.OrdinalIgnoreCase)).ToList() : commentView;
                             //排序
                             if (con.Sort != 0)
                             {
@@ -323,10 +323,10 @@ namespace CommentService.App
                     {
                         foreach (var con in condidtion)
                         {
-                            commentView = "Nick".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.Nick.Contains(con.Value)) : commentView;
-                            commentView = "Content".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.Content.Contains(con.Value)) : commentView;
-                            commentView = "ArticleTitle".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.ArticleTitle.Contains(con.Value)) : commentView;
-                            commentView = "Username".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.Username.Contains(con.Value)) : commentView;
+                            commentView = "Nick".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.Nick.Contains(con.Value, StringComparison.OrdinalIgnoreCase) || c.Username.Contains(con.Value, StringComparison.OrdinalIgnoreCase)) : commentView;
+                            commentView = "Content".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.Content.Contains(con.Value, StringComparison.OrdinalIgnoreCase)) : commentView;
+                            commentView = "ArticleTitle".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.ArticleTitle.Contains(con.Value, StringComparison.OrdinalIgnoreCase)) : commentView;
+                            commentView = "Username".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.Username.Contains(con.Value, StringComparison.OrdinalIgnoreCase)) : commentView;
                             commentView = "Status".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.Status == Convert.ToInt32(con.Value)) : commentView;
                             //排序
                             if (con.Sort != 0)
@@ -404,10 +404,10 @@ namespace CommentService.App
                     {
                         foreach (var con in condidtion)
                         {
-                            commentView = "Nick".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.Nick.Contains(con.Value)) : commentView;
-                            commentView = "Content".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.Content.Contains(con.Value)) : commentView;
-                            commentView = "ArticleTitle".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.ArticleTitle.Contains(con.Value)) : commentView;
-                            commentView = "Username".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.Username.Contains(con.Value)) : commentView;
+                            commentView = "Nick".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.Nick.Contains(con.Value, StringComparison.OrdinalIgnoreCase) || c.Username.Contains(con.Value, StringComparison.OrdinalIgnoreCase)) : commentView;
+                            commentView = "Content".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.Content.Contains(con.Value, StringComparison.OrdinalIgnoreCase)) : commentView;
+                            commentView = "ArticleTitle".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.ArticleTitle.Contains(con.Value, StringComparison.OrdinalIgnoreCase)) : commentView;
+                            commentView = "Username".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.Username.Contains(con.Value, StringComparison.OrdinalIgnoreCase)) : commentView;
                             commentView = "Status".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.Status == Convert.ToInt32(con.Value)) : commentView;
                             //排序
                             if (con.Sort != 0)
@@ -465,6 +465,7 @@ namespace CommentService.App
                     var commentView = (from c in comment
                                        join u in userList on c.UserId equals u.Id
                                        join a in articleList on c.ArticleId equals a.Id
+                                       where u.Id != uid
                                        select new
                                        {
                                            Id = c.Id,
@@ -484,10 +485,10 @@ namespace CommentService.App
                     {
                         foreach (var con in condidtion)
                         {
-                            commentView = "Nick".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.Nick.Contains(con.Value)) : commentView;
-                            commentView = "Content".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.Content.Contains(con.Value)) : commentView;
-                            commentView = "ArticleTitle".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.ArticleTitle.Contains(con.Value)) : commentView;
-                            commentView = "Username".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.Username.Contains(con.Value)) : commentView;
+                            commentView = "Nick".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.Nick.Contains(con.Value, StringComparison.OrdinalIgnoreCase) || c.Username.Contains(con.Value, StringComparison.OrdinalIgnoreCase)) : commentView;
+                            commentView = "Content".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.Content.Contains(con.Value,StringComparison.OrdinalIgnoreCase)) : commentView;
+                            commentView = "ArticleTitle".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.ArticleTitle.Contains(con.Value, StringComparison.OrdinalIgnoreCase)) : commentView;
+                            commentView = "Username".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.Username.Contains(con.Value, StringComparison.OrdinalIgnoreCase)) : commentView;
                             commentView = "Status".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? commentView.Where(c => c.Status == Convert.ToInt32(con.Value)) : commentView;
                             //排序
                             if (con.Sort != 0)
@@ -631,9 +632,9 @@ namespace CommentService.App
 
                     comment.Status = 1;
                     dbContext.Comments.Update(comment);
-                    if (await dbContext.SaveChangesAsync() < 0)
+                    if ((await dbContext.SaveChangesAsync()) > 0 && uid.HasValue)
                     {
-                        throw new Exception("操作失败");
+                         await ReadComment(cid, uid.Value); //删除对应评论消息
                     }
                     return "操作成功";
                 }

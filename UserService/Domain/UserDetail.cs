@@ -35,6 +35,8 @@ namespace UserService.Domain
         [Column("cover")]
         [StringLength(200)]
         public string Cover { get; set; }
+        [Column("message")]
+        public string Message { get; set; }
 
         [ForeignKey("UserId")]
         [InverseProperty("UserDetail")]

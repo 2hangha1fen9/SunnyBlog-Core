@@ -10,7 +10,6 @@ namespace UserService
 {
     public partial class UserDBContext : DbContext
     {
-
         public UserDBContext(DbContextOptions<UserDBContext> options)
             : base(options)
         {

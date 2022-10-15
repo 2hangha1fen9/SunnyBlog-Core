@@ -42,6 +42,10 @@
         /// </summary>
         public string? Remark { get; set; }
         /// <summary>
+        /// 用户留言版
+        /// </summary>
+        public string Message { get; set; }
+        /// <summary>
         /// 积分
         /// </summary>
         public decimal Score { get; set; }

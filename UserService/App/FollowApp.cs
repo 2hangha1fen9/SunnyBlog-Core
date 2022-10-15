@@ -39,7 +39,7 @@ namespace UserService.App
         {
             using (var dbContext = contextFactory.CreateDbContext())
             {
-                var follows = dbContext.UserFollows.Where(f => fans ? f.WatchId == id : f.UserId == id).Select(f => new
+                var follows = (await dbContext.UserFollows.Where(f => fans ? f.WatchId == id : f.UserId == id).Select(f => new
                 {
                     Id = f.Id,
                     UserId = fans ? f.UserId : f.WatchId,
@@ -47,7 +47,7 @@ namespace UserService.App
                     Nick = fans ? f.User.UserDetail.Nick : f.Watch.UserDetail.Nick,
                     Remark = fans ? f.User.UserDetail.Remark : f.Watch.UserDetail.Remark,
                     Photo = fans ? f.User.Photo : f.Watch.Photo
-                });
+                }).ToListAsync()).AsQueryable();
                 //筛选条件
                 if (condidtion.Count > 0)
                 {
@@ -60,8 +60,8 @@ namespace UserService.App
                 }
                 //分页条件
                 var followPage = new PageList<FollowView>();
-                follows = followPage.Pagination(pageIndex, pageSize, follows.AsQueryable());
-                followPage.Page = (await follows.ToListAsync()).MapToList<FollowView>();
+                follows = followPage.Pagination(pageIndex, pageSize, follows);
+                followPage.Page = follows.ToList().MapToList<FollowView>();
                 return followPage;
             }
         }

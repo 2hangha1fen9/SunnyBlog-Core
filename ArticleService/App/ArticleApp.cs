@@ -192,6 +192,7 @@ namespace ArticleService.App
                     {
                         //条件过滤
                         articleMap = "Username".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.Username.Contains(con.Value,StringComparison.OrdinalIgnoreCase)) : articleMap;
+                        articleMap = "Nick".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.Nick.Contains(con.Value,StringComparison.OrdinalIgnoreCase)) : articleMap;
                         articleMap = "Title".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.Title.Contains(con.Value,StringComparison.OrdinalIgnoreCase)) : articleMap;
                         articleMap = "Summary".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.Summary.Contains(con.Value,StringComparison.OrdinalIgnoreCase)) : articleMap;
                         articleMap = "Tag".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.Tags.Where(t => t.Name == con.Value).Count() > 0) : articleMap;

@@ -88,8 +88,7 @@ builder.Services.AddGrpcClient<gRole.gRoleClient>(option =>
 });
 //Redis¿Í»§¶Ë×¢²á
 builder.Services.AddSingleton<IConnectionMultiplexer>(cm =>
-{
-    var conStr = builder.Configuration.GetValue<string>("RedisServer");
+{    var conStr = builder.Configuration.GetValue<string>("RedisServer");
     return ConnectionMultiplexer.Connect(conStr);
 });
 

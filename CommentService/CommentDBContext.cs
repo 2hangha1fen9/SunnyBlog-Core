@@ -10,10 +10,6 @@ namespace CommentService
 {
     public partial class CommentDBContext : DbContext
     {
-        public CommentDBContext()
-        {
-        }
-
         public CommentDBContext(DbContextOptions<CommentDBContext> options)
             : base(options)
         {
@@ -31,7 +27,7 @@ namespace CommentService
 
                 entity.Property(e => e.Status)
                     .HasDefaultValueSql("((1))")
-                    .HasComment("1审核通过-1未审核");
+                    .HasComment("1审核通过2需要审核-1禁止评论");
 
                 entity.HasOne(d => d.Parent)
                     .WithMany(p => p.InverseParent)

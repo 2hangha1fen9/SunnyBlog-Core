@@ -23,5 +23,9 @@ namespace UserService.Request
         /// 备注
         /// </summary>
         public string? Remark { get; set; }
+        /// <summary>
+        /// 用户留言板
+        /// </summary>
+        public string? Message { get; set; }
     }
 }

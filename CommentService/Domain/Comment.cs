@@ -28,7 +28,7 @@ namespace CommentService.Domain
         [Column("createTime", TypeName = "datetime")]
         public DateTime CreateTime { get; set; }
         /// <summary>
-        /// 1审核通过-1未审核
+        /// 1审核通过2需要审核-1禁止评论
         /// </summary>
         [Column("status")]
         public int Status { get; set; }

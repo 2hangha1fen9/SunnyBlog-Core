@@ -186,7 +186,7 @@ namespace ArticleService.App
                     Name = t.Name,
                     Color = t.Color,
                     IsPrivate = t.IsPrivate,
-                    ArticleCount = t.ArticleTags.Count()
+                    ArticleCount = t.ArticleTags.Count(t => t.Article.UserId == uid)
 
                 }).ToListAsync();
                 return tags.MapToList<TagView>();

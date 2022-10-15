@@ -52,6 +52,8 @@ namespace UserService.App
                     Sex = u.UserDetail.Sex,
                     Fans = u.UserFollowWatches.Count(),
                     Follows = u.UserFollowUsers.Count(),
+                    Message = u.UserDetail.Message,
+                    RegisterTime = u.UserDetail.RegisterTime
                 }).FirstOrDefaultAsync();
                 var userView = user.MapTo<UserView>();
                 return userView;
@@ -77,6 +79,8 @@ namespace UserService.App
                     Sex = u.UserDetail.Sex,
                     Fans = u.UserFollowWatches.Count(),
                     Follows = u.UserFollowUsers.Count(),
+                    Message = u.UserDetail.Message,
+                    RegisterTime = u.UserDetail.RegisterTime
                 });
                 //判断是否有条件
                 if (condition?.Count > 0)
@@ -115,6 +119,7 @@ namespace UserService.App
                     Birthday = u.UserDetail.Birthday,
                     RegisterTime = u.UserDetail.RegisterTime,
                     Remark = u.UserDetail.Remark,
+                    Message = u.UserDetail.Message,
                     Photo = u.Photo,
                     Score = u.UserDetail == null ? 0.0m : u.UserDetail.Score,
                     Fans = u.UserFollowWatches.Count(),
@@ -179,6 +184,7 @@ namespace UserService.App
                     Birthday = u.UserDetail.Birthday,
                     RegisterTime = u.UserDetail.RegisterTime,
                     Remark = u.UserDetail.Remark,
+                    Message = u.UserDetail.Message,
                     Photo = u.Photo,
                     Score = u.UserDetail == null ? 0.0m : u.UserDetail.Score,
                     Fans = u.UserFollowWatches.Count(),
@@ -304,6 +310,7 @@ namespace UserService.App
                 {
                     userDetail.Nick = request.Nick ?? userDetail.Nick;
                     userDetail.Remark = request.Remark ?? userDetail.Remark;
+                    userDetail.Message = request.Message ?? userDetail.Message;
                     userDetail.Sex = request.Sex ?? userDetail.Sex;
                     userDetail.Birthday = string.IsNullOrWhiteSpace(request.Birthday) ? Convert.ToDateTime(request.Birthday) : Convert.ToDateTime(userDetail.Birthday);
                     dbContext.Entry(userDetail).State = EntityState.Modified;
@@ -533,6 +540,7 @@ namespace UserService.App
                     userDetail.Birthday = request.Birthday == null ?  (userDetail.Birthday == null ? null : Convert.ToDateTime(userDetail.Birthday)) : Convert.ToDateTime(request.Birthday);
                     userDetail.RegisterTime = request.RegisterTime == null ? (userDetail.RegisterTime == null ? null : Convert.ToDateTime(userDetail.RegisterTime)) : Convert.ToDateTime(request.RegisterTime);
                     userDetail.Remark = request.Remark ?? userDetail.Remark;
+                    userDetail.Message = request.Message ?? userDetail.Message;
                     userDetail.Score = request.Score ?? userDetail.Score;
 
                     dbContext.Entry(user).State = EntityState.Modified;
