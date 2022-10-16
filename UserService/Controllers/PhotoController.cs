@@ -24,6 +24,7 @@ namespace UserService.Controllers
         /// <returns></returns>
         [RBAC]
         [HttpPut]
+        [TypeFilter(typeof(RedisFlush), Arguments = new object[] { new string[] { "*user*" } })]
         public async Task<Response<UploadResult>> Upload([FromForm]UploadPhotoReq request,[FromQuery]int? uid = null,[FromQuery]string? type = "photo")
         {
             var result = new Response<UploadResult>();

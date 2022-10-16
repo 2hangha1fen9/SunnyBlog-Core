@@ -158,6 +158,30 @@ namespace UserService.Controllers
         }
 
         /// <summary>
+        /// 重置用户封面
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        [RBAC]
+        [HttpPut]
+        [TypeFilter(typeof(RedisFlush), Arguments = new object[] { new string[] { "*user*" } })]
+        public async Task<Response<string>> ResetCover()
+        {
+            var result = new Response<string>();
+            try
+            {
+                var userId = HttpContext.User.Claims?.FirstOrDefault(c => c.Type == "user_id")?.Value;
+                result.Result = await userApp.ResetCover(Convert.ToInt32(userId));
+            }
+            catch (Exception ex)
+            {
+                result.Status = 500;
+                result.Message = ex.InnerException?.Message ?? ex.Message;
+            }
+            return result;
+        }
+
+        /// <summary>
         /// 用户账号绑定
         /// </summary>
         /// <returns></returns>

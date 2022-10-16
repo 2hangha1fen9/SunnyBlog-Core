@@ -14,6 +14,7 @@ namespace UserService.App.Interface
         Task<string> UserRegister(UserRegisterReq request);
         Task<string> ChangePassword(ForgetPasswordReq request);
         Task<string> ChangeUser(ChangeUserReq request,int id);
+        Task<string> ResetCover(int id);
         Task<string> BindAccount(BindAccountReq requests,int id);
         Task<string> UbindAccount(UbindAccountReq requests,int id);
         Task<string> UpdateUserDetail(UpdateUserReq request);

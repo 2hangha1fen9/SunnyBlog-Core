@@ -186,6 +186,7 @@ namespace UserService.App
                     Remark = u.UserDetail.Remark,
                     Message = u.UserDetail.Message,
                     Photo = u.Photo,
+                    Cover = u.UserDetail.Cover,
                     Score = u.UserDetail == null ? 0.0m : u.UserDetail.Score,
                     Fans = u.UserFollowWatches.Count(),
                     Follows = u.UserFollowUsers.Count(),
@@ -312,7 +313,39 @@ namespace UserService.App
                     userDetail.Remark = request.Remark ?? userDetail.Remark;
                     userDetail.Message = request.Message ?? userDetail.Message;
                     userDetail.Sex = request.Sex ?? userDetail.Sex;
-                    userDetail.Birthday = string.IsNullOrWhiteSpace(request.Birthday) ? Convert.ToDateTime(request.Birthday) : Convert.ToDateTime(userDetail.Birthday);
+                    userDetail.Birthday = !string.IsNullOrWhiteSpace(request.Birthday) ? Convert.ToDateTime(request.Birthday) : Convert.ToDateTime(userDetail.Birthday);
+                    dbContext.Entry(userDetail).State = EntityState.Modified;
+                    if (await dbContext.SaveChangesAsync() > 0)
+                    {
+                        return "更新成功";
+                    }
+                    else
+                    {
+                        throw new Exception("更新失败");
+                    }
+                }
+                else
+                {
+                    throw new Exception("用户信息异常");
+                }
+            }
+        }
+
+        /// <summary>
+        /// 删除用户封面
+        /// </summary>
+        /// <param name="request"></param>
+        /// <returns></returns>
+        /// <exception cref="NotImplementedException"></exception>
+        public async Task<string> ResetCover(int id)
+        {
+            using (var dbContext = contextFactory.CreateDbContext())
+            {
+                //查询用户
+                var userDetail = await dbContext.UserDetails.FirstOrDefaultAsync(u => u.UserId == id);
+                if (userDetail != null)
+                {
+                    userDetail.Cover = null;
                     dbContext.Entry(userDetail).State = EntityState.Modified;
                     if (await dbContext.SaveChangesAsync() > 0)
                     {
@@ -351,12 +384,26 @@ namespace UserService.App
                     //判断绑定类型
                     if (requests.Type == "phone")
                     {
-                        user.Phone = requests.Bind;
+                        if((await dbContext.Users.FirstOrDefaultAsync(u => u.Phone == requests.Bind)) == null)
+                        {
+                            user.Phone = requests.Bind;
+                        }
+                        else
+                        {
+                            throw new Exception("手机号已存在");
+                        }
                     }
                     else if (requests.Type == "email")
                     {
+                        if ((await dbContext.Users.FirstOrDefaultAsync(u => u.Email == requests.Bind)) == null)
+                        {
+                            user.Email = requests.Bind;
+                        }
+                        else
+                        {
+                            throw new Exception("邮箱已存在");
+                        }
 
-                        user.Email = requests.Bind;
                     }
                     else
                     {
@@ -397,11 +444,28 @@ namespace UserService.App
                 {
                     if (requests.Type == "phone")
                     {
-                        user.Phone = string.Empty;
+                        //账号必须绑定手机、邮箱二选一
+                        if (!string.IsNullOrWhiteSpace(user.Email))
+                        {
+                            user.Phone = null;
+                        }
+                        else
+                        {
+                            throw new Exception("账号必须保证有一个绑定项");
+                        }
+                        
                     }
                     else if (requests.Type == "email")
                     {
-                        user.Email = string.Empty;
+                        //账号必须绑定手机、邮箱二选一
+                        if (!string.IsNullOrWhiteSpace(user.Phone))
+                        {
+                            user.Email = null;
+                        }
+                        else
+                        {
+                            throw new Exception("账号必须保证有一个绑定项");
+                        }
                     }
                     else
                     {

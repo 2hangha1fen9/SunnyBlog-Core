@@ -29,7 +29,7 @@ namespace UserService.App
             try
             {
                 var fileExtension = Path.GetExtension(request.Data.FileName);
-                string phyPath = Path.Combine(Directory.GetCurrentDirectory(), "static", "avatar", $"{id}{fileExtension}");
+                string phyPath = Path.Combine(Directory.GetCurrentDirectory(), "static", type == "photo" ? "avatar" : "cover", $"{id}{fileExtension}");
                 if (!(fileExtension != ".png" || fileExtension != ".jpeg" || fileExtension != ".gif" || fileExtension != ".bmp" || fileExtension != ".ico")){
                     throw new Exception("图片格式错误：只能为：png、jpeg、gif、bmp、ico");
                 }

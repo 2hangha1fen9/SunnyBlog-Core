@@ -58,6 +58,10 @@
         /// </summary>
         public string? Photo { get; set; }
         /// <summary>
+        /// 封面
+        /// </summary>
+        public string? Cover { get; set; }
+        /// <summary>
         /// 状态
         /// </summary>
         public int Status { get; set; }

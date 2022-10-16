@@ -47,7 +47,9 @@ namespace CommentService.App
                 }
                 else
                 {
-                    if(view.ViewTime.Month != DateTime.Now.Month && view.ViewTime.Day != DateTime.Now.Day)
+                    var start = DateTime.Now;
+                    var end = start.AddDays(1);
+                    if(view.ViewTime >= start && view.ViewTime <= end)
                     {
                         view = new View()
                         {
