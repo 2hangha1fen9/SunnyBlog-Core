@@ -53,6 +53,7 @@ builder.Services.AddScoped<IArticleRegionApp, ArticleRegionApp>();
 builder.Services.AddScoped<IArticleTagApp, ArticleTagApp>();
 builder.Services.AddScoped<IDrawingBedApp, DrawingBedApp>();
 builder.Services.AddScoped<ISettingApp, SettingApp>();
+builder.Services.AddScoped<ISiteConfigApp, SiteConfigApp>();
 //Redis¿Í»§¶Ë×¢²á
 builder.Services.AddSingleton<IConnectionMultiplexer>(cm =>
 {

@@ -69,7 +69,7 @@ namespace UserService.App
         {
             using (var context = contextFactory.CreateDbContext())
             {
-                var users = context.Users.Select(u => new
+                var users = (await context.Users.Select(u => new
                 {
                     Id = u.Id,
                     Username = u.Username,
@@ -81,21 +81,33 @@ namespace UserService.App
                     Follows = u.UserFollowUsers.Count(),
                     Message = u.UserDetail.Message,
                     RegisterTime = u.UserDetail.RegisterTime
-                });
+                }).ToListAsync()).AsQueryable();
                 //判断是否有条件
                 if (condition?.Count > 0)
                 {
                     foreach (var con in condition)
                     {
+                        users = "user".Equals(con.Key,StringComparison.OrdinalIgnoreCase) ? users.Where(u => u.Username.Contains(con.Value, StringComparison.OrdinalIgnoreCase) || u.Nick.Contains(con.Value, StringComparison.OrdinalIgnoreCase)) : users;
                         users = "username".Equals(con.Key,StringComparison.OrdinalIgnoreCase) ? users.Where(u => u.Username.Contains(con.Value, StringComparison.OrdinalIgnoreCase)) : users;
                         users = "nick".Equals(con.Key,StringComparison.OrdinalIgnoreCase) ? users.Where(u => u.Nick.Contains(con.Value, StringComparison.OrdinalIgnoreCase)) : users;
                         users = "remark".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? users.Where(u => u.Remark.Contains(con.Value, StringComparison.OrdinalIgnoreCase)) : users;
+                        if ("Fans".Equals(con.Key, StringComparison.OrdinalIgnoreCase))
+                        {
+                            if (con.Sort == -1)
+                            {
+                                users = users.OrderByDescending(m => m.Fans);
+                            }
+                            else
+                            {
+                                users = users.OrderBy(m => m.Fans);
+                            }
+                        }
                     }
                 }
                 //对结果进行分页
                 var userPage = new PageList<UserView>();
                 users = userPage.Pagination(pageIndex,pageSize,users); //添加分页表表达式
-                userPage.Page = (await users.ToListAsync()).MapToList<UserView>(); //获取分页结果
+                userPage.Page = users.ToList().MapToList<UserView>(); //获取分页结果
                 return userPage;
             }
         }
@@ -108,7 +120,7 @@ namespace UserService.App
         {
             using (var context = contextFactory.CreateDbContext())
             {
-                var users = context.Users.Select(u => new
+                var users = (await context.Users.Select(u => new
                 {
                     Id = u.Id,
                     Username = u.Username,
@@ -125,7 +137,7 @@ namespace UserService.App
                     Fans = u.UserFollowWatches.Count(),
                     Follows = u.UserFollowUsers.Count(),
                     Status = u.Status
-                });
+                }).ToListAsync()).AsQueryable();
                 //判断是否有条件
                 if (condition?.Count > 0)
                 {
@@ -159,7 +171,7 @@ namespace UserService.App
                 //对结果进行分页
                 var userPage = new PageList<UserDetailView>();
                 users = userPage.Pagination(pageIndex, pageSize, users); //添加分页表表达式
-                userPage.Page = (await users.ToListAsync()).MapToList<UserDetailView>(); //获取分页结果
+                userPage.Page = users.ToList().MapToList<UserDetailView>(); //获取分页结果
                 return userPage;
             }
         }

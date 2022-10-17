@@ -194,22 +194,26 @@ namespace ArticleService.App
                         articleMap = "Username".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.Username.Contains(con.Value,StringComparison.OrdinalIgnoreCase)) : articleMap;
                         articleMap = "Nick".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.Nick.Contains(con.Value,StringComparison.OrdinalIgnoreCase)) : articleMap;
                         articleMap = "Title".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.Title.Contains(con.Value,StringComparison.OrdinalIgnoreCase)) : articleMap;
-                        articleMap = "Summary".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.Summary.Contains(con.Value,StringComparison.OrdinalIgnoreCase)) : articleMap;
+                        articleMap = "Summary".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.Summary != null && a.Summary.Contains(con.Value,StringComparison.OrdinalIgnoreCase)) : articleMap;
                         articleMap = "Tag".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.Tags.Where(t => t.Name == con.Value).Count() > 0) : articleMap;
-                        articleMap = "Category".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.CategoryName.Contains(con.Value,StringComparison.OrdinalIgnoreCase)): articleMap;
-                        if("CategoryId".Equals(con.Key, StringComparison.OrdinalIgnoreCase) && con.Value != null)
-                        {
-                            articleMap =  articleMap.Where(a => a.CategoryId == Convert.ToInt32(con.Value));
-                        }
-                        else if("CategoryId".Equals(con.Key, StringComparison.OrdinalIgnoreCase))
-                        {
-                            articleMap = articleMap.Where(a => a.CategoryId == null);
-                        }
+                        articleMap = "Category".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.CategoryName != null && a.CategoryName.Contains(con.Value,StringComparison.OrdinalIgnoreCase)): articleMap;
                         articleMap = "Status".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.Status == Convert.ToInt32(con.Value)) : articleMap;
                         articleMap = "IsLock".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.IsLock == Convert.ToInt32(con.Value)) : articleMap;
                         articleMap = "CommentStatus".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.CommentStatus == Convert.ToInt32(con.Value)) : articleMap;
+                        if ("Article".Equals(con.Key, StringComparison.OrdinalIgnoreCase) && con.Value != null)
+                        {
+                            articleMap = articleMap.Where(a => a.Title.Contains(con.Value, StringComparison.OrdinalIgnoreCase) || (a.Summary != null && a.Summary.Contains(con.Value, StringComparison.OrdinalIgnoreCase)));
+                        }
+                        if ("CategoryId".Equals(con.Key, StringComparison.OrdinalIgnoreCase) && con.Value != null)
+                        {
+                            articleMap = articleMap.Where(a => a.CategoryId == Convert.ToInt32(con.Value));
+                        }
+                        else if ("CategoryId".Equals(con.Key, StringComparison.OrdinalIgnoreCase))
+                        {
+                            articleMap = articleMap.Where(a => a.CategoryId == null);
+                        }
                         //分区过滤
-                        if("Region".Equals(con.Key, StringComparison.OrdinalIgnoreCase))
+                        if ("Region".Equals(con.Key, StringComparison.OrdinalIgnoreCase))
                         {
                             //获取所有与之相关的分区
                             var filterRegion = await articleRegionApp.GetRegions(con.Value);
@@ -332,10 +336,18 @@ namespace ArticleService.App
                     {
                         //条件过滤
                         articleMap = "Username".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.Username.Contains(con.Value, StringComparison.OrdinalIgnoreCase)) : articleMap;
+                        articleMap = "Nick".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.Nick.Contains(con.Value, StringComparison.OrdinalIgnoreCase)) : articleMap;
                         articleMap = "Title".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.Title.Contains(con.Value, StringComparison.OrdinalIgnoreCase)) : articleMap;
-                        articleMap = "Summary".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.Summary.Contains(con.Value, StringComparison.OrdinalIgnoreCase)) : articleMap;
+                        articleMap = "Summary".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.Summary != null && a.Summary.Contains(con.Value, StringComparison.OrdinalIgnoreCase)) : articleMap;
                         articleMap = "Tag".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.Tags.Where(t => t.Name == con.Value).Count() > 0) : articleMap;
-                        articleMap = "Category".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.CategoryName.Contains(con.Value, StringComparison.OrdinalIgnoreCase)) : articleMap;
+                        articleMap = "Category".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.CategoryName != null && a.CategoryName.Contains(con.Value, StringComparison.OrdinalIgnoreCase)) : articleMap;
+                        articleMap = "Status".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.Status == Convert.ToInt32(con.Value)) : articleMap;
+                        articleMap = "IsLock".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.IsLock == Convert.ToInt32(con.Value)) : articleMap;
+                        articleMap = "CommentStatus".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.CommentStatus == Convert.ToInt32(con.Value)) : articleMap;
+                        if ("Article".Equals(con.Key, StringComparison.OrdinalIgnoreCase) && con.Value != null)
+                        {
+                            articleMap = articleMap.Where(a => a.Title.Contains(con.Value, StringComparison.OrdinalIgnoreCase) || (a.Summary != null && a.Summary.Contains(con.Value, StringComparison.OrdinalIgnoreCase)));
+                        }
                         if ("CategoryId".Equals(con.Key, StringComparison.OrdinalIgnoreCase) && con.Value != null)
                         {
                             articleMap = articleMap.Where(a => a.CategoryId == Convert.ToInt32(con.Value));
@@ -344,9 +356,6 @@ namespace ArticleService.App
                         {
                             articleMap = articleMap.Where(a => a.CategoryId == null);
                         }
-                        articleMap = "Status".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.Status == Convert.ToInt32(con.Value)) : articleMap;
-                        articleMap = "IsLock".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.IsLock == Convert.ToInt32(con.Value)) : articleMap;
-                        articleMap = "CommentStatus".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? articleMap.Where(a => a.CommentStatus == Convert.ToInt32(con.Value)) : articleMap;
                         //分区过滤
                         if ("Region".Equals(con.Key, StringComparison.OrdinalIgnoreCase))
                         {

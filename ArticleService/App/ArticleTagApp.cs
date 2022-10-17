@@ -153,7 +153,7 @@ namespace ArticleService.App
         /// 获取所有公共标签
         /// </summary>
         /// <returns></returns>
-        public async Task<List<TagView>> GetPublicTags()
+        public async Task<List<TagView>> GetPublicTags(List<SearchCondition>? condidtion = null)
         {
             using (var dbContext = contextFactory.CreateDbContext())
             {
@@ -166,6 +166,30 @@ namespace ArticleService.App
                     IsPrivate = t.IsPrivate,
                     ArticleCount = t.ArticleTags.Count()
                 }).ToListAsync();
+                //条件筛选
+                if(condidtion?.Count > 0)
+                {
+                    foreach (var con in condidtion)
+                    {
+                        tags = "Name".Equals(con.Key, StringComparison.OrdinalIgnoreCase) ? tags.Where(a => a.Name.Contains(con.Value, StringComparison.OrdinalIgnoreCase)).ToList() : tags;
+                        //排序
+                        if (con.Sort != 0)
+                        {
+                            if ("ArticleCount".Equals(con.Key, StringComparison.OrdinalIgnoreCase))
+                            {
+                                if (con.Sort == -1)
+                                {
+                                    tags = tags.OrderByDescending(a => a.ArticleCount).ToList();
+                                }
+                                else
+                                {
+                                    tags = tags.OrderBy(a => a.ArticleCount).ToList();
+                                }
+                            }
+                        }
+                    }
+                }
+                
                 return tags.MapToList<TagView>();
             }
         }

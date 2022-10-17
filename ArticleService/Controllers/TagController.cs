@@ -3,6 +3,7 @@ using ArticleService.Request;
 using ArticleService.Response;
 using Infrastructure;
 using Infrastructure.Auth;
+using Infrastructure.Utils;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -26,12 +27,13 @@ namespace ArticleService.Controllers
         [RBAC(IsPublic = 1)]
         [HttpGet]
         [TypeFilter(typeof(RedisCache))]
-        public async Task<Response<List<TagView>>> Public()
+        public async Task<Response<List<TagView>>> Public(string? condition = null)
         {
             var result = new Response<List<TagView>>();
             try
             {
-                var tags = await articleTagApp.GetPublicTags();
+                List<SearchCondition> con = SequenceConverter.ConvertToCondition(condition);
+                var tags = await articleTagApp.GetPublicTags(con);
                 result.Result = tags;
             }
             catch (Exception ex)
