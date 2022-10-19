@@ -51,6 +51,7 @@ builder.Services.AddScoped<IMessageApp, MessageApp>();
 builder.Services.AddScoped<IPhotoApp, PhotoApp>();
 builder.Services.AddScoped<IFollowApp, FollowApp>();
 builder.Services.AddScoped<IScoreApp, ScoreApp>();
+builder.Services.AddScoped<IStatisticsApp, StatisticsApp>();
 //Redis¿Í»§¶Ë×¢²á
 builder.Services.AddSingleton<IConnectionMultiplexer>(cm =>
 {

@@ -90,7 +90,8 @@ namespace ArticleService.App
         /// <summary>
         /// 获取文章详情
         /// </summary>
-        /// <param name="id"></param>
+        /// <param name="id">文章ID</param>
+        /// <param name="allScope">查询全部</param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
         public async Task<ArticleView> GetArticle(int id,bool allScope = false)
@@ -282,8 +283,9 @@ namespace ArticleService.App
         /// <summary>
         /// 获取用户的点赞/收藏文章
         /// </summary>
+        /// <param name="uid"></param>
+        /// <param name="isLike"></param>
         /// <param name="condidtion"></param>
-        /// <param name="predict"></param>
         /// <param name="pageIndex"></param>
         /// <param name="pageSize"></param>
         /// <returns></returns>

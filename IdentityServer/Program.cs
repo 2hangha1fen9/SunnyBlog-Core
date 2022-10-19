@@ -64,6 +64,7 @@ builder.Services.AddGrpcClient<gUser.gUserClient>(option =>
 builder.Services.AddScoped<IPermissionApp, PermissionApp>();
 builder.Services.AddScoped<IRoleApp,RoleApp>();
 builder.Services.AddScoped<IRelationApp,RelationApp>();
+builder.Services.AddScoped<IStatisticsApp, StatisticsApp>();
 
 //RBACÊÚÈ¨·şÎñ
 builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();

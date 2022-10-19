@@ -34,8 +34,17 @@ namespace CommentService.App
         {
             using (var dbContext = contextFactory.CreateDbContext())
             {
-                var view = await dbContext.Views.FirstOrDefaultAsync(v => v.ArticleId == aid && v.UserId == uid.Value && v.Ip == ip);
-                if(view == null)
+                View view = null;
+                if (uid.HasValue)
+                {
+                   view = await dbContext.Views.OrderByDescending(v => v.ViewTime).FirstOrDefaultAsync(v => v.ArticleId == aid && v.UserId == uid.Value && v.Ip == ip);
+                }
+                else
+                {
+                    view = await dbContext.Views.OrderByDescending(v => v.ViewTime).FirstOrDefaultAsync(v => v.ArticleId == aid && v.Ip == ip);
+
+                }
+                if (view == null)
                 {
                     view = new View()
                     {
@@ -47,9 +56,10 @@ namespace CommentService.App
                 }
                 else
                 {
-                    var start = DateTime.Now;
-                    var end = start.AddDays(1);
-                    if(view.ViewTime >= start && view.ViewTime <= end)
+                    var now = DateTime.Now;
+                    var nowDate = new DateTime(now.Year,now.Month,now.Day);
+                    var viewDate = new DateTime(view.ViewTime.Year,view.ViewTime.Month,view.ViewTime.Day);
+                    if(nowDate != viewDate)
                     {
                         view = new View()
                         {

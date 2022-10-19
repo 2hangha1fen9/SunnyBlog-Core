@@ -84,6 +84,7 @@ builder.Services.AddScoped<ILikeApp, LikeApp>();
 builder.Services.AddScoped<IViewApp, ViewApp>();
 builder.Services.AddScoped<IMetaApp, MetaApp>();
 builder.Services.AddScoped<IDrawingBedApp, DrawingBedApp>();
+builder.Services.AddScoped<IStatisticsApp, StatisticsApp>();
 //Redis¿Í»§¶Ë×¢²á
 builder.Services.AddSingleton<IConnectionMultiplexer>(cm =>
 {

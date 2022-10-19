@@ -173,7 +173,7 @@ namespace IdentityService.App
         {
             using (var dbContext = contextFactory.CreateDbContext())
             {
-                var roles = dbContext.Roles.AsQueryable();
+                var roles = dbContext.Roles.AsEnumerable();
                 if (condidtion.Count > 0)
                 {
                     foreach (var con in condidtion)
@@ -211,8 +211,8 @@ namespace IdentityService.App
                     }
                 }
                 var rolePage = new PageList<RoleView>();
-                roles = rolePage.Pagination(pageIndex, pageSize, roles);
-                rolePage.Page = (await roles.ToListAsync()).MapToList<RoleView>();
+                roles = rolePage.Pagination(pageIndex, pageSize, roles.AsQueryable());
+                rolePage.Page =  roles.ToList().MapToList<RoleView>();
                 return rolePage;
             }
         }

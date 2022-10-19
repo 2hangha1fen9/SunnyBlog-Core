@@ -245,7 +245,7 @@ namespace Service.IdentityService.App
         {
             using (var dbContext = contextFactory.CreateDbContext())
             {
-                var permissions = dbContext.Permissions.OrderBy(p => p.Service).AsQueryable();
+                var permissions = dbContext.Permissions.OrderBy(p => p.Service).AsEnumerable();
                 if (condidtion?.Count > 0)
                 {
                     foreach (var con in condidtion)
@@ -287,8 +287,8 @@ namespace Service.IdentityService.App
                 }
                 //对结果分页
                 var permissionPage = new PageList<PermissionView>();
-                permissions = permissionPage.Pagination(pageIndex, pageSize, permissions);
-                permissionPage.Page = (await permissions.ToListAsync()).MapToList<PermissionView>();
+                permissions = permissionPage.Pagination(pageIndex, pageSize, permissions.AsQueryable());
+                permissionPage.Page = permissions.ToList().MapToList<PermissionView>();
                 return permissionPage;
             }
         }
