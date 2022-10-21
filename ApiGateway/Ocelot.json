@@ -49,7 +49,7 @@
     "BaseUrl": "https://blog.gateway:8888",
     "ReRouteIsCaseSensitive": false,
     "ServiceDiscoveryProvider": {
-      "Host": "localhost",
+      "Host": "blog.consul",
       "Port": 8500,
       "Type": "Consul"
     }
