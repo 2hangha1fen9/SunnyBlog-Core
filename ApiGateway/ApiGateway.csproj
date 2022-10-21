@@ -3,9 +3,9 @@
 	<PropertyGroup>
 		<TargetFramework>net6.0</TargetFramework>
 		<Nullable>enable</Nullable>
+		<NoWarn>$(NoWarn);NU1605</NoWarn>
 		<ImplicitUsings>enable</ImplicitUsings>
 	</PropertyGroup>
-
 	<ItemGroup>
 		<PackageReference Include="SkyAPM.Agent.AspNetCore" Version="2.1.0" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.2.3" />
@@ -18,21 +18,19 @@
 		<PackageReference Include="Ocelot.Provider.Polly" Version="17.0.0"></PackageReference>
 	</ItemGroup>
 	<ItemGroup>
-	  <ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
+		<ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
 	</ItemGroup>
 	<ItemGroup>
-	  <Folder Include="Controllers\" />
+		<Folder Include="Controllers\" />
 	</ItemGroup>
 	<ItemGroup>
-	  <Content Update="skyapm.json">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </Content>
+		<Content Update="skyapm.json">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</Content>
 	</ItemGroup>
 
 	<ProjectExtensions>
-		<VisualStudio>
-			<UserProperties ocelot_1json__JsonSchema="" />
-		</VisualStudio>
+		<VisualStudio><UserProperties appsettings_1json__JsonSchema="" ocelot_1json__JsonSchema="" /></VisualStudio>
 	</ProjectExtensions>
 
 </Project>

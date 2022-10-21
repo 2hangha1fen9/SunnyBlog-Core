@@ -18,16 +18,23 @@ using IdentityService.Rpc.Protos;
 using SkyApm.Utilities.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
-//Apollo配置中心
-builder.Host.ConfigureAppConfiguration((context,builder) =>
-{
-    builder.AddApollo(builder.Build()
-            .GetSection("Apollo"))
-            .AddDefault()
-            .AddNamespace("UserService",ConfigFileFormat.Json);
-});
+var useApollo = builder.Configuration.GetValue<bool>("useApollo");
+var port = builder.Configuration.GetValue<int>("port");
 
-builder.WebHost.UseUrls("https://*:8081");
+if (useApollo)
+{
+    //Apollo配置中心
+    builder.Host.ConfigureAppConfiguration((context, builder) =>
+    {
+        builder.AddApollo(builder.Build()
+                .GetSection("Apollo"))
+                .AddDefault()
+                .AddNamespace("UserService", ConfigFileFormat.Json);
+    });
+}
+
+
+builder.WebHost.UseUrls($"https://*:{port}");
 // Add services to the container.
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

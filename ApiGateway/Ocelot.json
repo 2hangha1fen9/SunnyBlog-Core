@@ -1,133 +1,57 @@
 {
-  // 转发路由，数组中的每个元素都是某个服务的一组路由转发规则
   "Routes": [
-    //UserService
     {
-      "ServiceName": "UserService", //对应consul配置的ServiceName
-      "DownstreamScheme": "https", //Uri方案
-      "DownstreamPathTemplate": "/api/{path}", //下游（服务提供方）服务路由模板
-      "UpstreamPathTemplate": "/user-service/{path}", //上游（客户端、服务消费方）请求路由模板
-      "UpstreamHttpMethod": [ "Get", "Post", "Delete", "Put" ], //上游Http动词
-      "LoadBalancerOptions": { //负载均衡配置
-        "Type": "RoundRobin" //轮询
+      "ServiceName": "UserService",
+      "DownstreamScheme": "https",
+      "DownstreamPathTemplate": "/api/{path}",
+      "UpstreamPathTemplate": "/user-service/{path}",
+      "UpstreamHttpMethod": [ "Get", "Post", "Delete", "Put" ],
+      "LoadBalancerOptions": {
+        "Type": "NoLoadBalancer"
       },
-      "UseServiceDiscovery": true, //启用服务发现
-      "RateLimitOptions": { //流量控制
-        "ClientWhiteList": [ "dev" ], //白名单
-        "EnableRateLimiting": true, //是否启用限流
-        "Period": "1s", //统计时间段：1s、5m、1h、1d
-        "PeriodTimespan": 15, //多少秒之后客户端可以重试
-        "Limit": 100 // 在统计时间段内允许的最大请求数量
-      },
-      "QoSOptions": { //服务质量配置
-        "ExceptionsAllowedBeforeBreaking": 5, //允许多少个异常请求
-        "DurationOfBreak": 15000, //熔断时间，单位时间毫秒
-        "TimeoutValue": 5000 //下游请求的处理时间超过多少则视为该请求超时
-      },
-      "FileCacheOptions": { //缓存配置
-        "TtlSeconds": 10, //10秒内相同url请求直接返回缓存数据
-        "Region": ""
-      }
+      "UseServiceDiscovery": true
     },
-    //ArticleService
     {
-      "ServiceName": "ArticleService", //对应consul配置的ServiceName
-      "DownstreamScheme": "https", //Uri方案
-      "DownstreamPathTemplate": "/api/{path}", //下游（服务提供方）服务路由模板
-      "UpstreamPathTemplate": "/article-service/{path}", //上游（客户端、服务消费方）请求路由模板
-      "UpstreamHttpMethod": [ "Get", "Post", "Delete", "Put" ], //上游Http动词
-      "LoadBalancerOptions": { //负载均衡配置
-        "Type": "RoundRobin" //轮询
+      "ServiceName": "ArticleService",
+      "DownstreamScheme": "https",
+      "DownstreamPathTemplate": "/api/{path}",
+      "UpstreamPathTemplate": "/article-service/{path}",
+      "UpstreamHttpMethod": [ "Get", "Post", "Delete", "Put" ],
+      "LoadBalancerOptions": {
+        "Type": "NoLoadBalancer"
       },
-      "UseServiceDiscovery": true, //启用服务发现
-      "RateLimitOptions": { //流量控制
-        "ClientWhiteList": [ "dev" ], //白名单
-        "EnableRateLimiting": true, //是否启用限流
-        "Period": "10s", //统计时间段：1s、5m、1h、1d
-        "PeriodTimespan": 15, //多少秒之后客户端可以重试
-        "Limit": 100 // 在统计时间段内允许的最大请求数量
-      },
-      "QoSOptions": { //服务质量配置
-        "ExceptionsAllowedBeforeBreaking": 5, //允许多少个异常请求
-        "DurationOfBreak": 15000, //熔断时间，单位时间毫秒
-        "TimeoutValue": 5000 //下游请求的处理时间超过多少则视为该请求超时
-      },
-      "FileCacheOptions": { //缓存配置
-        "TtlSeconds": 10,
-        "Region": ""
-      }
+      "UseServiceDiscovery": true
     },
-    //commentService
     {
-      "ServiceName": "CommentService", //对应consul配置的ServiceName
-      "DownstreamScheme": "https", //Uri方案
-      "DownstreamPathTemplate": "/api/{path}", //下游（服务提供方）服务路由模板
-      "UpstreamPathTemplate": "/comment-service/{path}", //上游（客户端、服务消费方）请求路由模板
-      "UpstreamHttpMethod": [ "Get", "Post", "Delete", "Put" ], //上游Http动词
-      "LoadBalancerOptions": { //负载均衡配置
-        "Type": "RoundRobin" //轮询
+      "ServiceName": "CommentService",
+      "DownstreamScheme": "https",
+      "DownstreamPathTemplate": "/api/{path}",
+      "UpstreamPathTemplate": "/comment-service/{path}",
+      "UpstreamHttpMethod": [ "Get", "Post", "Delete", "Put" ],
+      "LoadBalancerOptions": {
+        "Type": "NoLoadBalancer"
       },
-      "UseServiceDiscovery": true, //启用服务发现
-      "RateLimitOptions": { //流量控制
-        "ClientWhiteList": [ "dev" ], //白名单
-        "EnableRateLimiting": true, //是否启用限流
-        "Period": "10s", //统计时间段：1s、5m、1h、1d
-        "PeriodTimespan": 15, //多少秒之后客户端可以重试
-        "Limit": 100 // 在统计时间段内允许的最大请求数量
-      },
-      "QoSOptions": { //服务质量配置
-        "ExceptionsAllowedBeforeBreaking": 5, //允许多少个异常请求
-        "DurationOfBreak": 15000, //熔断时间，单位时间毫秒
-        "TimeoutValue": 5000 //下游请求的处理时间超过多少则视为该请求超时
-      },
-      "FileCacheOptions": { //缓存配置
-        "TtlSeconds": 10,
-        "Region": ""
-      }
+      "UseServiceDiscovery": true
     },
-    //IdentityService
     {
-      "ServiceName": "IdentityService", //对应consul配置的ServiceName
-      "DownstreamScheme": "https", //Uri方案
-      "DownstreamPathTemplate": "/{path}", //下游（服务提供方）服务路由模板
-      "UpstreamPathTemplate": "/identity-service/{path}", //上游（客户端、服务消费方）请求路由模板
-      "UpstreamHttpMethod": [ "Get", "Post", "Delete", "Put" ], //上游Http动词
-      "LoadBalancerOptions": { //负载均衡配置
-        "Type": "RoundRobin" //轮询
+      "ServiceName": "IdentityService",
+      "DownstreamScheme": "https",
+      "DownstreamPathTemplate": "/{path}",
+      "UpstreamPathTemplate": "/identity-service/{path}",
+      "UpstreamHttpMethod": [ "Get", "Post", "Delete", "Put" ],
+      "LoadBalancerOptions": {
+        "Type": "NoLoadBalancer"
       },
-      "UseServiceDiscovery": true, //启用服务发现
-      "RateLimitOptions": { //流量控制
-        "ClientWhiteList": [ "dev" ], //白名单
-        "EnableRateLimiting": true, //是否启用限流
-        "Period": "10s", //统计时间段：1s、5m、1h、1d
-        "PeriodTimespan": 15, //多少秒之后客户端可以重试
-        "Limit": 100 // 在统计时间段内允许的最大请求数量
-      },
-      "QoSOptions": { //服务质量配置
-        "ExceptionsAllowedBeforeBreaking": 5, //允许多少个异常请求
-        "DurationOfBreak": 15000, //熔断时间，单位时间毫秒
-        "TimeoutValue": 5000 //下游请求的处理时间超过多少则视为该请求超时
-      },
-      "FileCacheOptions": { //缓存配置
-        "TtlSeconds": 10,
-        "Region": ""
-      }
+      "UseServiceDiscovery": true
     }
   ],
-  //全局配置,前端访问地址
   "GlobalConfiguration": {
-    "BaseUrl": "https://localhost:8888",
-    "ReRouteIsCaseSensitive": false, //重写路由区分大小写，false忽略
-    "ServiceDiscoveryProvider": { //注册中心配置
+    "BaseUrl": "https://blog.gateway:8888",
+    "ReRouteIsCaseSensitive": false,
+    "ServiceDiscoveryProvider": {
       "Host": "localhost",
       "Port": 8500,
-      "Type": "Consul" //由Consul提供服务发现
+      "Type": "Consul"
     }
-  },
-  "RateLimitOptions": {
-    "DisableRateLimitHeaders": false, // Http头  X-Rate-Limit 和 Retry-After 是否禁用
-    "QuotaExceededMessage": "Too many requests, are you OK?", // 当请求过载被截断时返回的消息
-    "HttpStatusCode": 999, // 当请求过载被截断时返回的http status
-    "ClientIdHeader": "client_id" // 用来识别客户端的请求头，默认是 ClientId
   }
 }

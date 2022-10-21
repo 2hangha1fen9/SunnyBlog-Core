@@ -8,14 +8,21 @@ using Ocelot.Provider.Polly;
 using SkyApm.Utilities.DependencyInjection;
 
 var builder = WebApplication.CreateBuilder(args);
-//ApolloÅäÖÃÖÐÐÄ
-builder.Host.ConfigureAppConfiguration((context, builder) =>
+var useApollo = builder.Configuration.GetValue<bool>("useApollo");
+var port = builder.Configuration.GetValue<int>("port");
+
+if (useApollo)
 {
-    builder.AddApollo(builder.Build()
-            .GetSection("Apollo"))
-            .AddDefault()
-            .AddNamespace("ApiGateway", ConfigFileFormat.Json);
-});
+    //ApolloÅäÖÃÖÐÐÄ
+    builder.Host.ConfigureAppConfiguration((context, builder) =>
+    {
+        builder.AddApollo(builder.Build()
+                .GetSection("Apollo"))
+                .AddDefault()
+                .AddNamespace("ApiGateway", ConfigFileFormat.Json);
+    });
+}
+
 // Add services to the container.
 
 builder.Services.AddControllers();
@@ -25,7 +32,7 @@ builder.Services.AddEndpointsApiExplorer();
 
 //ÅäÖÃOcelotÍø¹ØµØÖ· Ìí¼ÓOcelotÅäÖÃÎÄ¼þ
 //builder.Configuration.AddJsonFile("Ocelot.json", optional: false, reloadOnChange: true);
-builder.WebHost.UseUrls("https://*:8888");
+builder.WebHost.UseUrls($"https://*:{port}");
 //ÅäÖÃÍø¹Ø¿çÓò
 builder.Services.AddCors(option =>
 {

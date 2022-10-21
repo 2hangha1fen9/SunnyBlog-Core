@@ -21,17 +21,24 @@ using ArticleService.Domain;
 using CommentService.Rpc.Protos;
 
 var builder = WebApplication.CreateBuilder(args);
-//Apollo配置中心
-builder.Host.ConfigureAppConfiguration((context, builder) =>
+var useApollo = builder.Configuration.GetValue<bool>("useApollo");
+var port = builder.Configuration.GetValue<int>("port");
+
+if (useApollo)
 {
-    builder.AddApollo(builder.Build()
-            .GetSection("Apollo"))
-            .AddDefault()
-            .AddNamespace("ArticleService", ConfigFileFormat.Json);
-});
+    //Apollo配置中心
+    builder.Host.ConfigureAppConfiguration((context, builder) =>
+    {
+        builder.AddApollo(builder.Build()
+                .GetSection("Apollo"))
+                .AddDefault()
+                .AddNamespace("ArticleService", ConfigFileFormat.Json);
+    });
+}
+
 // Add services to the container.
 
-builder.WebHost.UseUrls("https://*:8082");
+builder.WebHost.UseUrls($"https://*:{port}");
 builder.Services.AddControllers().AddNewtonsoftJson(option =>
 {
     //忽略序列化循环引用

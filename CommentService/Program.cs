@@ -17,16 +17,22 @@ using StackExchange.Redis;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
-//Apollo配置中心
-builder.Host.ConfigureAppConfiguration((context, builder) =>
+var useApollo = builder.Configuration.GetValue<bool>("useApollo");
+var port = builder.Configuration.GetValue<int>("port");
+
+if (useApollo)
 {
-    builder.AddApollo(builder.Build()
-            .GetSection("Apollo"))
-            .AddDefault()
-            .AddNamespace("CommentService", ConfigFileFormat.Json);
-});
+    //Apollo配置中心
+    builder.Host.ConfigureAppConfiguration((context, builder) =>
+    {
+        builder.AddApollo(builder.Build()
+                .GetSection("Apollo"))
+                .AddDefault()
+                .AddNamespace("CommentService", ConfigFileFormat.Json);
+    });
+}
 // Add services to the container.
-builder.WebHost.UseUrls("https://*:8083");
+builder.WebHost.UseUrls($"https://*:{port}");
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
