@@ -6,10 +6,14 @@
       "DownstreamPathTemplate": "/api/{path}",
       "UpstreamPathTemplate": "/user-service/{path}",
       "UpstreamHttpMethod": [ "Get", "Post", "Delete", "Put" ],
+      "DangerousAcceptAnyServerCertificateValidator": true,
       "LoadBalancerOptions": {
         "Type": "NoLoadBalancer"
       },
-      "UseServiceDiscovery": true
+      "UseServiceDiscovery": true,
+      "UpstreamHeaderTransform": {
+        "X-Forwarded-For": "{RemoteIpAddress}"
+      }
     },
     {
       "ServiceName": "ArticleService",
@@ -17,10 +21,14 @@
       "DownstreamPathTemplate": "/api/{path}",
       "UpstreamPathTemplate": "/article-service/{path}",
       "UpstreamHttpMethod": [ "Get", "Post", "Delete", "Put" ],
+      "DangerousAcceptAnyServerCertificateValidator": true,
       "LoadBalancerOptions": {
         "Type": "NoLoadBalancer"
       },
-      "UseServiceDiscovery": true
+      "UseServiceDiscovery": true,
+      "UpstreamHeaderTransform": {
+        "X-Forwarded-For": "{RemoteIpAddress}"
+      }
     },
     {
       "ServiceName": "CommentService",
@@ -28,10 +36,14 @@
       "DownstreamPathTemplate": "/api/{path}",
       "UpstreamPathTemplate": "/comment-service/{path}",
       "UpstreamHttpMethod": [ "Get", "Post", "Delete", "Put" ],
+      "DangerousAcceptAnyServerCertificateValidator": true,
       "LoadBalancerOptions": {
         "Type": "NoLoadBalancer"
       },
-      "UseServiceDiscovery": true
+      "UseServiceDiscovery": true,
+      "UpstreamHeaderTransform": {
+        "X-Forwarded-For": "{RemoteIpAddress}"
+      }
     },
     {
       "ServiceName": "IdentityService",
@@ -39,17 +51,20 @@
       "DownstreamPathTemplate": "/{path}",
       "UpstreamPathTemplate": "/identity-service/{path}",
       "UpstreamHttpMethod": [ "Get", "Post", "Delete", "Put" ],
+      "DangerousAcceptAnyServerCertificateValidator": true,
       "LoadBalancerOptions": {
         "Type": "NoLoadBalancer"
       },
-      "UseServiceDiscovery": true
+      "UseServiceDiscovery": true,
+      "UpstreamHeaderTransform": {
+        "X-Forwarded-For": "{RemoteIpAddress}"
+      }
     }
   ],
   "GlobalConfiguration": {
-    "BaseUrl": "https://blog.gateway:8888",
     "ReRouteIsCaseSensitive": false,
     "ServiceDiscoveryProvider": {
-      "Host": "blog.consul",
+      "Host": "localhost",
       "Port": 8500,
       "Type": "Consul"
     }

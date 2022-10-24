@@ -5,6 +5,8 @@
 		<Nullable>enable</Nullable>
 		<NoWarn>$(NoWarn);NU1605</NoWarn>
 		<ImplicitUsings>enable</ImplicitUsings>
+		<DebugType>embedded</DebugType>
+		<ProduceReferenceAssembly>True</ProduceReferenceAssembly>
 	</PropertyGroup>
 	<ItemGroup>
 		<PackageReference Include="SkyAPM.Agent.AspNetCore" Version="2.1.0" />
@@ -21,12 +23,14 @@
 		<ProjectReference Include="..\Infrastructure\Infrastructure.csproj" />
 	</ItemGroup>
 	<ItemGroup>
-		<Folder Include="Controllers\" />
-	</ItemGroup>
-	<ItemGroup>
 		<Content Update="skyapm.json">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
+	</ItemGroup>
+	<ItemGroup>
+	  <None Update="blog.zhfsmy.cloud.pfx">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
 	</ItemGroup>
 
 	<ProjectExtensions>

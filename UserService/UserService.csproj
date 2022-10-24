@@ -9,6 +9,7 @@
 		<NoWarn>$(NoWarn);8618</NoWarn>
 		<NoWarn>$(NoWarn);8603</NoWarn>
 		<NoWarn>$(NoWarn);NU1605</NoWarn>
+		<DebugType>embedded</DebugType>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -55,6 +56,11 @@
 	  <Content Update="skyapm.json">
 	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
 	  </Content>
+	</ItemGroup>
+	<ItemGroup>
+	  <None Update="blog.zhfsmy.cloud.pfx">
+	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+	  </None>
 	</ItemGroup>
 	<ProjectExtensions><VisualStudio><UserProperties appsettings_1json__JsonSchema="" properties_4launchsettings_1json__JsonSchema="" /></VisualStudio></ProjectExtensions>
 </Project>

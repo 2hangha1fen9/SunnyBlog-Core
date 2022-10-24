@@ -18,11 +18,25 @@ using IdentityService.App.Interface;
 using IdentityService.App;
 using StackExchange.Redis;
 using IdentityService.Rpc.Protos;
+using System.Security.Cryptography.X509Certificates;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
+using System.Net;
+using Grpc.Net.ClientFactory;
+using IdentityServer4.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 var useApollo = builder.Configuration.GetValue<bool>("useApollo");
+var useSkywalking = builder.Configuration.GetValue<bool>("useSkywalking");
 var port = builder.Configuration.GetValue<int>("port");
+var httpsCertPath = builder.Configuration.GetValue<string>("httpsCertPath");
+var httpsCertPwd = builder.Configuration.GetValue<string>("httpsCertPwd");
+var isHttps = !string.IsNullOrWhiteSpace(httpsCertPath);
 
+
+if (useSkywalking)
+{
+    builder.Services.AddSkyAPM();
+}
 if (useApollo)
 {
     //Apollo配置中心
@@ -34,9 +48,45 @@ if (useApollo)
             .AddNamespace("IdentityService", ConfigFileFormat.Json);
     });
 }
-   
 
-builder.WebHost.UseUrls($"https://*:{port}");
+
+//配置https证书
+if (isHttps)
+{
+    var cert = new X509Certificate2(httpsCertPath, httpsCertPwd);
+    builder.WebHost.UseKestrel(option =>
+    {
+        //Grpc专用通道
+        option.Listen(IPAddress.Any, port + 10000, option =>
+        {
+            option.Protocols = HttpProtocols.Http2;
+            option.UseHttps(option =>
+            {
+                option.ServerCertificate = cert;
+            });
+        });
+        option.Listen(IPAddress.Any, port, option =>
+        {
+            option.UseHttps(option =>
+            {
+                option.ServerCertificate = cert;
+            });
+        });
+    });
+}
+else
+{
+    builder.WebHost.UseKestrel(option =>
+    {
+        //Grpc专用通道
+        option.Listen(IPAddress.Any, port + 10000, option =>
+        {
+            option.Protocols = HttpProtocols.Http2;
+        });
+        option.Listen(IPAddress.Any, port);
+    });
+}
+
 // Add services to the container.
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -59,6 +109,7 @@ builder.Services.AddSingleton<IConnectionMultiplexer>(cm =>
     var conStr = builder.Configuration.GetValue<string>("RedisServer");
     return ConnectionMultiplexer.Connect(conStr);
 });
+
 
 //注册gRPC
 builder.Services.AddGrpc();
@@ -91,11 +142,12 @@ builder.Services.AddAuthentication("Bearer")
 .AddJwtBearer("Bearer", options =>
 {
     options.Authority = ServiceUrl.GetServiceUrlByName("IdentityService",
-        builder.Configuration.GetSection("Consul").Get<ConsulServiceOptions>().ConsulAddress);
+        builder.Configuration.GetSection("Consul").Get<ConsulServiceOptions>().ConsulAddress,false);
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateAudience = false
     };
+    options.RequireHttpsMetadata = isHttps;
 });
 
 // Configure the HTTP request pipeline.
@@ -112,12 +164,18 @@ app.MapGrpcService<GRoleService>();
 app.UseIdentityServer();
 
 //节点注册
-app.UsePermissionRegistrar<Program>(builder.Configuration.GetSection("Consul").Get<ConsulServiceOptions>().ConsulAddress);
+app.Lifetime.ApplicationStarted.Register(async() =>
+{
+    await app.UsePermissionRegistrar<Program>(builder.Configuration.GetSection("Consul").Get<ConsulServiceOptions>().ConsulAddress);
+});
 
 app.UseSwagger();
 app.UseSwaggerUI();
 
-app.UseHttpsRedirection();
+if (isHttps)
+{
+    app.UseHttpsRedirection();
+}
 
 //启用授权鉴权
 app.UseAuthentication();
@@ -126,3 +184,4 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+

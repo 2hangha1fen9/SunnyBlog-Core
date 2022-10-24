@@ -18,6 +18,11 @@
         public int ServicePort { get; set; }
 
         /// <summary>
+        /// http/https
+        /// </summary>
+        public string Schema { get; set; }
+
+        /// <summary>
         /// 服务健康检查
         /// </summary>
         public string ServiceHealthCheck { get; set; }

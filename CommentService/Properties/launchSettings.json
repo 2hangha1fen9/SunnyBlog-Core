@@ -4,12 +4,11 @@
     "CommentService": {
       "commandName": "Project",
       "dotnetRunMessages": true,
-      "launchBrowser": false  ,
+      "launchBrowser": false,
       "launchUrl": "swagger",
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development",
-        //"ASPNETCORE_HOSTINGSTARTUPASSEMBLIES": "SkyAPM.Agent.AspNetCore",
-        "SKYWALKING__SERVICENAME": "CommentService"
+        //"ASPNETCORE_ENVIRONMENT": "Development",
+        "ASPNETCORE_ENVIRONMENT": "Production"
       }
     }
   }

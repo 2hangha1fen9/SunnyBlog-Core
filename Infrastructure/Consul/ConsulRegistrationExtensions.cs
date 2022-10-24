@@ -16,18 +16,22 @@ namespace Infrastructure.Consul
                 c.Address = new Uri(consulServiceOptions.ConsulAddress);
             });
             //注册服务
+            var meta = new Dictionary<string, string>();
+            meta.Add("Schema", consulServiceOptions.Schema);
             var registration = new AgentServiceRegistration()
             {
                 ID = Guid.NewGuid().ToString(),
                 Name = consulServiceOptions.ServiceName, //服务名
                 Address = consulServiceOptions.ServiceIP, //注册中心地址
                 Port = consulServiceOptions.ServicePort, //注册中心端口号
+                Meta = meta,
                 Check = new AgentServiceCheck()  //健康检查配置
                 {
                     DeregisterCriticalServiceAfter = TimeSpan.FromSeconds(5), //服务启动后多久注册   
                     Interval = TimeSpan.FromSeconds(10), //健康检查间隔
                     HTTP = consulServiceOptions.ServiceHealthCheck, //健康检查地址
-                    Timeout = TimeSpan.FromSeconds(5) //超时时间
+                    Timeout = TimeSpan.FromSeconds(5), //超时时间,
+                    TLSSkipVerify = true //取消https检查
                 }
             };
             consulClient.Agent.ServiceRegister(registration).Wait(); //注册服务
