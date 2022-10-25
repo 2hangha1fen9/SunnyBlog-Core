@@ -57,12 +57,6 @@
 	  </Content>
 	</ItemGroup>
 
-	<ItemGroup>
-	  <None Update="blog.zhfsmy.cloud.pfx">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </None>
-	</ItemGroup>
-
 	<ProjectExtensions>
 		<VisualStudio>
 			<UserProperties />

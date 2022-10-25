@@ -27,11 +27,6 @@
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</Content>
 	</ItemGroup>
-	<ItemGroup>
-	  <None Update="blog.zhfsmy.cloud.pfx">
-	    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-	  </None>
-	</ItemGroup>
 
 	<ProjectExtensions>
 		<VisualStudio><UserProperties appsettings_1json__JsonSchema="" ocelot_1json__JsonSchema="" /></VisualStudio>

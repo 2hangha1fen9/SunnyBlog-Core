@@ -46,13 +46,18 @@ builder.Services.AddEndpointsApiExplorer();
 //ÅäÖÃhttpsÖ¤Êé
 if (isHttps)
 {   
+    var cert = new X509Certificate2(httpsCertPath, httpsCertPwd);
     builder.WebHost.UseKestrel(option =>
     {
         option.ConfigureHttpsDefaults(c =>
         {
-            c.ServerCertificate = new X509Certificate2(httpsCertPath, httpsCertPwd);
+            c.ServerCertificate = cert;
         });
     });
+
+    using(var store = new X509Store())
+   
+
     builder.WebHost.UseUrls($"https://*:{port}");
 }
 else
