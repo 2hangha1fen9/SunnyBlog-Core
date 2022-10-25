@@ -122,7 +122,8 @@ builder.Services.AddSingleton<IAuthorizationHandler, RBACRequirementHandler>();
 // 数据库连接池注册
 builder.Services.AddPooledDbContextFactory<ArticleDBContext>(option =>
 {
-    option.UseSqlServer(builder.Configuration.GetValue<string>("SqlServer"));
+    //option.UseSqlServer(builder.Configuration.GetValue<string>("SqlServer"));
+    option.UseMySql(builder.Configuration.GetValue<string>("MySQL"), new MySqlServerVersion(new Version(8, 0, 27)));
 });
 
 //认证中心注册

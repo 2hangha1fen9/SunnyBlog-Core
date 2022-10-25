@@ -25,7 +25,7 @@ namespace IdentityService
         {
             modelBuilder.Entity<Permission>(entity =>
             {
-                entity.Property(e => e.CreateTime).HasDefaultValueSql("(getdate())");
+                entity.Property(e => e.CreateTime).HasDefaultValueSql("(now())");
 
                 entity.Property(e => e.IsPublic)
                     .HasDefaultValueSql("((-1))")
@@ -38,7 +38,7 @@ namespace IdentityService
 
             modelBuilder.Entity<Role>(entity =>
             {
-                entity.Property(e => e.CreateTime).HasDefaultValueSql("(getdate())");
+                entity.Property(e => e.CreateTime).HasDefaultValueSql("(now())");
 
                 entity.Property(e => e.IsDefault).HasComment("1默认-1不默认");
 

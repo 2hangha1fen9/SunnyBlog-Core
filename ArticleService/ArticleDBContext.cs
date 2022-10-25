@@ -50,7 +50,7 @@ namespace ArticleService
                     .HasDefaultValueSql("((1))")
                     .HasComment("-1不可以评论1可评论2需要审核评论");
 
-                entity.Property(e => e.CreateTime).HasDefaultValueSql("(getdate())");
+                entity.Property(e => e.CreateTime).HasDefaultValueSql("(now())");
 
                 entity.Property(e => e.IsLock)
                     .HasDefaultValueSql("((1))")

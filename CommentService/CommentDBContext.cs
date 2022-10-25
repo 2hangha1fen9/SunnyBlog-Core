@@ -10,6 +10,7 @@ namespace CommentService
 {
     public partial class CommentDBContext : DbContext
     {
+
         public CommentDBContext(DbContextOptions<CommentDBContext> options)
             : base(options)
         {
@@ -23,7 +24,7 @@ namespace CommentService
         {
             modelBuilder.Entity<Comment>(entity =>
             {
-                entity.Property(e => e.CreateTime).HasDefaultValueSql("(getdate())");
+                entity.Property(e => e.CreateTime).HasDefaultValueSql("(now())");
 
                 entity.Property(e => e.Status)
                     .HasDefaultValueSql("((1))")
@@ -46,7 +47,7 @@ namespace CommentService
             {
                 entity.Property(e => e.UserId).HasDefaultValueSql("((0))");
 
-                entity.Property(e => e.ViewTime).HasDefaultValueSql("(getdate())");
+                entity.Property(e => e.ViewTime).HasDefaultValueSql("(now())");
             });
 
             OnModelCreatingPartial(modelBuilder);

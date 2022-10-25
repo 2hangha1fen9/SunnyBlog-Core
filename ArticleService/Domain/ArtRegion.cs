@@ -26,7 +26,7 @@ namespace ArticleService.Domain
         [Column("name")]
         [StringLength(20)]
         public string Name { get; set; }
-        [Column("description", TypeName = "ntext")]
+        [Column("description", TypeName = "text")]
         public string Description { get; set; }
         [Column("parentId")]
         public int? ParentId { get; set; }

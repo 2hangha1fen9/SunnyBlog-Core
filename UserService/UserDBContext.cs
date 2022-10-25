@@ -10,6 +10,7 @@ namespace UserService
 {
     public partial class UserDBContext : DbContext
     {
+
         public UserDBContext(DbContextOptions<UserDBContext> options)
             : base(options)
         {
@@ -34,7 +35,7 @@ namespace UserService
             {
                 entity.Property(e => e.UserId).ValueGeneratedNever();
 
-                entity.Property(e => e.RegisterTime).HasDefaultValueSql("(getdate())");
+                entity.Property(e => e.RegisterTime).HasDefaultValueSql("(NOW())");
 
                 entity.Property(e => e.Sex).HasComment("1男-1女0未知");
 
@@ -61,7 +62,7 @@ namespace UserService
 
             modelBuilder.Entity<UserScore>(entity =>
             {
-                entity.Property(e => e.Time).HasDefaultValueSql("(getdate())");
+                entity.Property(e => e.Time).HasDefaultValueSql("(NOW())");
 
                 entity.HasOne(d => d.User)
                     .WithMany(p => p.UserScores)

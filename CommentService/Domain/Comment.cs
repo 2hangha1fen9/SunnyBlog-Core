@@ -19,7 +19,7 @@ namespace CommentService.Domain
         [Column("id")]
         public int Id { get; set; }
         [Required]
-        [Column("content", TypeName = "ntext")]
+        [Column("content", TypeName = "text")]
         public string Content { get; set; }
         [Column("userId")]
         public int UserId { get; set; }
