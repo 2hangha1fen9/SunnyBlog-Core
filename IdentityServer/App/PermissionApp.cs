@@ -137,13 +137,18 @@ namespace Service.IdentityService.App
             //查询用户权限
             using (var context = contextFactory.CreateDbContext())
             {
-                var permissions = await context.Set<Permission>().FromSqlRaw($"select * from Permission as p where p.id in(select permissionId from RolePermissionRelation as rp where rp.roleId in(select roleId from UserRoleRelation as ur,Role r where ur.roleId = r.id and ur.userId = {user.Id} and exists(select * from [User] u where id = ur.userId and u.status = 1) and r.status = 1)) and status = 1")
-                            .Select(r => new
-                            {
-                                r.Controller,
-                                r.Action
-                            }).ToArrayAsync();
-                return new object[] { user, permissions};
+                if(user != null)
+                {
+                    var permissions = await context.Set<Permission>().FromSqlRaw($"select * from Permission as p where p.id in(select permissionId from RolePermissionRelation as rp where rp.roleId in(select roleId from UserRoleRelation as ur,Role r where ur.roleId = r.id and ur.userId = {user.Id} and exists(select * from User u where id = ur.userId and u.status = 1) and r.status = 1)) and status = 1")
+                              .Select(r => new
+                              {
+                                  r.Controller,
+                                  r.Action
+                              }).ToArrayAsync();
+                    return new object[] { user, permissions };
+                }
+               
+                return new object[] { user, null};
             }
         }
 
@@ -159,16 +164,21 @@ namespace Service.IdentityService.App
             {
                 Username = username,
             });
+
             //查询用户权限
             using (var context = contextFactory.CreateDbContext())
             {
-                var permissions = await context.Set<Permission>().FromSqlRaw($"select * from Permission as p where p.id in(select permissionId from RolePermissionRelation as rp where rp.roleId in(select roleId from UserRoleRelation as ur,Role r where ur.roleId = r.id and ur.userId = {user.Id} and exists(select * from [User] u where id = ur.userId and u.status = 1) and r.status = 1)) and status = 1")
+                if(user != null)
+                {
+                    var permissions = await context.Set<Permission>().FromSqlRaw($"select * from Permission as p where p.id in(select permissionId from RolePermissionRelation as rp where rp.roleId in(select roleId from UserRoleRelation as ur,Role r where ur.roleId = r.id and ur.userId = {user.Id} and exists(select * from User u where id = ur.userId and u.status = 1) and r.status = 1)) and status = 1")
                             .Select(r => new
                             {
                                 r.Controller,
                                 r.Action
                             }).ToArrayAsync();
-                return new object[] { user, permissions };
+                    return new object[] { user, permissions };
+                }
+                return new object[] { user, null };
             }
         }
 
@@ -227,7 +237,7 @@ namespace Service.IdentityService.App
             //查询用户权限
             using (var context = contextFactory.CreateDbContext())
             {
-                var permissions = context.Set<Permission>().FromSqlRaw($"select * from Permission as p where p.id in(select permissionId from RolePermissionRelation as rp where rp.roleId in(select roleId from UserRoleRelation as ur,Role r where ur.roleId = r.id and ur.userId = {id} and exists(select * from [User] u where id = ur.userId and u.status = 1) and r.status = 1)) and status = 1");
+                var permissions = context.Set<Permission>().FromSqlRaw($"select * from Permission as p where p.id in(select permissionId from RolePermissionRelation as rp where rp.roleId in(select roleId from UserRoleRelation as ur,Role r where ur.roleId = r.id and ur.userId = {id} and exists(select * from User u where id = ur.userId and u.status = 1) and r.status = 1)) and status = 1");
                 //对结果分页
                 var permissionPage = new PageList<PermissionView>();
                 permissions = permissionPage.Pagination(pageIndex, pageSize, permissions);

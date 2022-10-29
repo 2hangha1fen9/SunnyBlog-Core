@@ -9,18 +9,18 @@
         /// <summary>
         /// 浏览量
         /// </summary>
-        public int ViewCount { get; set; }
+        public long ViewCount { get; set; }
         /// <summary>
         /// 点赞量
         /// </summary>
-        public int LikeCount { get; set; }
+        public long LikeCount { get; set; }
         /// <summary>
         /// 评论量
         /// </summary>
-        public int CommentCount { get; set; }
+        public long CommentCount { get; set; }
         /// <summary>
         /// 收藏量
         /// </summary>
-        public int CollectionCount { get; set; }
+        public long CollectionCount { get; set; }
     }
 }

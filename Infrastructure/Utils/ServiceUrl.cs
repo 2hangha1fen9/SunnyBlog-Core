@@ -15,7 +15,7 @@ namespace Infrastructure
         
         
         //通过consul查询对应的服务地址，方便rpc调用
-        public static string GetServiceUrlByName(string name,string consulAddress,bool isRpc = true)
+        public static string GetServiceUrlByName(string name,string consulAddress)
         {
             //创建consul客户端对象
             var consulClient = new ConsulClient(c => c.Address = new Uri(consulAddress));
@@ -33,7 +33,7 @@ namespace Infrastructure
                     var index = number++ % services.Count;
                     var result = services[index];
                     //rpc端口号为高位端口获取时区分是否是rpc端口
-                    return $"{result.Meta["Schema"]}://{result.Address}:{(isRpc ? result.Port + 10000 : result.Port)}";
+                    return $"https://{result.Address}:{result.Port}";
                 }
                 else
                 {

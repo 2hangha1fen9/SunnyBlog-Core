@@ -1,0 +1,1159 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>UserService</name>
+    </assembly>
+    <members>
+        <member name="F:UserService.App.FollowApp.contextFactory">
+            <summary>
+            数据库上下文工厂
+            </summary>
+        </member>
+        <member name="F:UserService.App.FollowApp.jsonConfig">
+            <summary>
+            序列化配置
+            </summary>
+        </member>
+        <member name="M:UserService.App.FollowApp.FollowList(System.Int32,System.Boolean,System.Collections.Generic.List{Infrastructure.SearchCondition},System.Int32,System.Int32)">
+            <summary>
+            关注列表
+            </summary>
+            <param name="id">用户ID</param>
+            <returns></returns>
+        </member>
+        <member name="M:UserService.App.FollowApp.GetFollowMessage(System.Int32)">
+            <summary>
+            获取关注通知信息
+            </summary>
+            <param name="uid"></param>
+            <returns></returns>
+        </member>
+        <member name="M:UserService.App.FollowApp.DeleteFollowMessage(System.Int32,System.Int32,System.Boolean)">
+            <summary>
+            删除关注信息
+            </summary>
+            <param name="cid"></param>
+            <param name="uid"></param>
+            <param name="isAll"></param>
+            <returns></returns>
+            <exception cref="T:System.NotImplementedException"></exception>
+        </member>
+        <member name="M:UserService.App.FollowApp.FollowSb(System.Int32,System.Int32)">
+            <summary>
+            关注/取消某人
+            </summary>
+            <param name="id">用户ID</param>
+            <param name="sbId">被关注用户ID</param>
+            <returns></returns>
+        </member>
+        <member name="M:UserService.App.FollowApp.FollowStatus(System.Int32,System.Int32)">
+            <summary>
+            关注状态
+            </summary>
+            <param name="id">用户ID</param>
+            <param name="sbId">被关注用户ID</param>
+            <returns></returns>
+        </member>
+        <member name="F:UserService.App.PhotoApp.contextFactory">
+            <summary>
+            数据库上下文
+            </summary>
+        </member>
+        <member name="M:UserService.App.PhotoApp.UploadPhoto(UserService.Request.UploadPhotoReq,System.Int32,System.String)">
+            <summary>
+            上传用户头像/封面
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:UserService.App.ScoreApp.Increase(System.Int32,System.String)">
+            <summary>
+            增加积分
+            </summary>
+            <param name="request"></param>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:UserService.App.ScoreApp.CanIncrease(System.Int32,System.String)">
+            <summary>
+            判断用户是否可以增加积分
+            </summary>
+            <param name="id"></param>
+            <param name="reason"></param>
+            <returns></returns>
+        </member>
+        <member name="M:UserService.App.ScoreApp.ListUnit">
+            <summary>
+            列出所有积分单位
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:UserService.App.ScoreApp.SetUnit(System.String,System.Decimal)">
+            <summary>
+            更新积分单位
+            </summary>
+            <param name="key"></param>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:UserService.App.StatisticsApp.GetUserCount">
+            <summary>
+            统计用户
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:UserService.App.StatisticsApp.GetUserTrend">
+            <summary>
+            统计用户趋势
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="F:UserService.App.UserApp.contextFactory">
+            <summary>
+            数据库上下文
+            </summary>
+        </member>
+        <member name="F:UserService.App.UserApp.database">
+            <summary>
+            Redis客户端,依赖注入
+            </summary>
+        </member>
+        <member name="M:UserService.App.UserApp.GetUserById(System.Int32)">
+            <summary>
+            根据ID查询用户
+            </summary>
+            <param name="id">用户id</param>
+            <returns>用户视图</returns>
+        </member>
+        <member name="M:UserService.App.UserApp.GetUsers(System.Collections.Generic.List{Infrastructure.SearchCondition},System.Int32,System.Int32)">
+            <summary>
+            获取用户列表,分页+条件
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:UserService.App.UserApp.GetUserDetails(System.Collections.Generic.List{Infrastructure.SearchCondition},System.Int32,System.Int32)">
+            <summary>
+            获取用户列表
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:UserService.App.UserApp.GetUserDetailById(System.Int32)">
+            <summary>
+            根据用户ID获取用户详情
+            </summary>
+            <param name="id">用户ID</param>
+            <returns></returns>
+        </member>
+        <member name="M:UserService.App.UserApp.UserRegister(UserService.Request.UserRegisterReq)">
+            <summary>
+            用户注册
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:UserService.App.UserApp.ChangePassword(UserService.Request.ForgetPasswordReq)">
+            <summary>
+            修改用户密码
+            </summary>
+            <param name="request">忘记密码请求</param>
+        </member>
+        <member name="M:UserService.App.UserApp.ChangeUser(UserService.Request.ChangeUserReq,System.Int32)">
+            <summary>
+            修改用户信息
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+            <exception cref="T:System.NotImplementedException"></exception>
+        </member>
+        <member name="M:UserService.App.UserApp.ResetCover(System.Int32)">
+            <summary>
+            删除用户封面
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+            <exception cref="T:System.NotImplementedException"></exception>
+        </member>
+        <member name="M:UserService.App.UserApp.BindAccount(UserService.Request.BindAccountReq,System.Int32)">
+            <summary>
+            账号绑定
+            </summary>
+            <param name="requests"></param>
+            <returns></returns>
+            <exception cref="T:System.NotImplementedException"></exception>
+        </member>
+        <member name="M:UserService.App.UserApp.UbindAccount(UserService.Request.UbindAccountReq,System.Int32)">
+            <summary>
+            账号解绑
+            </summary>
+            <param name="requests"></param>
+            <returns></returns>
+            <exception cref="T:System.NotImplementedException"></exception>
+        </member>
+        <member name="M:UserService.App.UserApp.AddUser(UserService.Request.AddUserReq)">
+            <summary>
+            添加用户
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:UserService.App.UserApp.DelUser(System.Collections.Generic.List{UserService.Request.Request.DelUserReq})">
+            <summary>
+            删除用户
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+            <exception cref="T:System.NotImplementedException"></exception>
+        </member>
+        <member name="M:UserService.App.UserApp.UpdateUserDetail(UserService.Request.UpdateUserReq)">
+            <summary>
+            修改用户详情信息
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:UserService.Controllers.FollowController.Sb(System.Int32)">
+            <summary>
+            关注某用户
+            </summary>
+            <param name="id"></param>
+            <param name="sbId"></param>
+            <returns></returns>
+        </member>
+        <member name="M:UserService.Controllers.FollowController.List(System.Int32,System.Nullable{System.Boolean},System.String,System.Nullable{System.Int32},System.Nullable{System.Int32})">
+            <summary>
+            查看用户的关注列表/粉丝列表
+            </summary>
+        </member>
+        <member name="M:UserService.Controllers.FollowController.Message">
+            <summary>
+            获取用户关注信息
+            </summary>
+            <param name="fid"></param>
+            <param name="isAll"></param>
+            <returns></returns>
+        </member>
+        <member name="M:UserService.Controllers.FollowController.DeleteMessage(System.Int32,System.Nullable{System.Boolean})">
+            <summary>
+            删除用户关注信息
+            </summary>
+            <param name="fid"></param>
+            <param name="isAll"></param>
+            <returns></returns>
+        </member>
+        <member name="M:UserService.Controllers.FollowController.Status(System.Int32)">
+            <summary>
+            获取关注状态
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:UserService.Controllers.HealthCheckController.Get">
+            <summary>
+            健康检查
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:UserService.Controllers.ManagerController.ListUser(System.Nullable{System.Int32},System.Nullable{System.Int32},System.String)">
+             <summary>
+            列出用户详情列表
+             </summary>
+             <returns></returns>
+        </member>
+        <member name="M:UserService.Controllers.ManagerController.GetUser(System.Int32)">
+            <summary>
+            根据ID查询用户详情
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:UserService.Controllers.ManagerController.ModifyUser(UserService.Request.UpdateUserReq)">
+            <summary>
+            修改用户信息
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:UserService.Controllers.ManagerController.AddUser(UserService.Request.AddUserReq)">
+            <summary>
+            添加用户
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:UserService.Controllers.ManagerController.DelUser(System.Collections.Generic.List{UserService.Request.Request.DelUserReq})">
+            <summary>
+            删除用户
+            </summary>
+            <param name="requests"></param>
+            <returns></returns>
+        </member>
+        <member name="M:UserService.Controllers.PhotoController.Upload(UserService.Request.UploadPhotoReq,System.Nullable{System.Int32},System.String)">
+            <summary>
+            上传头像/封面
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:UserService.Controllers.ScoreController.CheckIn">
+            <summary>
+            用户签到
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:UserService.Controllers.ScoreController.ListUnit">
+            <summary>
+            列出所有积分单位
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:UserService.Controllers.ScoreController.SetUnit(System.String,System.Decimal)">
+            <summary>
+            设置积分单位
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:UserService.Controllers.StatisticsController.Count">
+            <summary>
+            统计用户数
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:UserService.Controllers.StatisticsController.Trend">
+             <summary>
+            统计用户趋势
+             </summary>
+             <returns></returns>
+        </member>
+        <member name="M:UserService.Controllers.UserController.List(System.Nullable{System.Int32},System.Nullable{System.Int32},System.String)">
+            <summary>
+            列出用户列表
+            </summary>
+            <returns>用户列表</returns>
+        </member>
+        <member name="M:UserService.Controllers.UserController.GetUser(System.Int32)">
+            <summary>
+            根据ID获取用户信息
+            </summary>
+            <param name="uid"></param>
+            <returns></returns>
+        </member>
+        <member name="M:UserService.Controllers.UserController.LoginInfo">
+            <summary>
+            列出当前登录者的用户详情
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:UserService.Controllers.UserController.Register(UserService.Request.UserRegisterReq)">
+            <summary>
+            用户注册
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:UserService.Controllers.UserController.ForgetPassword(UserService.Request.ForgetPasswordReq)">
+            <summary>
+            用户找回密码
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:UserService.Controllers.UserController.UpdateInfo(UserService.Request.ChangeUserReq)">
+            <summary>
+            用户修改个人信息
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:UserService.Controllers.UserController.ResetCover">
+            <summary>
+            重置用户封面
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:UserService.Controllers.UserController.BindAccount(UserService.Request.BindAccountReq)">
+            <summary>
+            用户账号绑定
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:UserService.Controllers.UserController.UbindAccount(UserService.Request.UbindAccountReq)">
+            <summary>
+            用户账号解绑
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:UserService.Controllers.VerifyController.SendVCode(UserService.Request.SendVCodeReq)">
+            <summary>
+            发送验证码
+            </summary>
+            <param name="type"></param>
+            <param name="receiver"></param>
+            <returns></returns>
+        </member>
+        <member name="P:UserService.Domain.config.MailConfig.Mail">
+            <summary>
+            发送者
+            </summary>
+        </member>
+        <member name="P:UserService.Domain.config.MailConfig.DisplayName">
+            <summary>
+            显示名称
+            </summary>
+        </member>
+        <member name="P:UserService.Domain.config.MailConfig.Password">
+            <summary>
+            发送者授权码
+            </summary>
+        </member>
+        <member name="P:UserService.Domain.config.MailConfig.Host">
+            <summary>
+            发送者邮件服务器地址
+            </summary>
+        </member>
+        <member name="P:UserService.Domain.config.MailConfig.Port">
+            <summary>
+            发送者邮箱服务器端口
+            </summary>
+        </member>
+        <member name="P:UserService.Domain.config.MailTemplate.ToEmail">
+            <summary>
+            接收者
+            </summary>
+        </member>
+        <member name="P:UserService.Domain.config.MailTemplate.Subject">
+            <summary>
+            标题
+            </summary>
+        </member>
+        <member name="P:UserService.Domain.config.MailTemplate.Body">
+            <summary>
+            内容
+            </summary>
+        </member>
+        <member name="P:UserService.Domain.config.MessageConfig.SecretId">
+            <summary>
+            腾讯云账户Id
+            </summary>
+        </member>
+        <member name="P:UserService.Domain.config.MessageConfig.SecretKey">
+            <summary>
+            腾讯云密钥
+            </summary>
+        </member>
+        <member name="P:UserService.Domain.config.MessageConfig.Region">
+            <summary>
+            地域参数
+            </summary>
+        </member>
+        <member name="P:UserService.Domain.config.MessageConfig.SmsSdkAppId">
+            <summary>
+            短信AppID
+            </summary>
+        </member>
+        <member name="P:UserService.Domain.config.MessageConfig.TemplateId">
+            <summary>
+            短信模板ID
+            </summary>
+        </member>
+        <member name="P:UserService.Domain.config.MessageConfig.Sign">
+            <summary>
+            签名信息
+            </summary>
+        </member>
+        <member name="P:UserService.Domain.User.Status">
+            <summary>
+            1启用-1禁用
+            </summary>
+        </member>
+        <member name="P:UserService.Domain.UserDetail.Sex">
+            <summary>
+            1男-1女0未知
+            </summary>
+        </member>
+        <member name="P:UserService.Request.AddUserReq.Username">
+            <summary>
+            登录名
+            </summary>
+        </member>
+        <member name="P:UserService.Request.AddUserReq.Password">
+            <summary>
+            密码
+            </summary>
+        </member>
+        <member name="P:UserService.Request.AddUserReq.Nick">
+            <summary>
+            用户昵称
+            </summary>
+        </member>
+        <member name="P:UserService.Request.AddUserReq.Phone">
+            <summary>
+            手机号
+            </summary>
+        </member>
+        <member name="P:UserService.Request.AddUserReq.Email">
+            <summary>
+            邮箱
+            </summary>
+        </member>
+        <member name="P:UserService.Request.AddUserReq.Sex">
+            <summary>
+            性别
+            </summary>
+        </member>
+        <member name="P:UserService.Request.AddUserReq.Birthday">
+            <summary>
+            生日
+            </summary>
+        </member>
+        <member name="P:UserService.Request.AddUserReq.RegisterTime">
+            <summary>
+            注册时间
+            </summary>
+        </member>
+        <member name="P:UserService.Request.AddUserReq.Remark">
+            <summary>
+            备注
+            </summary>
+        </member>
+        <member name="P:UserService.Request.AddUserReq.Score">
+            <summary>
+            积分
+            </summary>
+        </member>
+        <member name="P:UserService.Request.AddUserReq.Photo">
+            <summary>
+            头像
+            </summary>
+        </member>
+        <member name="P:UserService.Request.AddUserReq.Status">
+            <summary>
+            状态1启用0禁用
+            </summary>
+        </member>
+        <member name="T:UserService.Request.BindAccountReq">
+            <summary>
+            账户绑定请求
+            </summary>
+        </member>
+        <member name="P:UserService.Request.BindAccountReq.Type">
+            <summary>
+            绑定类型: phone、email
+            </summary>
+        </member>
+        <member name="P:UserService.Request.BindAccountReq.Bind">
+            <summary>
+            绑定值
+            </summary>
+        </member>
+        <member name="P:UserService.Request.BindAccountReq.Password">
+            <summary>
+            用户密码
+            </summary>
+        </member>
+        <member name="P:UserService.Request.BindAccountReq.VerificationCode">
+            <summary>
+            验证码
+            </summary>
+        </member>
+        <member name="T:UserService.Request.ChangeUserReq">
+            <summary>
+            更新用户信息请求
+            </summary>
+        </member>
+        <member name="P:UserService.Request.ChangeUserReq.Nick">
+            <summary>
+            昵称
+            </summary>
+        </member>
+        <member name="P:UserService.Request.ChangeUserReq.Sex">
+            <summary>
+            性别
+            </summary>
+        </member>
+        <member name="P:UserService.Request.ChangeUserReq.Birthday">
+            <summary>
+            生日
+            </summary>
+        </member>
+        <member name="P:UserService.Request.ChangeUserReq.Remark">
+            <summary>
+            备注
+            </summary>
+        </member>
+        <member name="P:UserService.Request.ChangeUserReq.Message">
+            <summary>
+            用户留言板
+            </summary>
+        </member>
+        <member name="T:UserService.Request.Request.DelUserReq">
+            <summary>
+            删除用户请求
+            </summary>
+        </member>
+        <member name="P:UserService.Request.Request.DelUserReq.Id">
+            <summary>
+            待删除的ID
+            </summary>
+        </member>
+        <member name="T:UserService.Request.ForgetPasswordReq">
+            <summary>
+            忘记密码请求
+            </summary>
+        </member>
+        <member name="P:UserService.Request.ForgetPasswordReq.Username">
+            <summary>
+            用户名
+            </summary>
+        </member>
+        <member name="P:UserService.Request.ForgetPasswordReq.NewPassword">
+            <summary>
+            新密码
+            </summary>
+        </member>
+        <member name="P:UserService.Request.ForgetPasswordReq.VerificationCode">
+            <summary>
+            验证码
+            </summary>
+        </member>
+        <member name="T:UserService.Request.IncreaseScoreReq">
+            <summary>
+            积分增加请求
+            </summary>
+        </member>
+        <member name="P:UserService.Request.IncreaseScoreReq.Value">
+            <summary>
+            值
+            </summary>
+        </member>
+        <member name="P:UserService.Request.IncreaseScoreReq.Reason">
+            <summary>
+            原因
+            </summary>
+        </member>
+        <member name="T:UserService.Request.SendVCodeReq">
+            <summary>
+            发送验证码请求
+            </summary>
+        </member>
+        <member name="P:UserService.Request.SendVCodeReq.Type">
+            <summary>
+            发送类型，手机phone，邮箱mail
+            </summary>
+        </member>
+        <member name="P:UserService.Request.SendVCodeReq.Receiver">
+            <summary>
+            接受人
+            </summary>
+        </member>
+        <member name="P:UserService.Request.UbindAccountReq.Type">
+            <summary>
+            绑定类型: phone、email
+            </summary>
+        </member>
+        <member name="P:UserService.Request.UbindAccountReq.Password">
+            <summary>
+            
+            </summary>
+        </member>
+        <member name="T:UserService.Request.UpdateUserReq">
+            <summary>
+            修改用户信息请求
+            </summary>
+        </member>
+        <member name="P:UserService.Request.UpdateUserReq.Id">
+            <summary>
+            用户ID
+            </summary>
+        </member>
+        <member name="P:UserService.Request.UpdateUserReq.Username">
+            <summary>
+            登录名
+            </summary>
+        </member>
+        <member name="P:UserService.Request.UpdateUserReq.Password">
+            <summary>
+            密码
+            </summary>
+        </member>
+        <member name="P:UserService.Request.UpdateUserReq.Nick">
+            <summary>
+            用户昵称
+            </summary>
+        </member>
+        <member name="P:UserService.Request.UpdateUserReq.Phone">
+            <summary>
+            手机号
+            </summary>
+        </member>
+        <member name="P:UserService.Request.UpdateUserReq.Email">
+            <summary>
+            邮箱
+            </summary>
+        </member>
+        <member name="P:UserService.Request.UpdateUserReq.Sex">
+            <summary>
+            性别
+            </summary>
+        </member>
+        <member name="P:UserService.Request.UpdateUserReq.Birthday">
+            <summary>
+            生日
+            </summary>
+        </member>
+        <member name="P:UserService.Request.UpdateUserReq.RegisterTime">
+            <summary>
+            注册时间
+            </summary>
+        </member>
+        <member name="P:UserService.Request.UpdateUserReq.Remark">
+            <summary>
+            备注
+            </summary>
+        </member>
+        <member name="P:UserService.Request.UpdateUserReq.Message">
+            <summary>
+            用户留言板
+            </summary>
+        </member>
+        <member name="P:UserService.Request.UpdateUserReq.Score">
+            <summary>
+            积分
+            </summary>
+        </member>
+        <member name="P:UserService.Request.UpdateUserReq.Photo">
+            <summary>
+            头像
+            </summary>
+        </member>
+        <member name="P:UserService.Request.UpdateUserReq.Status">
+            <summary>
+            状态1启用0禁用
+            </summary>
+        </member>
+        <member name="T:UserService.Request.UploadPhotoReq">
+            <summary>
+            用户头像上传请求
+            </summary>
+        </member>
+        <member name="P:UserService.Request.UploadPhotoReq.Data">
+            <summary>
+            图片数据
+            </summary>
+        </member>
+        <member name="P:UserService.Request.UserRegisterReq.Username">
+            <summary>
+            登录名
+            </summary>
+        </member>
+        <member name="P:UserService.Request.UserRegisterReq.Password">
+            <summary>
+            密码
+            </summary>
+        </member>
+        <member name="P:UserService.Request.UserRegisterReq.Email">
+            <summary>
+            邮箱
+            </summary>
+        </member>
+        <member name="P:UserService.Request.UserRegisterReq.Phone">
+            <summary>
+            手机
+            </summary>
+        </member>
+        <member name="P:UserService.Request.UserRegisterReq.VerificationCode">
+            <summary>
+            验证码
+            </summary>
+        </member>
+        <member name="P:UserService.Response.FollowView.UserId">
+            <summary>
+            用户Id
+            </summary>
+        </member>
+        <member name="P:UserService.Response.FollowView.Username">
+            <summary>
+            昵称
+            </summary>
+        </member>
+        <member name="P:UserService.Response.FollowView.Nick">
+            <summary>
+            昵称
+            </summary>
+        </member>
+        <member name="P:UserService.Response.FollowView.Remark">
+            <summary>
+            备注
+            </summary>
+        </member>
+        <member name="P:UserService.Response.FollowView.Photo">
+            <summary>
+            头像
+            </summary>
+        </member>
+        <member name="P:UserService.Response.UploadResult.Path">
+            <summary>
+            文件路径
+            </summary>
+        </member>
+        <member name="T:UserService.Response.UserDetailView">
+            <summary>
+            用户详情响应视图
+            </summary>
+        </member>
+        <member name="P:UserService.Response.UserDetailView.Id">
+            <summary>
+            用户ID
+            </summary>
+        </member>
+        <member name="P:UserService.Response.UserDetailView.Username">
+            <summary>
+            登录名
+            </summary>
+        </member>
+        <member name="P:UserService.Response.UserDetailView.Nick">
+            <summary>
+            用户昵称
+            </summary>
+        </member>
+        <member name="P:UserService.Response.UserDetailView.Phone">
+            <summary>
+            手机号
+            </summary>
+        </member>
+        <member name="P:UserService.Response.UserDetailView.Email">
+            <summary>
+            邮箱
+            </summary>
+        </member>
+        <member name="P:UserService.Response.UserDetailView.Sex">
+            <summary>
+            性别
+            </summary>
+        </member>
+        <member name="P:UserService.Response.UserDetailView.Birthday">
+            <summary>
+            生日
+            </summary>
+        </member>
+        <member name="P:UserService.Response.UserDetailView.RegisterTime">
+            <summary>
+            注册时间
+            </summary>
+        </member>
+        <member name="P:UserService.Response.UserDetailView.Remark">
+            <summary>
+            备注
+            </summary>
+        </member>
+        <member name="P:UserService.Response.UserDetailView.Message">
+            <summary>
+            用户留言版
+            </summary>
+        </member>
+        <member name="P:UserService.Response.UserDetailView.Score">
+            <summary>
+            积分
+            </summary>
+        </member>
+        <member name="P:UserService.Response.UserDetailView.Fans">
+            <summary>
+            粉丝
+            </summary>
+        </member>
+        <member name="P:UserService.Response.UserDetailView.Photo">
+            <summary>
+            头像
+            </summary>
+        </member>
+        <member name="P:UserService.Response.UserDetailView.Cover">
+            <summary>
+            封面
+            </summary>
+        </member>
+        <member name="P:UserService.Response.UserDetailView.Status">
+            <summary>
+            状态
+            </summary>
+        </member>
+        <member name="P:UserService.Response.UserTrendStatistics.Date">
+            <summary>
+            日期
+            </summary>
+        </member>
+        <member name="P:UserService.Response.UserTrendStatistics.UserCount">
+            <summary>
+            用户数
+            </summary>
+        </member>
+        <member name="T:UserService.Response.UserView">
+            <summary>
+            Api视图
+            </summary>
+        </member>
+        <member name="P:UserService.Response.UserView.Username">
+            <summary>
+            用户名称
+            </summary>
+        </member>
+        <member name="P:UserService.Response.UserView.Nick">
+            <summary>
+            昵称
+            </summary>
+        </member>
+        <member name="P:UserService.Response.UserView.Remark">
+            <summary>
+            简介
+            </summary>
+        </member>
+        <member name="P:UserService.Response.UserView.Photo">
+            <summary>
+            头像
+            </summary>
+        </member>
+        <member name="P:UserService.Response.UserView.Cover">
+            <summary>
+            封面
+            </summary>
+        </member>
+        <member name="P:UserService.Response.UserView.Sex">
+            <summary>
+            性别
+            </summary>
+        </member>
+        <member name="P:UserService.Response.UserView.Fans">
+            <summary>
+            粉丝
+            </summary>
+        </member>
+        <member name="P:UserService.Response.UserView.Follows">
+            <summary>
+            关注数
+            </summary>
+        </member>
+        <member name="P:UserService.Response.UserView.Message">
+            <summary>
+            用户留言版
+            </summary>
+        </member>
+        <member name="P:UserService.Response.UserView.RegisterTime">
+            <summary>
+            注册时间
+            </summary>
+        </member>
+        <member name="T:UserService.Rpc.Service.GUserService">
+            <summary>
+            gRPC服务类
+            </summary>
+        </member>
+        <member name="F:UserService.Rpc.Service.GUserService.contextFactory">
+            <summary>
+            依赖使用
+            </summary>
+        </member>
+        <member name="T:UserService.Rpc.Protos.UserReflection">
+            <summary>Holder for reflection information generated from Rpc/Protos/user.proto</summary>
+        </member>
+        <member name="P:UserService.Rpc.Protos.UserReflection.Descriptor">
+            <summary>File descriptor for Rpc/Protos/user.proto</summary>
+        </member>
+        <member name="T:UserService.Rpc.Protos.UserRequest">
+             <summary>
+            定义请求对象
+             </summary>
+        </member>
+        <member name="F:UserService.Rpc.Protos.UserRequest.UsernameFieldNumber">
+            <summary>Field number for the "Username" field.</summary>
+        </member>
+        <member name="F:UserService.Rpc.Protos.UserRequest.PasswordFieldNumber">
+            <summary>Field number for the "Password" field.</summary>
+        </member>
+        <member name="T:UserService.Rpc.Protos.UserNameRequest">
+             <summary>
+            定义请求对象
+             </summary>
+        </member>
+        <member name="F:UserService.Rpc.Protos.UserNameRequest.UsernameFieldNumber">
+            <summary>Field number for the "Username" field.</summary>
+        </member>
+        <member name="F:UserService.Rpc.Protos.UserInfoRequest.IdFieldNumber">
+            <summary>Field number for the "Id" field.</summary>
+        </member>
+        <member name="F:UserService.Rpc.Protos.UserInfoResponse.IdFieldNumber">
+            <summary>Field number for the "Id" field.</summary>
+        </member>
+        <member name="F:UserService.Rpc.Protos.UserInfoResponse.UsernameFieldNumber">
+            <summary>Field number for the "Username" field.</summary>
+        </member>
+        <member name="F:UserService.Rpc.Protos.UserInfoResponse.NickFieldNumber">
+            <summary>Field number for the "Nick" field.</summary>
+        </member>
+        <member name="F:UserService.Rpc.Protos.UserInfoResponse.PhotoFieldNumber">
+            <summary>Field number for the "Photo" field.</summary>
+        </member>
+        <member name="F:UserService.Rpc.Protos.UserInfoListReqponse.UserInfoFieldNumber">
+            <summary>Field number for the "UserInfo" field.</summary>
+        </member>
+        <member name="T:UserService.Rpc.Protos.gUser">
+             <summary>
+            定义服务
+             </summary>
+        </member>
+        <member name="P:UserService.Rpc.Protos.gUser.Descriptor">
+            <summary>Service descriptor</summary>
+        </member>
+        <member name="T:UserService.Rpc.Protos.gUser.gUserBase">
+            <summary>Base class for server-side implementations of gUser</summary>
+        </member>
+        <member name="M:UserService.Rpc.Protos.gUser.gUserBase.GetUserByPassword(UserService.Rpc.Protos.UserRequest,Grpc.Core.ServerCallContext)">
+             <summary>
+            根据账号密码查询用户
+             </summary>
+             <param name="request">The request received from the client.</param>
+             <param name="context">The context of the server-side call handler being invoked.</param>
+             <returns>The response to send back to the client (wrapped by a task).</returns>
+        </member>
+        <member name="M:UserService.Rpc.Protos.gUser.gUserBase.GetUserByUsername(UserService.Rpc.Protos.UserNameRequest,Grpc.Core.ServerCallContext)">
+             <summary>
+            根据账号查询用户
+             </summary>
+             <param name="request">The request received from the client.</param>
+             <param name="context">The context of the server-side call handler being invoked.</param>
+             <returns>The response to send back to the client (wrapped by a task).</returns>
+        </member>
+        <member name="M:UserService.Rpc.Protos.gUser.gUserBase.GetUserByID(UserService.Rpc.Protos.UserInfoRequest,Grpc.Core.ServerCallContext)">
+             <summary>
+            根据ID查询用户信息
+             </summary>
+             <param name="request">The request received from the client.</param>
+             <param name="context">The context of the server-side call handler being invoked.</param>
+             <returns>The response to send back to the client (wrapped by a task).</returns>
+        </member>
+        <member name="M:UserService.Rpc.Protos.gUser.gUserBase.GetUserList(Google.Protobuf.WellKnownTypes.Empty,Grpc.Core.ServerCallContext)">
+             <summary>
+            获取yoghurt列表
+             </summary>
+             <param name="request">The request received from the client.</param>
+             <param name="context">The context of the server-side call handler being invoked.</param>
+             <returns>The response to send back to the client (wrapped by a task).</returns>
+        </member>
+        <member name="M:UserService.Rpc.Protos.gUser.BindService(UserService.Rpc.Protos.gUser.gUserBase)">
+            <summary>Creates service definition that can be registered with a server</summary>
+            <param name="serviceImpl">An object implementing the server-side handling logic.</param>
+        </member>
+        <member name="M:UserService.Rpc.Protos.gUser.BindService(Grpc.Core.ServiceBinderBase,UserService.Rpc.Protos.gUser.gUserBase)">
+            <summary>Register service method with a service binder with or without implementation. Useful when customizing the service binding logic.
+            Note: this method is part of an experimental API that can change or be removed without any prior notice.</summary>
+            <param name="serviceBinder">Service methods will be bound by calling <c>AddMethod</c> on this object.</param>
+            <param name="serviceImpl">An object implementing the server-side handling logic.</param>
+        </member>
+        <member name="F:Infrastructure.MailApp.config">
+            <summary>
+            邮件配置
+            </summary>
+        </member>
+        <member name="F:Infrastructure.MailApp.template">
+            <summary>
+            邮件模板
+            </summary>
+        </member>
+        <member name="F:Infrastructure.MailApp.database">
+            <summary>
+            Redis客户端,依赖注入
+            </summary>
+        </member>
+        <member name="F:Infrastructure.MessageApp.database">
+            <summary>
+            Redis客户端,依赖注入
+            </summary>
+        </member>
+        <member name="F:Infrastructure.MessageApp.config">
+            <summary>
+            短信配置
+            </summary>
+        </member>
+        <member name="M:Infrastructure.MessageApp.SendMessageCode(System.String)">
+            <summary>
+            发送短信
+            </summary>
+            <param name="phone"></param>
+            <returns></returns>
+            <exception cref="T:System.NotImplementedException"></exception>
+        </member>
+        <member name="T:IdentityService.Rpc.Protos.RoleReflection">
+            <summary>Holder for reflection information generated from Rpc/Protos/role.proto</summary>
+        </member>
+        <member name="P:IdentityService.Rpc.Protos.RoleReflection.Descriptor">
+            <summary>File descriptor for Rpc/Protos/role.proto</summary>
+        </member>
+        <member name="F:IdentityService.Rpc.Protos.BindDefaultRequest.UidFieldNumber">
+            <summary>Field number for the "uid" field.</summary>
+        </member>
+        <member name="T:IdentityService.Rpc.Protos.gRole">
+             <summary>
+            角色绑定服务
+             </summary>
+        </member>
+        <member name="P:IdentityService.Rpc.Protos.gRole.Descriptor">
+            <summary>Service descriptor</summary>
+        </member>
+        <member name="T:IdentityService.Rpc.Protos.gRole.gRoleClient">
+            <summary>Client for gRole</summary>
+        </member>
+        <member name="M:IdentityService.Rpc.Protos.gRole.gRoleClient.#ctor(Grpc.Core.ChannelBase)">
+            <summary>Creates a new client for gRole</summary>
+            <param name="channel">The channel to use to make remote calls.</param>
+        </member>
+        <member name="M:IdentityService.Rpc.Protos.gRole.gRoleClient.#ctor(Grpc.Core.CallInvoker)">
+            <summary>Creates a new client for gRole that uses a custom <c>CallInvoker</c>.</summary>
+            <param name="callInvoker">The callInvoker to use to make remote calls.</param>
+        </member>
+        <member name="M:IdentityService.Rpc.Protos.gRole.gRoleClient.#ctor">
+            <summary>Protected parameterless constructor to allow creation of test doubles.</summary>
+        </member>
+        <member name="M:IdentityService.Rpc.Protos.gRole.gRoleClient.#ctor(Grpc.Core.ClientBase.ClientBaseConfiguration)">
+            <summary>Protected constructor to allow creation of configured clients.</summary>
+            <param name="configuration">The client configuration.</param>
+        </member>
+        <member name="M:IdentityService.Rpc.Protos.gRole.gRoleClient.BindDefaultRole(IdentityService.Rpc.Protos.BindDefaultRequest,Grpc.Core.Metadata,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
+             <summary>
+            绑定默认角色
+             </summary>
+             <param name="request">The request to send to the server.</param>
+             <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
+             <param name="deadline">An optional deadline for the call. The call will be cancelled if deadline is hit.</param>
+             <param name="cancellationToken">An optional token for canceling the call.</param>
+             <returns>The response received from the server.</returns>
+        </member>
+        <member name="M:IdentityService.Rpc.Protos.gRole.gRoleClient.BindDefaultRole(IdentityService.Rpc.Protos.BindDefaultRequest,Grpc.Core.CallOptions)">
+             <summary>
+            绑定默认角色
+             </summary>
+             <param name="request">The request to send to the server.</param>
+             <param name="options">The options for the call.</param>
+             <returns>The response received from the server.</returns>
+        </member>
+        <member name="M:IdentityService.Rpc.Protos.gRole.gRoleClient.BindDefaultRoleAsync(IdentityService.Rpc.Protos.BindDefaultRequest,Grpc.Core.Metadata,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
+             <summary>
+            绑定默认角色
+             </summary>
+             <param name="request">The request to send to the server.</param>
+             <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
+             <param name="deadline">An optional deadline for the call. The call will be cancelled if deadline is hit.</param>
+             <param name="cancellationToken">An optional token for canceling the call.</param>
+             <returns>The call object.</returns>
+        </member>
+        <member name="M:IdentityService.Rpc.Protos.gRole.gRoleClient.BindDefaultRoleAsync(IdentityService.Rpc.Protos.BindDefaultRequest,Grpc.Core.CallOptions)">
+             <summary>
+            绑定默认角色
+             </summary>
+             <param name="request">The request to send to the server.</param>
+             <param name="options">The options for the call.</param>
+             <returns>The call object.</returns>
+        </member>
+        <member name="M:IdentityService.Rpc.Protos.gRole.gRoleClient.NewInstance(Grpc.Core.ClientBase.ClientBaseConfiguration)">
+            <summary>Creates a new instance of client from given <c>ClientBaseConfiguration</c>.</summary>
+        </member>
+    </members>
+</doc>

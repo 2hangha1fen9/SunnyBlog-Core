@@ -9,26 +9,26 @@
         /// <summary>
         /// 浏览量
         /// </summary>
-        public int ViewCount { get; set; }
+        public long ViewCount { get; set; }
         /// <summary>
         /// 点赞量
         /// </summary>
-        public int LikeCount { get; set; }
+        public long LikeCount { get; set; }
         /// <summary>
         /// 评论量
         /// </summary>
-        public int CommentCount { get; set; }
+        public long CommentCount { get; set; }
         /// <summary>
         /// 收藏量
         /// </summary>
-        public int CollectionCount { get; set; }
+        public long CollectionCount { get; set; }
         /// <summary>
         /// 当前用户点赞
         /// </summary>
-        public int? IsUserLike { get; set; }
+        public long? IsUserLike { get; set; }
         /// <summary>
         /// 当前用户收藏
         /// </summary>
-        public int? IsUserCollection { get; set; }
+        public long? IsUserCollection { get; set; }
     }
 }

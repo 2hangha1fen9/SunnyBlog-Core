@@ -1,0 +1,1203 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>CommentService</name>
+    </assembly>
+    <members>
+        <member name="F:CommentService.App.CommentApp.jsonConfig">
+            <summary>
+            序列化配置
+            </summary>
+        </member>
+        <member name="M:CommentService.App.CommentApp.CommentArticle(CommentService.Request.CommentReq,System.Int32)">
+            <summary>
+            评论文章
+            </summary>
+            <param name="request">评论内容</param>
+            <param name="uid">用户ID</param>
+            <returns></returns>
+        </member>
+        <member name="M:CommentService.App.CommentApp.DeleteComment(System.Int32,System.Int32)">
+            <summary>
+            删除评论(评论者)
+            </summary>
+            <param name="cid"></param>
+            <param name="uid"></param>
+            <returns></returns>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:CommentService.App.CommentApp.DeleteComment(System.Int32[])">
+            <summary>
+            删除评论(管理员)
+            </summary>
+            <param name="cid"></param>
+            <returns></returns>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:CommentService.App.CommentApp.DeleteArticleComment(System.Int32,System.Int32)">
+            <summary>
+            删除评论(作者)
+            </summary>
+            <param name="cid"></param>
+            <param name="uid"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CommentService.App.CommentApp.GetArticleComment(System.Int32,System.Collections.Generic.List{Infrastructure.SearchCondition},System.Int32,System.Int32)">
+            <summary>
+            获取文章评论
+            </summary>
+            <param name="aid">文章ID</param>
+            <returns></returns>
+        </member>
+        <member name="M:CommentService.App.CommentApp.GetCommentList(System.Collections.Generic.List{Infrastructure.SearchCondition},System.Int32,System.Int32)">
+            <summary>
+            获取所有文章评论列表
+            </summary>
+            <returns></returns>
+            <exception cref="T:System.NotImplementedException"></exception>
+        </member>
+        <member name="M:CommentService.App.CommentApp.GetUserCommentList(System.Int32,System.Collections.Generic.List{Infrastructure.SearchCondition},System.Int32,System.Int32)">
+            <summary>
+            获取用户发表的评论
+            </summary>
+            <param name="uid"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CommentService.App.CommentApp.GetMyCommentList(System.Int32,System.Collections.Generic.List{Infrastructure.SearchCondition},System.Int32,System.Int32)">
+            <summary>
+            获取用户给我的的评论
+            </summary>
+            <param name="uid"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CommentService.App.CommentApp.GetUserUnreadComment(System.Int32)">
+            <summary>
+            获取用户未读评论
+            </summary>
+            <param name="uid"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CommentService.App.CommentApp.ReadComment(System.Int32,System.Int32,System.Boolean)">
+            <summary>
+            已读评论
+            </summary>
+            <param name="cid"></param>
+            <param name="uid"></param>
+            <param name="isAll"></param>
+            <returns></returns>
+            <exception cref="T:System.NotImplementedException"></exception>
+        </member>
+        <member name="M:CommentService.App.CommentApp.AllowComment(System.Int32,System.Nullable{System.Int32})">
+            <summary>
+            审核评论
+            </summary>
+            <param name="cid">评论id</param>
+            <param name="uid">作者id</param>
+            <returns></returns>
+            <exception cref="T:System.NotImplementedException"></exception>
+        </member>
+        <member name="M:CommentService.App.CommentApp.GetArticleCommentCount(System.Int32)">
+            <summary>
+            获取文章评论数
+            </summary>
+            <param name="aid"></param>
+            <returns></returns>
+            <exception cref="T:System.NotImplementedException"></exception>
+        </member>
+        <member name="M:CommentService.App.CommentApp.GetUserCommentCount(System.Int32)">
+            <summary>
+            获取用户文章的评论总数
+            </summary>
+            <param name="uid"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CommentService.App.DrawingBedApp.UploadPicture(CommentService.Request.UploadReq)">
+            <summary>
+            上传图片
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="T:CommentService.App.Interface.IMetaApp">
+            <summary>
+            文章数据统计
+            </summary>
+        </member>
+        <member name="F:CommentService.App.LikeApp.jsonConfig">
+            <summary>
+            序列化配置
+            </summary>
+        </member>
+        <member name="M:CommentService.App.LikeApp.LikeArticle(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            点赞/收藏(取消)
+            </summary>
+            <param name="aid"></param>
+            <param name="uid"></param>
+            <param name="status"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CommentService.App.LikeApp.GetUserLike(System.Int32,System.Boolean)">
+            <summary>
+            获取用户的点赞/收藏记录
+            </summary>
+            <param name="uid"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CommentService.App.LikeApp.GetUserLikeMessage(System.Int32)">
+            <summary>
+            获取用户给我点赞得信息
+            </summary>
+            <param name="uid"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CommentService.App.LikeApp.GetArticleLikeCount(System.Int32,System.Int32)">
+            <summary>
+            获取文章的点赞/收藏数
+            </summary>
+            <param name="aid">文章ID</param>
+            <param name="status">1点赞数2收藏数</param>
+            <returns></returns>
+        </member>
+        <member name="M:CommentService.App.LikeApp.DeleteLikeMessage(System.Int32,System.Int32,System.Boolean)">
+            <summary>
+            删除消息
+            </summary>
+            <param name="cid"></param>
+            <param name="uid"></param>
+            <param name="isAll"></param>
+            <returns></returns>
+            <exception cref="T:System.NotImplementedException"></exception>
+        </member>
+        <member name="M:CommentService.App.MetaApp.GetMeta(System.Int32,System.Nullable{System.Int32})">
+            <summary>
+            获取文章元数据
+            </summary>
+            <param name="aid"></param>
+            <param name="uid"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CommentService.App.MetaApp.GetMetaList(System.Int32[],System.Nullable{System.Int32})">
+            <summary>
+            获取一批文章互动元数据
+            </summary>
+            <param name="aids"></param>
+            <param name="uid"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CommentService.App.MetaApp.GetUserMeta(System.Int32)">
+            <summary>
+            获取用户的互动数据
+            </summary>
+            <param name="uid"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CommentService.App.ViewApp.AddArticleViewCount(System.Int32,System.Nullable{System.Int32},System.String)">
+            <summary>
+            增加文章访问量
+            </summary>
+            <param name="aid">文章ID</param>
+            <param name="uid">用户ID</param>
+            <param name="ip">IP地址</param>
+        </member>
+        <member name="M:CommentService.App.ViewApp.GetArticleViewCount(System.Int32)">
+            <summary>
+            获取文章访问量
+            </summary>
+            <param name="aid"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CommentService.App.ViewApp.GetUserViewCount(System.Int32)">
+            <summary>
+            获取用户文章的总访问数
+            </summary>
+            <param name="uid"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CommentService.App.ViewApp.GetUserView(System.Int32,System.Collections.Generic.List{Infrastructure.SearchCondition},System.Int32,System.Int32)">
+            <summary>
+            获取用户访问记录
+            </summary>
+            <param name="uid"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CommentService.App.ViewApp.GetViewList(System.Collections.Generic.List{Infrastructure.SearchCondition},System.Int32,System.Int32)">
+            <summary>
+            获取所有访问记录
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:CommentService.Controllers.CommentController.Publish(CommentService.Request.CommentReq)">
+            <summary>
+            发表评论
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CommentService.Controllers.CommentController.Delete(System.Int32)">
+            <summary>
+            删除评论(评论者)
+            </summary>
+            <param name="cid"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CommentService.Controllers.CommentController.AuthorDelete(System.Int32)">
+            <summary>
+            删除评论(作者)
+            </summary>
+            <param name="cid"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CommentService.Controllers.CommentController.Remove(System.Int32[])">
+            <summary>
+            删除评论(管理员)
+            </summary>
+            <param name="cid"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CommentService.Controllers.CommentController.List(System.Int32,System.String,System.Nullable{System.Int32},System.Nullable{System.Int32})">
+            <summary>
+            列出某篇文章评论
+            </summary>
+            <param name="aid">文章ID</param>
+            <param name="condidtion">过滤条件</param>
+            <param name="pageIndex"></param>
+            <param name="pageSize"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CommentService.Controllers.CommentController.User(System.Int32,System.String,System.Nullable{System.Int32},System.Nullable{System.Int32})">
+            <summary>
+            列出用户发表的评论
+            </summary>
+            <param name="aid">文章ID</param>
+            <param name="condidtion">过滤条件</param>
+            <param name="pageIndex"></param>
+            <param name="pageSize"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CommentService.Controllers.CommentController.My(System.String,System.Nullable{System.Int32},System.Nullable{System.Int32})">
+            <summary>
+            列出用户给我的的评论
+            </summary>
+            <param name="aid">文章ID</param>
+            <param name="condidtion">过滤条件</param>
+            <param name="pageIndex"></param>
+            <param name="pageSize"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CommentService.Controllers.CommentController.MyUnread">
+            <summary>
+            获取用户未读评论
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:CommentService.Controllers.CommentController.All(System.String,System.Nullable{System.Int32},System.Nullable{System.Int32})">
+            <summary>
+            列出所有评论
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:CommentService.Controllers.CommentController.Read(System.Int32,System.Nullable{System.Boolean})">
+            <summary>
+            读评论
+            </summary>
+            <param name="cid"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CommentService.Controllers.CommentController.AuthroAllow(System.Int32)">
+            <summary>
+            审核评论(作者)
+            </summary>
+            <param name="cid"></param>
+            <param name="uid">作者ID</param>
+            <returns></returns>
+        </member>
+        <member name="M:CommentService.Controllers.CommentController.Allow(System.Int32)">
+            <summary>
+            审核评论(管理员)
+            </summary>
+            <param name="cid"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CommentService.Controllers.DrawingBedController.Upload(CommentService.Request.UploadReq)">
+            <summary>
+            上传图片
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CommentService.Controllers.HealthCheckController.Get">
+            <summary>
+            健康检查
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:CommentService.Controllers.MarkController.Article(System.Int32,System.Nullable{System.Int32})">
+            <summary>
+            点赞/收藏文章
+            </summary>
+            <param name="aid">文章ID</param>
+            <param name="status">1点赞2收藏</param>
+            <returns></returns>
+        </member>
+        <member name="M:CommentService.Controllers.MarkController.Message">
+            <summary>
+            获取点赞消息
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:CommentService.Controllers.MarkController.DeleteMessage(System.Int32,System.Nullable{System.Boolean})">
+            <summary>
+            删除点赞消息
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:CommentService.Controllers.MarkController.List(System.Int32,System.Boolean)">
+            <summary>
+            获取用户的点赞/收藏记录
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:CommentService.Controllers.MetaController.GetArticleMeta(System.Int32)">
+            <summary>
+            获取文章访问量评论数点赞量
+            </summary>
+            <param name="aid"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CommentService.Controllers.MetaController.GetArticleMetaList(System.Int32[])">
+            <summary>
+            获取一批文章访问量评论数点赞量
+            </summary>
+            <param name="aids"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CommentService.Controllers.MetaController.GetUserMeta(System.Int32)">
+            <summary>
+            获取用户的总访问量评论数点赞量
+            </summary>
+            <param name="uid"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CommentService.Controllers.StatisticsController.Count">
+            <summary>
+            统计评论数
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:CommentService.Controllers.StatisticsController.UserCount">
+            <summary>
+            统计文章数
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:CommentService.Controllers.ViewController.Add(System.Int32)">
+            <summary>
+            增加文章访问量
+            </summary>
+            <param name="aid"></param>
+            <returns></returns>
+        </member>
+        <member name="M:CommentService.Controllers.ViewController.UserHistory(System.Nullable{System.Int32},System.Nullable{System.Int32},System.String)">
+            <summary>
+            列出用户文章访问记录
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:CommentService.Controllers.ViewController.AllHistory(System.Nullable{System.Int32},System.Nullable{System.Int32},System.String)">
+            <summary>
+            列出所有文章访问记录
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:CommentService.Domain.Comment.Status">
+            <summary>
+            1审核通过2需要审核-1禁止评论
+            </summary>
+        </member>
+        <member name="P:CommentService.Domain.Like.Status">
+            <summary>
+            1点赞2收藏 3点赞又收藏
+            </summary>
+        </member>
+        <member name="T:CommentService.Request.CommentReq">
+            <summary>
+            评论请求
+            </summary>
+        </member>
+        <member name="P:CommentService.Request.CommentReq.ArticleId">
+            <summary>
+            文章ID
+            </summary>
+        </member>
+        <member name="P:CommentService.Request.CommentReq.ParentId">
+            <summary>
+            父级评论ID
+            </summary>
+        </member>
+        <member name="P:CommentService.Request.CommentReq.Content">
+            <summary>
+            评论内容
+            </summary>
+        </member>
+        <member name="P:CommentService.Request.LikeArticleReq.ArticleId">
+            <summary>
+            文章ID
+            </summary>
+        </member>
+        <member name="P:CommentService.Request.LikeArticleReq.Status">
+            <summary>
+            1点赞2收藏
+            </summary>
+        </member>
+        <member name="P:CommentService.Request.UploadReq.Data">
+            <summary>
+            图片数据
+            </summary>
+        </member>
+        <member name="P:CommentService.Response.CommentListView.Id">
+            <summary>
+            评论ID
+            </summary>
+        </member>
+        <member name="P:CommentService.Response.CommentListView.ArticleId">
+            <summary>
+            文章ID
+            </summary>
+        </member>
+        <member name="P:CommentService.Response.CommentListView.UserId">
+            <summary>
+            用户ID
+            </summary>
+        </member>
+        <member name="P:CommentService.Response.CommentListView.ArticleTitle">
+            <summary>
+            文章标题
+            </summary>
+        </member>
+        <member name="P:CommentService.Response.CommentListView.Content">
+            <summary>
+            评论内容
+            </summary>
+        </member>
+        <member name="P:CommentService.Response.CommentListView.Nick">
+            <summary>
+            用户昵称
+            </summary>
+        </member>
+        <member name="P:CommentService.Response.CommentListView.Photo">
+            <summary>
+            用户头像
+            </summary>
+        </member>
+        <member name="P:CommentService.Response.CommentListView.Username">
+            <summary>
+            用户昵称
+            </summary>
+        </member>
+        <member name="P:CommentService.Response.CommentListView.Status">
+            <summary>
+            评论状态 1审核通过2需要审核-1禁止评论
+            </summary>
+        </member>
+        <member name="P:CommentService.Response.CommentListView.CreateTime">
+            <summary>
+            发表时间
+            </summary>
+        </member>
+        <member name="T:CommentService.Response.CommentView">
+            <summary>
+            评论列表视图
+            </summary>
+        </member>
+        <member name="P:CommentService.Response.CommentView.Id">
+            <summary>
+            评论ID
+            </summary>
+        </member>
+        <member name="P:CommentService.Response.CommentView.ArticleId">
+            <summary>
+            文章ID
+            </summary>
+        </member>
+        <member name="P:CommentService.Response.CommentView.UserId">
+            <summary>
+            用户ID
+            </summary>
+        </member>
+        <member name="P:CommentService.Response.CommentView.Nick">
+            <summary>
+            用户昵称
+            </summary>
+        </member>
+        <member name="P:CommentService.Response.CommentView.Username">
+            <summary>
+            用户昵称
+            </summary>
+        </member>
+        <member name="P:CommentService.Response.CommentView.Photo">
+            <summary>
+            用户头像
+            </summary>
+        </member>
+        <member name="P:CommentService.Response.CommentView.Content">
+            <summary>
+            评论内容
+            </summary>
+        </member>
+        <member name="P:CommentService.Response.CommentView.CreateTime">
+            <summary>
+            发表时间
+            </summary>
+        </member>
+        <member name="P:CommentService.Response.CommentView.ParentId">
+            <summary>
+            父级评论ID
+            </summary>
+        </member>
+        <member name="P:CommentService.Response.CommentView.InverseParent">
+            <summary>
+            子级评论
+            </summary>
+        </member>
+        <member name="P:CommentService.Response.LikeView.Id">
+            <summary>
+            点赞id
+            </summary>
+        </member>
+        <member name="P:CommentService.Response.LikeView.ArticleId">
+            <summary>
+            喜欢/收藏文章ID
+            </summary>
+        </member>
+        <member name="P:CommentService.Response.LikeView.ArticleTitle">
+            <summary>
+            文章标题
+            </summary>
+        </member>
+        <member name="P:CommentService.Response.LikeView.UserId">
+            <summary>
+            喜欢/收藏用户ID
+            </summary>
+        </member>
+        <member name="P:CommentService.Response.LikeView.Username">
+            <summary>
+            用户名
+            </summary>
+        </member>
+        <member name="P:CommentService.Response.LikeView.Nick">
+            <summary>
+            昵称
+            </summary>
+        </member>
+        <member name="P:CommentService.Response.LikeView.Photo">
+            <summary>
+            用户头像
+            </summary>
+        </member>
+        <member name="P:CommentService.Response.LikeView.Status">
+            <summary>
+            1点赞2收藏
+            </summary>
+        </member>
+        <member name="P:CommentService.Response.Meta.ArticleId">
+            <summary>
+            文章ID
+            </summary>
+        </member>
+        <member name="P:CommentService.Response.Meta.ViewCount">
+            <summary>
+            浏览量
+            </summary>
+        </member>
+        <member name="P:CommentService.Response.Meta.LikeCount">
+            <summary>
+            点赞量
+            </summary>
+        </member>
+        <member name="P:CommentService.Response.Meta.CommentCount">
+            <summary>
+            评论量
+            </summary>
+        </member>
+        <member name="P:CommentService.Response.Meta.CollectionCount">
+            <summary>
+            收藏量
+            </summary>
+        </member>
+        <member name="P:CommentService.Response.Meta.IsUserLike">
+            <summary>
+            当前用户点赞
+            </summary>
+        </member>
+        <member name="P:CommentService.Response.Meta.IsUserCollection">
+            <summary>
+            当前用户收藏
+            </summary>
+        </member>
+        <member name="P:CommentService.Response.UploadResult.Path">
+            <summary>
+            文件路径
+            </summary>
+        </member>
+        <member name="P:CommentService.Response.UserMeta.UserId">
+            <summary>
+            用户ID
+            </summary>
+        </member>
+        <member name="P:CommentService.Response.UserMeta.ViewCount">
+            <summary>
+            浏览量
+            </summary>
+        </member>
+        <member name="P:CommentService.Response.UserMeta.LikeCount">
+            <summary>
+            点赞量
+            </summary>
+        </member>
+        <member name="P:CommentService.Response.UserMeta.CommentCount">
+            <summary>
+            评论量
+            </summary>
+        </member>
+        <member name="P:CommentService.Response.UserMeta.CollectionCount">
+            <summary>
+            收藏量
+            </summary>
+        </member>
+        <member name="P:CommentService.Response.UserViewHistory.UserId">
+            <summary>
+            用户ID
+            </summary>
+        </member>
+        <member name="P:CommentService.Response.UserViewHistory.Username">
+            <summary>
+            用户名
+            </summary>
+        </member>
+        <member name="P:CommentService.Response.UserViewHistory.Nick">
+            <summary>
+            昵称
+            </summary>
+        </member>
+        <member name="P:CommentService.Response.UserViewHistory.ArticleId">
+            <summary>
+            文章ID
+            </summary>
+        </member>
+        <member name="P:CommentService.Response.UserViewHistory.ArticleTitle">
+            <summary>
+            文章标题
+            </summary>
+        </member>
+        <member name="P:CommentService.Response.UserViewHistory.Ip">
+            <summary>
+            用户IP
+            </summary>
+        </member>
+        <member name="P:CommentService.Response.UserViewHistory.ViewTime">
+            <summary>
+            访问时间
+            </summary>
+        </member>
+        <member name="M:CommentService.Rpc.Service.GRankService.GetArticleRank(CommentService.Rpc.Protos.RankCondidtion,Grpc.Core.ServerCallContext)">
+            <summary>
+            获取文章排行榜
+            </summary>
+            <param name="request"></param>
+            <param name="context"></param>
+            <returns></returns>
+        </member>
+        <member name="T:CommentService.Rpc.Protos.UserReflection">
+            <summary>Holder for reflection information generated from Rpc/Protos/user.proto</summary>
+        </member>
+        <member name="P:CommentService.Rpc.Protos.UserReflection.Descriptor">
+            <summary>File descriptor for Rpc/Protos/user.proto</summary>
+        </member>
+        <member name="T:CommentService.Rpc.Protos.UserRequest">
+             <summary>
+            定义请求对象
+             </summary>
+        </member>
+        <member name="F:CommentService.Rpc.Protos.UserRequest.UsernameFieldNumber">
+            <summary>Field number for the "Username" field.</summary>
+        </member>
+        <member name="F:CommentService.Rpc.Protos.UserRequest.PasswordFieldNumber">
+            <summary>Field number for the "Password" field.</summary>
+        </member>
+        <member name="T:CommentService.Rpc.Protos.UserNameRequest">
+             <summary>
+            定义请求对象
+             </summary>
+        </member>
+        <member name="F:CommentService.Rpc.Protos.UserNameRequest.UsernameFieldNumber">
+            <summary>Field number for the "Username" field.</summary>
+        </member>
+        <member name="F:CommentService.Rpc.Protos.UserInfoRequest.IdFieldNumber">
+            <summary>Field number for the "Id" field.</summary>
+        </member>
+        <member name="F:CommentService.Rpc.Protos.UserInfoResponse.IdFieldNumber">
+            <summary>Field number for the "Id" field.</summary>
+        </member>
+        <member name="F:CommentService.Rpc.Protos.UserInfoResponse.UsernameFieldNumber">
+            <summary>Field number for the "Username" field.</summary>
+        </member>
+        <member name="F:CommentService.Rpc.Protos.UserInfoResponse.NickFieldNumber">
+            <summary>Field number for the "Nick" field.</summary>
+        </member>
+        <member name="F:CommentService.Rpc.Protos.UserInfoResponse.PhotoFieldNumber">
+            <summary>Field number for the "Photo" field.</summary>
+        </member>
+        <member name="F:CommentService.Rpc.Protos.UserInfoListReqponse.UserInfoFieldNumber">
+            <summary>Field number for the "UserInfo" field.</summary>
+        </member>
+        <member name="T:CommentService.Rpc.Protos.gUser">
+             <summary>
+            定义服务
+             </summary>
+        </member>
+        <member name="P:CommentService.Rpc.Protos.gUser.Descriptor">
+            <summary>Service descriptor</summary>
+        </member>
+        <member name="T:CommentService.Rpc.Protos.gUser.gUserClient">
+            <summary>Client for gUser</summary>
+        </member>
+        <member name="M:CommentService.Rpc.Protos.gUser.gUserClient.#ctor(Grpc.Core.ChannelBase)">
+            <summary>Creates a new client for gUser</summary>
+            <param name="channel">The channel to use to make remote calls.</param>
+        </member>
+        <member name="M:CommentService.Rpc.Protos.gUser.gUserClient.#ctor(Grpc.Core.CallInvoker)">
+            <summary>Creates a new client for gUser that uses a custom <c>CallInvoker</c>.</summary>
+            <param name="callInvoker">The callInvoker to use to make remote calls.</param>
+        </member>
+        <member name="M:CommentService.Rpc.Protos.gUser.gUserClient.#ctor">
+            <summary>Protected parameterless constructor to allow creation of test doubles.</summary>
+        </member>
+        <member name="M:CommentService.Rpc.Protos.gUser.gUserClient.#ctor(Grpc.Core.ClientBase.ClientBaseConfiguration)">
+            <summary>Protected constructor to allow creation of configured clients.</summary>
+            <param name="configuration">The client configuration.</param>
+        </member>
+        <member name="M:CommentService.Rpc.Protos.gUser.gUserClient.GetUserByPassword(CommentService.Rpc.Protos.UserRequest,Grpc.Core.Metadata,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
+             <summary>
+            根据账号密码查询用户
+             </summary>
+             <param name="request">The request to send to the server.</param>
+             <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
+             <param name="deadline">An optional deadline for the call. The call will be cancelled if deadline is hit.</param>
+             <param name="cancellationToken">An optional token for canceling the call.</param>
+             <returns>The response received from the server.</returns>
+        </member>
+        <member name="M:CommentService.Rpc.Protos.gUser.gUserClient.GetUserByPassword(CommentService.Rpc.Protos.UserRequest,Grpc.Core.CallOptions)">
+             <summary>
+            根据账号密码查询用户
+             </summary>
+             <param name="request">The request to send to the server.</param>
+             <param name="options">The options for the call.</param>
+             <returns>The response received from the server.</returns>
+        </member>
+        <member name="M:CommentService.Rpc.Protos.gUser.gUserClient.GetUserByPasswordAsync(CommentService.Rpc.Protos.UserRequest,Grpc.Core.Metadata,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
+             <summary>
+            根据账号密码查询用户
+             </summary>
+             <param name="request">The request to send to the server.</param>
+             <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
+             <param name="deadline">An optional deadline for the call. The call will be cancelled if deadline is hit.</param>
+             <param name="cancellationToken">An optional token for canceling the call.</param>
+             <returns>The call object.</returns>
+        </member>
+        <member name="M:CommentService.Rpc.Protos.gUser.gUserClient.GetUserByPasswordAsync(CommentService.Rpc.Protos.UserRequest,Grpc.Core.CallOptions)">
+             <summary>
+            根据账号密码查询用户
+             </summary>
+             <param name="request">The request to send to the server.</param>
+             <param name="options">The options for the call.</param>
+             <returns>The call object.</returns>
+        </member>
+        <member name="M:CommentService.Rpc.Protos.gUser.gUserClient.GetUserByUsername(CommentService.Rpc.Protos.UserNameRequest,Grpc.Core.Metadata,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
+             <summary>
+            根据账号查询用户
+             </summary>
+             <param name="request">The request to send to the server.</param>
+             <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
+             <param name="deadline">An optional deadline for the call. The call will be cancelled if deadline is hit.</param>
+             <param name="cancellationToken">An optional token for canceling the call.</param>
+             <returns>The response received from the server.</returns>
+        </member>
+        <member name="M:CommentService.Rpc.Protos.gUser.gUserClient.GetUserByUsername(CommentService.Rpc.Protos.UserNameRequest,Grpc.Core.CallOptions)">
+             <summary>
+            根据账号查询用户
+             </summary>
+             <param name="request">The request to send to the server.</param>
+             <param name="options">The options for the call.</param>
+             <returns>The response received from the server.</returns>
+        </member>
+        <member name="M:CommentService.Rpc.Protos.gUser.gUserClient.GetUserByUsernameAsync(CommentService.Rpc.Protos.UserNameRequest,Grpc.Core.Metadata,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
+             <summary>
+            根据账号查询用户
+             </summary>
+             <param name="request">The request to send to the server.</param>
+             <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
+             <param name="deadline">An optional deadline for the call. The call will be cancelled if deadline is hit.</param>
+             <param name="cancellationToken">An optional token for canceling the call.</param>
+             <returns>The call object.</returns>
+        </member>
+        <member name="M:CommentService.Rpc.Protos.gUser.gUserClient.GetUserByUsernameAsync(CommentService.Rpc.Protos.UserNameRequest,Grpc.Core.CallOptions)">
+             <summary>
+            根据账号查询用户
+             </summary>
+             <param name="request">The request to send to the server.</param>
+             <param name="options">The options for the call.</param>
+             <returns>The call object.</returns>
+        </member>
+        <member name="M:CommentService.Rpc.Protos.gUser.gUserClient.GetUserByID(CommentService.Rpc.Protos.UserInfoRequest,Grpc.Core.Metadata,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
+             <summary>
+            根据ID查询用户信息
+             </summary>
+             <param name="request">The request to send to the server.</param>
+             <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
+             <param name="deadline">An optional deadline for the call. The call will be cancelled if deadline is hit.</param>
+             <param name="cancellationToken">An optional token for canceling the call.</param>
+             <returns>The response received from the server.</returns>
+        </member>
+        <member name="M:CommentService.Rpc.Protos.gUser.gUserClient.GetUserByID(CommentService.Rpc.Protos.UserInfoRequest,Grpc.Core.CallOptions)">
+             <summary>
+            根据ID查询用户信息
+             </summary>
+             <param name="request">The request to send to the server.</param>
+             <param name="options">The options for the call.</param>
+             <returns>The response received from the server.</returns>
+        </member>
+        <member name="M:CommentService.Rpc.Protos.gUser.gUserClient.GetUserByIDAsync(CommentService.Rpc.Protos.UserInfoRequest,Grpc.Core.Metadata,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
+             <summary>
+            根据ID查询用户信息
+             </summary>
+             <param name="request">The request to send to the server.</param>
+             <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
+             <param name="deadline">An optional deadline for the call. The call will be cancelled if deadline is hit.</param>
+             <param name="cancellationToken">An optional token for canceling the call.</param>
+             <returns>The call object.</returns>
+        </member>
+        <member name="M:CommentService.Rpc.Protos.gUser.gUserClient.GetUserByIDAsync(CommentService.Rpc.Protos.UserInfoRequest,Grpc.Core.CallOptions)">
+             <summary>
+            根据ID查询用户信息
+             </summary>
+             <param name="request">The request to send to the server.</param>
+             <param name="options">The options for the call.</param>
+             <returns>The call object.</returns>
+        </member>
+        <member name="M:CommentService.Rpc.Protos.gUser.gUserClient.GetUserList(Google.Protobuf.WellKnownTypes.Empty,Grpc.Core.Metadata,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
+             <summary>
+            获取yoghurt列表
+             </summary>
+             <param name="request">The request to send to the server.</param>
+             <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
+             <param name="deadline">An optional deadline for the call. The call will be cancelled if deadline is hit.</param>
+             <param name="cancellationToken">An optional token for canceling the call.</param>
+             <returns>The response received from the server.</returns>
+        </member>
+        <member name="M:CommentService.Rpc.Protos.gUser.gUserClient.GetUserList(Google.Protobuf.WellKnownTypes.Empty,Grpc.Core.CallOptions)">
+             <summary>
+            获取yoghurt列表
+             </summary>
+             <param name="request">The request to send to the server.</param>
+             <param name="options">The options for the call.</param>
+             <returns>The response received from the server.</returns>
+        </member>
+        <member name="M:CommentService.Rpc.Protos.gUser.gUserClient.GetUserListAsync(Google.Protobuf.WellKnownTypes.Empty,Grpc.Core.Metadata,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
+             <summary>
+            获取yoghurt列表
+             </summary>
+             <param name="request">The request to send to the server.</param>
+             <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
+             <param name="deadline">An optional deadline for the call. The call will be cancelled if deadline is hit.</param>
+             <param name="cancellationToken">An optional token for canceling the call.</param>
+             <returns>The call object.</returns>
+        </member>
+        <member name="M:CommentService.Rpc.Protos.gUser.gUserClient.GetUserListAsync(Google.Protobuf.WellKnownTypes.Empty,Grpc.Core.CallOptions)">
+             <summary>
+            获取yoghurt列表
+             </summary>
+             <param name="request">The request to send to the server.</param>
+             <param name="options">The options for the call.</param>
+             <returns>The call object.</returns>
+        </member>
+        <member name="M:CommentService.Rpc.Protos.gUser.gUserClient.NewInstance(Grpc.Core.ClientBase.ClientBaseConfiguration)">
+            <summary>Creates a new instance of client from given <c>ClientBaseConfiguration</c>.</summary>
+        </member>
+        <member name="T:CommentService.Rpc.Protos.RankReflection">
+            <summary>Holder for reflection information generated from Rpc/Protos/rank.proto</summary>
+        </member>
+        <member name="P:CommentService.Rpc.Protos.RankReflection.Descriptor">
+            <summary>File descriptor for Rpc/Protos/rank.proto</summary>
+        </member>
+        <member name="F:CommentService.Rpc.Protos.RankCondidtion.KeyFieldNumber">
+            <summary>Field number for the "key" field.</summary>
+        </member>
+        <member name="F:CommentService.Rpc.Protos.RankCondidtion.OrderFieldNumber">
+            <summary>Field number for the "order" field.</summary>
+        </member>
+        <member name="F:CommentService.Rpc.Protos.RankList.RanksFieldNumber">
+            <summary>Field number for the "ranks" field.</summary>
+        </member>
+        <member name="P:CommentService.Rpc.Protos.gRank.Descriptor">
+            <summary>Service descriptor</summary>
+        </member>
+        <member name="T:CommentService.Rpc.Protos.gRank.gRankBase">
+            <summary>Base class for server-side implementations of gRank</summary>
+        </member>
+        <member name="M:CommentService.Rpc.Protos.gRank.gRankBase.GetArticleRank(CommentService.Rpc.Protos.RankCondidtion,Grpc.Core.ServerCallContext)">
+             <summary>
+            获取文章排行数据
+             </summary>
+             <param name="request">The request received from the client.</param>
+             <param name="context">The context of the server-side call handler being invoked.</param>
+             <returns>The response to send back to the client (wrapped by a task).</returns>
+        </member>
+        <member name="M:CommentService.Rpc.Protos.gRank.BindService(CommentService.Rpc.Protos.gRank.gRankBase)">
+            <summary>Creates service definition that can be registered with a server</summary>
+            <param name="serviceImpl">An object implementing the server-side handling logic.</param>
+        </member>
+        <member name="M:CommentService.Rpc.Protos.gRank.BindService(Grpc.Core.ServiceBinderBase,CommentService.Rpc.Protos.gRank.gRankBase)">
+            <summary>Register service method with a service binder with or without implementation. Useful when customizing the service binding logic.
+            Note: this method is part of an experimental API that can change or be removed without any prior notice.</summary>
+            <param name="serviceBinder">Service methods will be bound by calling <c>AddMethod</c> on this object.</param>
+            <param name="serviceImpl">An object implementing the server-side handling logic.</param>
+        </member>
+        <member name="T:CommentService.Rpc.Protos.MarkReflection">
+            <summary>Holder for reflection information generated from Rpc/Protos/mark.proto</summary>
+        </member>
+        <member name="P:CommentService.Rpc.Protos.MarkReflection.Descriptor">
+            <summary>File descriptor for Rpc/Protos/mark.proto</summary>
+        </member>
+        <member name="F:CommentService.Rpc.Protos.RequestInfo.UidFieldNumber">
+            <summary>Field number for the "uid" field.</summary>
+        </member>
+        <member name="F:CommentService.Rpc.Protos.RequestInfo.TypeFieldNumber">
+            <summary>Field number for the "type" field.</summary>
+        </member>
+        <member name="F:CommentService.Rpc.Protos.ArticleIdList.IdsFieldNumber">
+            <summary>Field number for the "ids" field.</summary>
+        </member>
+        <member name="P:CommentService.Rpc.Protos.gMark.Descriptor">
+            <summary>Service descriptor</summary>
+        </member>
+        <member name="T:CommentService.Rpc.Protos.gMark.gMarkBase">
+            <summary>Base class for server-side implementations of gMark</summary>
+        </member>
+        <member name="M:CommentService.Rpc.Protos.gMark.BindService(CommentService.Rpc.Protos.gMark.gMarkBase)">
+            <summary>Creates service definition that can be registered with a server</summary>
+            <param name="serviceImpl">An object implementing the server-side handling logic.</param>
+        </member>
+        <member name="M:CommentService.Rpc.Protos.gMark.BindService(Grpc.Core.ServiceBinderBase,CommentService.Rpc.Protos.gMark.gMarkBase)">
+            <summary>Register service method with a service binder with or without implementation. Useful when customizing the service binding logic.
+            Note: this method is part of an experimental API that can change or be removed without any prior notice.</summary>
+            <param name="serviceBinder">Service methods will be bound by calling <c>AddMethod</c> on this object.</param>
+            <param name="serviceImpl">An object implementing the server-side handling logic.</param>
+        </member>
+        <member name="T:ArticleService.Rpc.Protos.SettingReflection">
+            <summary>Holder for reflection information generated from Rpc/Protos/setting.proto</summary>
+        </member>
+        <member name="P:ArticleService.Rpc.Protos.SettingReflection.Descriptor">
+            <summary>File descriptor for Rpc/Protos/setting.proto</summary>
+        </member>
+        <member name="F:ArticleService.Rpc.Protos.Setting.IdFieldNumber">
+            <summary>Field number for the "id" field.</summary>
+        </member>
+        <member name="F:ArticleService.Rpc.Protos.Setting.OptionFieldNumber">
+            <summary>Field number for the "option" field.</summary>
+        </member>
+        <member name="F:ArticleService.Rpc.Protos.Setting.ValueFieldNumber">
+            <summary>Field number for the "value" field.</summary>
+        </member>
+        <member name="F:ArticleService.Rpc.Protos.SettingList.SettingsFieldNumber">
+            <summary>Field number for the "settings" field.</summary>
+        </member>
+        <member name="P:ArticleService.Rpc.Protos.gSetting.Descriptor">
+            <summary>Service descriptor</summary>
+        </member>
+        <member name="T:ArticleService.Rpc.Protos.gSetting.gSettingClient">
+            <summary>Client for gSetting</summary>
+        </member>
+        <member name="M:ArticleService.Rpc.Protos.gSetting.gSettingClient.#ctor(Grpc.Core.ChannelBase)">
+            <summary>Creates a new client for gSetting</summary>
+            <param name="channel">The channel to use to make remote calls.</param>
+        </member>
+        <member name="M:ArticleService.Rpc.Protos.gSetting.gSettingClient.#ctor(Grpc.Core.CallInvoker)">
+            <summary>Creates a new client for gSetting that uses a custom <c>CallInvoker</c>.</summary>
+            <param name="callInvoker">The callInvoker to use to make remote calls.</param>
+        </member>
+        <member name="M:ArticleService.Rpc.Protos.gSetting.gSettingClient.#ctor">
+            <summary>Protected parameterless constructor to allow creation of test doubles.</summary>
+        </member>
+        <member name="M:ArticleService.Rpc.Protos.gSetting.gSettingClient.#ctor(Grpc.Core.ClientBase.ClientBaseConfiguration)">
+            <summary>Protected constructor to allow creation of configured clients.</summary>
+            <param name="configuration">The client configuration.</param>
+        </member>
+        <member name="M:ArticleService.Rpc.Protos.gSetting.gSettingClient.GetGlobalSetting(Google.Protobuf.WellKnownTypes.Empty,Grpc.Core.Metadata,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
+             <summary>
+            获取所有设置项
+             </summary>
+             <param name="request">The request to send to the server.</param>
+             <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
+             <param name="deadline">An optional deadline for the call. The call will be cancelled if deadline is hit.</param>
+             <param name="cancellationToken">An optional token for canceling the call.</param>
+             <returns>The response received from the server.</returns>
+        </member>
+        <member name="M:ArticleService.Rpc.Protos.gSetting.gSettingClient.GetGlobalSetting(Google.Protobuf.WellKnownTypes.Empty,Grpc.Core.CallOptions)">
+             <summary>
+            获取所有设置项
+             </summary>
+             <param name="request">The request to send to the server.</param>
+             <param name="options">The options for the call.</param>
+             <returns>The response received from the server.</returns>
+        </member>
+        <member name="M:ArticleService.Rpc.Protos.gSetting.gSettingClient.GetGlobalSettingAsync(Google.Protobuf.WellKnownTypes.Empty,Grpc.Core.Metadata,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
+             <summary>
+            获取所有设置项
+             </summary>
+             <param name="request">The request to send to the server.</param>
+             <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
+             <param name="deadline">An optional deadline for the call. The call will be cancelled if deadline is hit.</param>
+             <param name="cancellationToken">An optional token for canceling the call.</param>
+             <returns>The call object.</returns>
+        </member>
+        <member name="M:ArticleService.Rpc.Protos.gSetting.gSettingClient.GetGlobalSettingAsync(Google.Protobuf.WellKnownTypes.Empty,Grpc.Core.CallOptions)">
+             <summary>
+            获取所有设置项
+             </summary>
+             <param name="request">The request to send to the server.</param>
+             <param name="options">The options for the call.</param>
+             <returns>The call object.</returns>
+        </member>
+        <member name="M:ArticleService.Rpc.Protos.gSetting.gSettingClient.NewInstance(Grpc.Core.ClientBase.ClientBaseConfiguration)">
+            <summary>Creates a new instance of client from given <c>ClientBaseConfiguration</c>.</summary>
+        </member>
+        <member name="T:ArticleService.Rpc.Protos.ArticleReflection">
+            <summary>Holder for reflection information generated from Rpc/Protos/article.proto</summary>
+        </member>
+        <member name="P:ArticleService.Rpc.Protos.ArticleReflection.Descriptor">
+            <summary>File descriptor for Rpc/Protos/article.proto</summary>
+        </member>
+        <member name="F:ArticleService.Rpc.Protos.ArticleId.IdFieldNumber">
+            <summary>Field number for the "Id" field.</summary>
+        </member>
+        <member name="F:ArticleService.Rpc.Protos.ArticleInfo.IdFieldNumber">
+            <summary>Field number for the "Id" field.</summary>
+        </member>
+        <member name="F:ArticleService.Rpc.Protos.ArticleInfo.TitleFieldNumber">
+            <summary>Field number for the "Title" field.</summary>
+        </member>
+        <member name="F:ArticleService.Rpc.Protos.ArticleInfo.StatusFieldNumber">
+            <summary>Field number for the "Status" field.</summary>
+        </member>
+        <member name="F:ArticleService.Rpc.Protos.ArticleInfo.CommentStatusFieldNumber">
+            <summary>Field number for the "CommentStatus" field.</summary>
+        </member>
+        <member name="F:ArticleService.Rpc.Protos.ArticleInfo.IsLockFieldNumber">
+            <summary>Field number for the "IsLock" field.</summary>
+        </member>
+        <member name="F:ArticleService.Rpc.Protos.ArticleInfo.UserIdFieldNumber">
+            <summary>Field number for the "UserId" field.</summary>
+        </member>
+        <member name="F:ArticleService.Rpc.Protos.ArticleInfoList.InfosFieldNumber">
+            <summary>Field number for the "infos" field.</summary>
+        </member>
+        <member name="P:ArticleService.Rpc.Protos.gArticle.Descriptor">
+            <summary>Service descriptor</summary>
+        </member>
+        <member name="T:ArticleService.Rpc.Protos.gArticle.gArticleClient">
+            <summary>Client for gArticle</summary>
+        </member>
+        <member name="M:ArticleService.Rpc.Protos.gArticle.gArticleClient.#ctor(Grpc.Core.ChannelBase)">
+            <summary>Creates a new client for gArticle</summary>
+            <param name="channel">The channel to use to make remote calls.</param>
+        </member>
+        <member name="M:ArticleService.Rpc.Protos.gArticle.gArticleClient.#ctor(Grpc.Core.CallInvoker)">
+            <summary>Creates a new client for gArticle that uses a custom <c>CallInvoker</c>.</summary>
+            <param name="callInvoker">The callInvoker to use to make remote calls.</param>
+        </member>
+        <member name="M:ArticleService.Rpc.Protos.gArticle.gArticleClient.#ctor">
+            <summary>Protected parameterless constructor to allow creation of test doubles.</summary>
+        </member>
+        <member name="M:ArticleService.Rpc.Protos.gArticle.gArticleClient.#ctor(Grpc.Core.ClientBase.ClientBaseConfiguration)">
+            <summary>Protected constructor to allow creation of configured clients.</summary>
+            <param name="configuration">The client configuration.</param>
+        </member>
+        <member name="M:ArticleService.Rpc.Protos.gArticle.gArticleClient.GetArticleInfo(ArticleService.Rpc.Protos.ArticleId,Grpc.Core.Metadata,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
+             <summary>
+            根据ID获取文章信息
+             </summary>
+             <param name="request">The request to send to the server.</param>
+             <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
+             <param name="deadline">An optional deadline for the call. The call will be cancelled if deadline is hit.</param>
+             <param name="cancellationToken">An optional token for canceling the call.</param>
+             <returns>The response received from the server.</returns>
+        </member>
+        <member name="M:ArticleService.Rpc.Protos.gArticle.gArticleClient.GetArticleInfo(ArticleService.Rpc.Protos.ArticleId,Grpc.Core.CallOptions)">
+             <summary>
+            根据ID获取文章信息
+             </summary>
+             <param name="request">The request to send to the server.</param>
+             <param name="options">The options for the call.</param>
+             <returns>The response received from the server.</returns>
+        </member>
+        <member name="M:ArticleService.Rpc.Protos.gArticle.gArticleClient.GetArticleInfoAsync(ArticleService.Rpc.Protos.ArticleId,Grpc.Core.Metadata,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
+             <summary>
+            根据ID获取文章信息
+             </summary>
+             <param name="request">The request to send to the server.</param>
+             <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
+             <param name="deadline">An optional deadline for the call. The call will be cancelled if deadline is hit.</param>
+             <param name="cancellationToken">An optional token for canceling the call.</param>
+             <returns>The call object.</returns>
+        </member>
+        <member name="M:ArticleService.Rpc.Protos.gArticle.gArticleClient.GetArticleInfoAsync(ArticleService.Rpc.Protos.ArticleId,Grpc.Core.CallOptions)">
+             <summary>
+            根据ID获取文章信息
+             </summary>
+             <param name="request">The request to send to the server.</param>
+             <param name="options">The options for the call.</param>
+             <returns>The call object.</returns>
+        </member>
+        <member name="M:ArticleService.Rpc.Protos.gArticle.gArticleClient.GetArticleList(Google.Protobuf.WellKnownTypes.Empty,Grpc.Core.Metadata,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
+             <summary>
+            获取文章列表
+             </summary>
+             <param name="request">The request to send to the server.</param>
+             <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
+             <param name="deadline">An optional deadline for the call. The call will be cancelled if deadline is hit.</param>
+             <param name="cancellationToken">An optional token for canceling the call.</param>
+             <returns>The response received from the server.</returns>
+        </member>
+        <member name="M:ArticleService.Rpc.Protos.gArticle.gArticleClient.GetArticleList(Google.Protobuf.WellKnownTypes.Empty,Grpc.Core.CallOptions)">
+             <summary>
+            获取文章列表
+             </summary>
+             <param name="request">The request to send to the server.</param>
+             <param name="options">The options for the call.</param>
+             <returns>The response received from the server.</returns>
+        </member>
+        <member name="M:ArticleService.Rpc.Protos.gArticle.gArticleClient.GetArticleListAsync(Google.Protobuf.WellKnownTypes.Empty,Grpc.Core.Metadata,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
+             <summary>
+            获取文章列表
+             </summary>
+             <param name="request">The request to send to the server.</param>
+             <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
+             <param name="deadline">An optional deadline for the call. The call will be cancelled if deadline is hit.</param>
+             <param name="cancellationToken">An optional token for canceling the call.</param>
+             <returns>The call object.</returns>
+        </member>
+        <member name="M:ArticleService.Rpc.Protos.gArticle.gArticleClient.GetArticleListAsync(Google.Protobuf.WellKnownTypes.Empty,Grpc.Core.CallOptions)">
+             <summary>
+            获取文章列表
+             </summary>
+             <param name="request">The request to send to the server.</param>
+             <param name="options">The options for the call.</param>
+             <returns>The call object.</returns>
+        </member>
+        <member name="M:ArticleService.Rpc.Protos.gArticle.gArticleClient.NewInstance(Grpc.Core.ClientBase.ClientBaseConfiguration)">
+            <summary>Creates a new instance of client from given <c>ClientBaseConfiguration</c>.</summary>
+        </member>
+    </members>
+</doc>

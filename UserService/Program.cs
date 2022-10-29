@@ -15,17 +15,12 @@ using Microsoft.Extensions.FileProviders;
 using UserService.Domain.config;
 using StackExchange.Redis;
 using IdentityService.Rpc.Protos;
-using System.Security.Cryptography.X509Certificates;
 using System.Net;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
 
 var builder = WebApplication.CreateBuilder(args);
 var useSkywalking = builder.Configuration.GetValue<bool>("useSkywalking");
 var useApollo = builder.Configuration.GetValue<bool>("useApollo");
 var port = builder.Configuration.GetValue<int>("port");
-var httpsCertPath = builder.Configuration.GetValue<string>("httpsCertPath");
-var httpsCertPwd = builder.Configuration.GetValue<string>("httpsCertPwd");
-var isHttps = !string.IsNullOrWhiteSpace(httpsCertPath);
 
 if (useSkywalking)
 {
@@ -43,42 +38,9 @@ if (useApollo)
     });
 }
 
-//配置https证书
-if (isHttps)
-{
-    var cert = new X509Certificate2(httpsCertPath, httpsCertPwd);
-    builder.WebHost.UseKestrel(option =>
-    {
-        //Grpc专用通道
-        option.Listen(IPAddress.Any, port + 10000, option =>
-        {
-            option.Protocols = HttpProtocols.Http2;
-            option.UseHttps(option =>
-            {
-                option.ServerCertificate = cert;
-            });
-        });
-        option.Listen(IPAddress.Any, port, option =>
-        {
-            option.UseHttps(option =>
-            {
-                option.ServerCertificate = cert;
-            });
-        });
-    });
-}
-else
-{
-    builder.WebHost.UseKestrel(option =>
-    {
-        //Grpc专用通道
-        option.Listen(IPAddress.Any, port + 10000, option =>
-        {
-            option.Protocols = HttpProtocols.Http2;
-        });
-        option.Listen(IPAddress.Any, port);
-    });
-}
+//配置端口
+builder.WebHost.UseUrls($"https://*:{port}");
+
 
 // Add services to the container.
 builder.Services.AddControllers();
@@ -89,6 +51,7 @@ builder.Services.AddSwaggerGen(options =>
     //配置接口注释
     var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
     options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
+    
 });
 
 //邮件配置注册
@@ -118,7 +81,6 @@ builder.Services.AddSingleton<IAuthorizationHandler, RBACRequirementHandler>();
 // 数据库连接池注册
 builder.Services.AddPooledDbContextFactory<UserDBContext>(option =>
 {
-    //option.UseSqlServer(builder.Configuration.GetValue<string>("SqlServer"));
     option.UseMySql(builder.Configuration.GetValue<string>("MySQL"),new MySqlServerVersion(new Version(8,0,27)));
 });
 
@@ -127,12 +89,11 @@ builder.Services.AddAuthentication("Bearer")
 .AddJwtBearer("Bearer", options =>
 {
     options.Authority = ServiceUrl.GetServiceUrlByName("IdentityService",
-        builder.Configuration.GetSection("Consul").Get<ConsulServiceOptions>().ConsulAddress,false);
+        builder.Configuration.GetSection("Consul").Get<ConsulServiceOptions>().ConsulAddress);
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateAudience = false
     };
-    options.RequireHttpsMetadata = isHttps;
 });
 
 //gRPC注册
@@ -156,10 +117,13 @@ app.UseConsul(builder.Configuration.GetSection("Consul").Get<ConsulServiceOption
 app.MapGrpcService<GUserService>();
 
 //节点注册
-app.Lifetime.ApplicationStarted.Register(async () =>
+if (builder.Environment.IsDevelopment())
 {
-    await app.UsePermissionRegistrar<Program>(builder.Configuration.GetSection("Consul").Get<ConsulServiceOptions>().ConsulAddress);
-});
+    app.Lifetime.ApplicationStarted.Register(async () =>
+    {
+        await app.UsePermissionRegistrar<Program>(builder.Configuration.GetSection("Consul").Get<ConsulServiceOptions>().ConsulAddress);
+    });
+}
 
 //开启静态文件访问
 app.UseStaticFiles(new StaticFileOptions()
@@ -177,10 +141,7 @@ app.UseStaticFiles(new StaticFileOptions()
 app.UseSwagger();
 app.UseSwaggerUI();
 
-if (isHttps)
-{
-    app.UseHttpsRedirection();
-}
+app.UseHttpsRedirection();
 
 //启用授权鉴权
 app.UseAuthentication();

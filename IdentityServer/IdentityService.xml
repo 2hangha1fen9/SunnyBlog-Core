@@ -1,0 +1,872 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>IdentityService</name>
+    </assembly>
+    <members>
+        <member name="F:Service.IdentityService.App.PermissionApp.contextFactory">
+            <summary>
+            数据库上下文
+            </summary>
+        </member>
+        <member name="M:Service.IdentityService.App.PermissionApp.AddPermission(IdentityService.Request.AddPermissionReq)">
+            <summary>
+            添加权限
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:Service.IdentityService.App.PermissionApp.ChangePermission(IdentityService.Request.ModifyPermissionReq)">
+            <summary>
+            修改权限
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:Service.IdentityService.App.PermissionApp.DelPermission(System.Collections.Generic.List{IdentityService.Request.DelPermissionReq})">
+            <summary>
+            删除权限
+            </summary>
+            <param name="requests"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Service.IdentityService.App.PermissionApp.GetPermission(System.String,System.String)">
+            <summary>
+            根据用户账号密码获取权限
+            </summary>
+            <param name="user"></param>
+            <returns>第一个元素用户ID,第二元素权限列表</returns>
+        </member>
+        <member name="M:Service.IdentityService.App.PermissionApp.GetPermission(System.String)">
+            <summary>
+            根据账户名获取用户权限
+            </summary>
+            <param name="username"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Service.IdentityService.App.PermissionApp.GetPermissionById(System.Int32)">
+            <summary>
+            根据ID获取权限详情
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Service.IdentityService.App.PermissionApp.GetPermissionsByRoleId(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            根据角色查询权限信息
+            </summary>
+        </member>
+        <member name="M:Service.IdentityService.App.PermissionApp.GetPermissionsByUserId(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            根据用户Id获取权限
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:Service.IdentityService.App.PermissionApp.ListPermission(System.Collections.Generic.List{Infrastructure.SearchCondition},System.Int32,System.Int32)">
+            <summary>
+            获取权限列表
+            </summary>
+            <param name="condidtion"></param>
+            <returns></returns>
+        </member>
+        <member name="T:Service.IdentityService.CustomResourceOwnerPasswordValidator">
+            <summary>
+            自定义令牌信息
+            </summary>
+        </member>
+        <member name="M:IdentityService.App.RelationApp.RolePermissionBind(IdentityService.Request.RolePermissionBindReq)">
+            <summary>
+            角色权限绑定
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:IdentityService.App.RelationApp.UserRoleBind(IdentityService.Request.UserRoleBindReq)">
+            <summary>
+            用户角色绑定
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:IdentityService.App.RoleApp.AddRole(IdentityService.Request.AddRoleReq)">
+            <summary>
+            添加角色
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+            <exception cref="T:System.NotImplementedException"></exception>
+        </member>
+        <member name="M:IdentityService.App.RoleApp.ChangeRole(IdentityService.Request.ModifyRoleReq)">
+            <summary>
+            修改角色
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:IdentityService.App.RoleApp.DelRole(System.Collections.Generic.List{IdentityService.Request.DelRoleReq})">
+            <summary>
+            删除角色
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:IdentityService.App.RoleApp.GetRoleById(System.Int32)">
+            <summary>
+            根据ID获取角色信息
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:IdentityService.App.RoleApp.GetRoleByPermissionId(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            根据权限ID获取角色信息
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+            <exception cref="T:System.NotImplementedException"></exception>
+        </member>
+        <member name="M:IdentityService.App.RoleApp.GetRoleByUserId(System.Int32,System.Int32,System.Int32)">
+            <summary>
+            根据用户ID获取角色信息
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:IdentityService.App.RoleApp.ListRole(System.Collections.Generic.List{Infrastructure.SearchCondition},System.Int32,System.Int32)">
+            <summary>
+            获取角色列表
+            </summary>
+            <param name="condidtion"></param>
+            <returns></returns>
+        </member>
+        <member name="M:IdentityService.App.StatisticsApp.GetPermissionCount">
+            <summary>
+            获取所有权限统计
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:IdentityService.Controllers.HealthCheckController.Get">
+            <summary>
+            健康检查
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:IdentityService.Controllers.PermissionController.List(System.Nullable{System.Int32},System.Nullable{System.Int32},System.String)">
+            <summary>
+            列出权限信息
+            </summary>
+            <param name="pageIndex"></param>
+            <param name="pageSize"></param>
+            <param name="condition"></param>
+            <returns></returns>
+        </member>
+        <member name="M:IdentityService.Controllers.PermissionController.Get(System.Int32)">
+            <summary>
+            根据ID查询权限详情
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:IdentityService.Controllers.PermissionController.GetByUser(System.Int32,System.Nullable{System.Int32},System.Nullable{System.Int32})">
+            <summary>
+            根据用户ID列出权限
+            </summary>
+            <param name="id"></param>
+            <param name="pageIndex"></param>
+            <param name="pageSize"></param>
+            <returns></returns>
+        </member>
+        <member name="M:IdentityService.Controllers.PermissionController.GetByRole(System.Int32,System.Nullable{System.Int32},System.Nullable{System.Int32})">
+            <summary>
+            根据角色ID列出权限
+            </summary>
+            <param name="id"></param>
+            <param name="pageIndex"></param>
+            <param name="pageSize"></param>
+            <returns></returns>
+        </member>
+        <member name="M:IdentityService.Controllers.PermissionController.Add(IdentityService.Request.AddPermissionReq)">
+            <summary>
+            添加权限
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:IdentityService.Controllers.PermissionController.Delete(System.Collections.Generic.List{IdentityService.Request.DelPermissionReq})">
+            <summary>
+            删除权限
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:IdentityService.Controllers.PermissionController.Modify(IdentityService.Request.ModifyPermissionReq)">
+            <summary>
+            修改权限
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:IdentityService.Controllers.RelationController.RolePermissionBind(IdentityService.Request.RolePermissionBindReq)">
+            <summary>
+            角色权限绑定
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:IdentityService.Controllers.RelationController.UserRoleBind(IdentityService.Request.UserRoleBindReq)">
+            <summary>
+            用户角色绑定
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:IdentityService.Controllers.RoleController.List(System.Nullable{System.Int32},System.Nullable{System.Int32},System.String)">
+            <summary>
+            列出角色信息
+            </summary>
+            <param name="pageIndex"></param>
+            <param name="pageSize"></param>
+            <param name="condition"></param>
+            <returns></returns>
+        </member>
+        <member name="M:IdentityService.Controllers.RoleController.Get(System.Int32)">
+            <summary>
+            根据ID查询角色信息
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:IdentityService.Controllers.RoleController.GetByUser(System.Int32,System.Nullable{System.Int32},System.Nullable{System.Int32})">
+            <summary>
+            根据用户ID查询角色信息
+            </summary>
+            <param name="id"></param>
+            <param name="pageIndex"></param>
+            <param name="pageSize"></param>
+            <returns></returns>
+        </member>
+        <member name="M:IdentityService.Controllers.RoleController.GetByPermission(System.Int32,System.Nullable{System.Int32},System.Nullable{System.Int32})">
+            <summary>
+            根据权限ID查询角色信息
+            </summary>
+            <param name="id"></param>
+            <param name="pageIndex"></param>
+            <param name="pageSize"></param>
+            <returns></returns>
+        </member>
+        <member name="M:IdentityService.Controllers.RoleController.Add(IdentityService.Request.AddRoleReq)">
+            <summary>
+            添加角色
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:IdentityService.Controllers.RoleController.Delete(System.Collections.Generic.List{IdentityService.Request.DelRoleReq})">
+            <summary>
+            删除角色
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:IdentityService.Controllers.RoleController.Modify(IdentityService.Request.ModifyRoleReq)">
+            <summary>
+            修改角色
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:IdentityService.Controllers.StatisticsController.Count">
+            <summary>
+            获取所有权限统计
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="P:IdentityService.Domain.Permission.Status">
+            <summary>
+            1启用-1禁用
+            </summary>
+        </member>
+        <member name="P:IdentityService.Domain.Permission.IsPublic">
+            <summary>
+            1匿名权限-1私有权限
+            </summary>
+        </member>
+        <member name="P:IdentityService.Domain.Role.Status">
+            <summary>
+            -1禁用1启用
+            </summary>
+        </member>
+        <member name="P:IdentityService.Domain.Role.IsDefault">
+            <summary>
+            1默认-1不默认
+            </summary>
+        </member>
+        <member name="P:IdentityService.Request.AddPermissionReq.Service">
+            <summary>
+            服务名称
+            </summary>
+        </member>
+        <member name="P:IdentityService.Request.AddPermissionReq.Controller">
+            <summary>
+            控制器名称
+            </summary>
+        </member>
+        <member name="P:IdentityService.Request.AddPermissionReq.Action">
+            <summary>
+            操作
+            </summary>
+        </member>
+        <member name="P:IdentityService.Request.AddPermissionReq.Description">
+            <summary>
+            描述
+            </summary>
+        </member>
+        <member name="P:IdentityService.Request.AddPermissionReq.Status">
+            <summary>
+            权限状态
+            </summary>
+        </member>
+        <member name="P:IdentityService.Request.AddPermissionReq.IsPublic">
+            <summary>
+            是否为公共权限
+            </summary>
+        </member>
+        <member name="P:IdentityService.Request.AddRoleReq.Name">
+            <summary>
+            角色名
+            </summary>
+        </member>
+        <member name="P:IdentityService.Request.AddRoleReq.Status">
+            <summary>
+            状态
+            </summary>
+        </member>
+        <member name="P:IdentityService.Request.AddRoleReq.IsDefault">
+            <summary>
+            是否为默认角色
+            </summary>
+        </member>
+        <member name="P:IdentityService.Request.DelPermissionReq.Id">
+            <summary>
+            待删除的ID
+            </summary>
+        </member>
+        <member name="P:IdentityService.Request.DelRoleReq.Id">
+            <summary>
+            角色ID
+            </summary>
+        </member>
+        <member name="P:IdentityService.Request.ModifyPermissionReq.Id">
+            <summary>
+            权限ID
+            </summary>
+        </member>
+        <member name="P:IdentityService.Request.ModifyPermissionReq.Service">
+            <summary>
+            服务名称
+            </summary>
+        </member>
+        <member name="P:IdentityService.Request.ModifyPermissionReq.Controller">
+            <summary>
+            控制器名称
+            </summary>
+        </member>
+        <member name="P:IdentityService.Request.ModifyPermissionReq.Action">
+            <summary>
+            操作
+            </summary>
+        </member>
+        <member name="P:IdentityService.Request.ModifyPermissionReq.Description">
+            <summary>
+            描述
+            </summary>
+        </member>
+        <member name="P:IdentityService.Request.ModifyPermissionReq.Status">
+            <summary>
+            权限状态
+            </summary>
+        </member>
+        <member name="P:IdentityService.Request.ModifyPermissionReq.IsPublic">
+            <summary>
+            是否为公共权限
+            </summary>
+        </member>
+        <member name="P:IdentityService.Request.ModifyRoleReq.Id">
+            <summary>
+            角色ID
+            </summary>
+        </member>
+        <member name="P:IdentityService.Request.ModifyRoleReq.Name">
+            <summary>
+            角色名
+            </summary>
+        </member>
+        <member name="P:IdentityService.Request.ModifyRoleReq.Status">
+            <summary>
+            状态
+            </summary>
+        </member>
+        <member name="P:IdentityService.Request.ModifyRoleReq.IsDefault">
+            <summary>
+            是否为默认角色
+            </summary>
+        </member>
+        <member name="P:IdentityService.Response.PermissionCountStatistics.PermissionCount">
+            <summary>
+            权限数量
+            </summary>
+        </member>
+        <member name="P:IdentityService.Response.PermissionCountStatistics.RoleCount">
+            <summary>
+            角色数量
+            </summary>
+        </member>
+        <member name="P:IdentityService.Response.PermissionCountStatistics.EnablePermissionCount">
+            <summary>
+            已启用的权限数量
+            </summary>
+        </member>
+        <member name="P:IdentityService.Response.PermissionCountStatistics.DisablePermissionCount">
+            <summary>
+            已禁用的权限数量
+            </summary>
+        </member>
+        <member name="P:IdentityService.Response.PermissionCountStatistics.EnableRoleCount">
+            <summary>
+            已启用的角色数量
+            </summary>
+        </member>
+        <member name="P:IdentityService.Response.PermissionCountStatistics.DisableRoleCount">
+            <summary>
+            已禁用的角色数量
+            </summary>
+        </member>
+        <member name="T:IdentityService.Response.PermissionView">
+            <summary>
+            权限列表
+            </summary>
+        </member>
+        <member name="P:IdentityService.Response.PermissionView.Id">
+            <summary>
+            权限ID
+            </summary>
+        </member>
+        <member name="P:IdentityService.Response.PermissionView.Service">
+            <summary>
+            服务名
+            </summary>
+        </member>
+        <member name="P:IdentityService.Response.PermissionView.Controller">
+            <summary>
+            控制器
+            </summary>
+        </member>
+        <member name="P:IdentityService.Response.PermissionView.Action">
+            <summary>
+            操作
+            </summary>
+        </member>
+        <member name="P:IdentityService.Response.PermissionView.Description">
+            <summary>
+            描述
+            </summary>
+        </member>
+        <member name="P:IdentityService.Response.PermissionView.UpdateTime">
+            <summary>
+            更新时间
+            </summary>
+        </member>
+        <member name="P:IdentityService.Response.PermissionView.CreateTime">
+            <summary>
+            创建时间
+            </summary>
+        </member>
+        <member name="P:IdentityService.Response.PermissionView.Status">
+            <summary>
+            权限状态
+            </summary>
+        </member>
+        <member name="P:IdentityService.Response.PermissionView.IsPublic">
+            <summary>
+            是否为公共权限
+            </summary>
+        </member>
+        <member name="P:IdentityService.Response.RoleView.Id">
+            <summary>
+            角色ID
+            </summary>
+        </member>
+        <member name="P:IdentityService.Response.RoleView.Name">
+            <summary>
+            角色名
+            </summary>
+        </member>
+        <member name="P:IdentityService.Response.RoleView.Status">
+            <summary>
+            角色状态
+            </summary>
+        </member>
+        <member name="P:IdentityService.Response.RoleView.IsDefault">
+            <summary>
+            是否为默认角色
+            </summary>
+        </member>
+        <member name="P:IdentityService.Response.RoleView.CreateTime">
+            <summary>
+            创建时间
+            </summary>
+        </member>
+        <member name="P:IdentityService.Response.RoleView.UpdateTime">
+            <summary>
+            更新时间
+            </summary>
+        </member>
+        <member name="T:IdentityService.Rpc.Service.GEndpointService">
+            <summary>
+            注册服务api端点
+            </summary>
+        </member>
+        <member name="T:IdentityService.Rpc.Protos.UserReflection">
+            <summary>Holder for reflection information generated from Rpc/Protos/user.proto</summary>
+        </member>
+        <member name="P:IdentityService.Rpc.Protos.UserReflection.Descriptor">
+            <summary>File descriptor for Rpc/Protos/user.proto</summary>
+        </member>
+        <member name="T:IdentityService.Rpc.Protos.UserRequest">
+             <summary>
+            定义请求对象
+             </summary>
+        </member>
+        <member name="F:IdentityService.Rpc.Protos.UserRequest.UsernameFieldNumber">
+            <summary>Field number for the "Username" field.</summary>
+        </member>
+        <member name="F:IdentityService.Rpc.Protos.UserRequest.PasswordFieldNumber">
+            <summary>Field number for the "Password" field.</summary>
+        </member>
+        <member name="T:IdentityService.Rpc.Protos.UserNameRequest">
+             <summary>
+            定义请求对象
+             </summary>
+        </member>
+        <member name="F:IdentityService.Rpc.Protos.UserNameRequest.UsernameFieldNumber">
+            <summary>Field number for the "Username" field.</summary>
+        </member>
+        <member name="F:IdentityService.Rpc.Protos.UserInfoRequest.IdFieldNumber">
+            <summary>Field number for the "Id" field.</summary>
+        </member>
+        <member name="F:IdentityService.Rpc.Protos.UserInfoResponse.IdFieldNumber">
+            <summary>Field number for the "Id" field.</summary>
+        </member>
+        <member name="F:IdentityService.Rpc.Protos.UserInfoResponse.UsernameFieldNumber">
+            <summary>Field number for the "Username" field.</summary>
+        </member>
+        <member name="F:IdentityService.Rpc.Protos.UserInfoResponse.NickFieldNumber">
+            <summary>Field number for the "Nick" field.</summary>
+        </member>
+        <member name="F:IdentityService.Rpc.Protos.UserInfoResponse.PhotoFieldNumber">
+            <summary>Field number for the "Photo" field.</summary>
+        </member>
+        <member name="F:IdentityService.Rpc.Protos.UserInfoListReqponse.UserInfoFieldNumber">
+            <summary>Field number for the "UserInfo" field.</summary>
+        </member>
+        <member name="T:IdentityService.Rpc.Protos.gUser">
+             <summary>
+            定义服务
+             </summary>
+        </member>
+        <member name="P:IdentityService.Rpc.Protos.gUser.Descriptor">
+            <summary>Service descriptor</summary>
+        </member>
+        <member name="T:IdentityService.Rpc.Protos.gUser.gUserClient">
+            <summary>Client for gUser</summary>
+        </member>
+        <member name="M:IdentityService.Rpc.Protos.gUser.gUserClient.#ctor(Grpc.Core.ChannelBase)">
+            <summary>Creates a new client for gUser</summary>
+            <param name="channel">The channel to use to make remote calls.</param>
+        </member>
+        <member name="M:IdentityService.Rpc.Protos.gUser.gUserClient.#ctor(Grpc.Core.CallInvoker)">
+            <summary>Creates a new client for gUser that uses a custom <c>CallInvoker</c>.</summary>
+            <param name="callInvoker">The callInvoker to use to make remote calls.</param>
+        </member>
+        <member name="M:IdentityService.Rpc.Protos.gUser.gUserClient.#ctor">
+            <summary>Protected parameterless constructor to allow creation of test doubles.</summary>
+        </member>
+        <member name="M:IdentityService.Rpc.Protos.gUser.gUserClient.#ctor(Grpc.Core.ClientBase.ClientBaseConfiguration)">
+            <summary>Protected constructor to allow creation of configured clients.</summary>
+            <param name="configuration">The client configuration.</param>
+        </member>
+        <member name="M:IdentityService.Rpc.Protos.gUser.gUserClient.GetUserByPassword(IdentityService.Rpc.Protos.UserRequest,Grpc.Core.Metadata,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
+             <summary>
+            根据账号密码查询用户
+             </summary>
+             <param name="request">The request to send to the server.</param>
+             <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
+             <param name="deadline">An optional deadline for the call. The call will be cancelled if deadline is hit.</param>
+             <param name="cancellationToken">An optional token for canceling the call.</param>
+             <returns>The response received from the server.</returns>
+        </member>
+        <member name="M:IdentityService.Rpc.Protos.gUser.gUserClient.GetUserByPassword(IdentityService.Rpc.Protos.UserRequest,Grpc.Core.CallOptions)">
+             <summary>
+            根据账号密码查询用户
+             </summary>
+             <param name="request">The request to send to the server.</param>
+             <param name="options">The options for the call.</param>
+             <returns>The response received from the server.</returns>
+        </member>
+        <member name="M:IdentityService.Rpc.Protos.gUser.gUserClient.GetUserByPasswordAsync(IdentityService.Rpc.Protos.UserRequest,Grpc.Core.Metadata,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
+             <summary>
+            根据账号密码查询用户
+             </summary>
+             <param name="request">The request to send to the server.</param>
+             <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
+             <param name="deadline">An optional deadline for the call. The call will be cancelled if deadline is hit.</param>
+             <param name="cancellationToken">An optional token for canceling the call.</param>
+             <returns>The call object.</returns>
+        </member>
+        <member name="M:IdentityService.Rpc.Protos.gUser.gUserClient.GetUserByPasswordAsync(IdentityService.Rpc.Protos.UserRequest,Grpc.Core.CallOptions)">
+             <summary>
+            根据账号密码查询用户
+             </summary>
+             <param name="request">The request to send to the server.</param>
+             <param name="options">The options for the call.</param>
+             <returns>The call object.</returns>
+        </member>
+        <member name="M:IdentityService.Rpc.Protos.gUser.gUserClient.GetUserByUsername(IdentityService.Rpc.Protos.UserNameRequest,Grpc.Core.Metadata,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
+             <summary>
+            根据账号查询用户
+             </summary>
+             <param name="request">The request to send to the server.</param>
+             <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
+             <param name="deadline">An optional deadline for the call. The call will be cancelled if deadline is hit.</param>
+             <param name="cancellationToken">An optional token for canceling the call.</param>
+             <returns>The response received from the server.</returns>
+        </member>
+        <member name="M:IdentityService.Rpc.Protos.gUser.gUserClient.GetUserByUsername(IdentityService.Rpc.Protos.UserNameRequest,Grpc.Core.CallOptions)">
+             <summary>
+            根据账号查询用户
+             </summary>
+             <param name="request">The request to send to the server.</param>
+             <param name="options">The options for the call.</param>
+             <returns>The response received from the server.</returns>
+        </member>
+        <member name="M:IdentityService.Rpc.Protos.gUser.gUserClient.GetUserByUsernameAsync(IdentityService.Rpc.Protos.UserNameRequest,Grpc.Core.Metadata,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
+             <summary>
+            根据账号查询用户
+             </summary>
+             <param name="request">The request to send to the server.</param>
+             <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
+             <param name="deadline">An optional deadline for the call. The call will be cancelled if deadline is hit.</param>
+             <param name="cancellationToken">An optional token for canceling the call.</param>
+             <returns>The call object.</returns>
+        </member>
+        <member name="M:IdentityService.Rpc.Protos.gUser.gUserClient.GetUserByUsernameAsync(IdentityService.Rpc.Protos.UserNameRequest,Grpc.Core.CallOptions)">
+             <summary>
+            根据账号查询用户
+             </summary>
+             <param name="request">The request to send to the server.</param>
+             <param name="options">The options for the call.</param>
+             <returns>The call object.</returns>
+        </member>
+        <member name="M:IdentityService.Rpc.Protos.gUser.gUserClient.GetUserByID(IdentityService.Rpc.Protos.UserInfoRequest,Grpc.Core.Metadata,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
+             <summary>
+            根据ID查询用户信息
+             </summary>
+             <param name="request">The request to send to the server.</param>
+             <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
+             <param name="deadline">An optional deadline for the call. The call will be cancelled if deadline is hit.</param>
+             <param name="cancellationToken">An optional token for canceling the call.</param>
+             <returns>The response received from the server.</returns>
+        </member>
+        <member name="M:IdentityService.Rpc.Protos.gUser.gUserClient.GetUserByID(IdentityService.Rpc.Protos.UserInfoRequest,Grpc.Core.CallOptions)">
+             <summary>
+            根据ID查询用户信息
+             </summary>
+             <param name="request">The request to send to the server.</param>
+             <param name="options">The options for the call.</param>
+             <returns>The response received from the server.</returns>
+        </member>
+        <member name="M:IdentityService.Rpc.Protos.gUser.gUserClient.GetUserByIDAsync(IdentityService.Rpc.Protos.UserInfoRequest,Grpc.Core.Metadata,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
+             <summary>
+            根据ID查询用户信息
+             </summary>
+             <param name="request">The request to send to the server.</param>
+             <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
+             <param name="deadline">An optional deadline for the call. The call will be cancelled if deadline is hit.</param>
+             <param name="cancellationToken">An optional token for canceling the call.</param>
+             <returns>The call object.</returns>
+        </member>
+        <member name="M:IdentityService.Rpc.Protos.gUser.gUserClient.GetUserByIDAsync(IdentityService.Rpc.Protos.UserInfoRequest,Grpc.Core.CallOptions)">
+             <summary>
+            根据ID查询用户信息
+             </summary>
+             <param name="request">The request to send to the server.</param>
+             <param name="options">The options for the call.</param>
+             <returns>The call object.</returns>
+        </member>
+        <member name="M:IdentityService.Rpc.Protos.gUser.gUserClient.GetUserList(Google.Protobuf.WellKnownTypes.Empty,Grpc.Core.Metadata,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
+             <summary>
+            获取yoghurt列表
+             </summary>
+             <param name="request">The request to send to the server.</param>
+             <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
+             <param name="deadline">An optional deadline for the call. The call will be cancelled if deadline is hit.</param>
+             <param name="cancellationToken">An optional token for canceling the call.</param>
+             <returns>The response received from the server.</returns>
+        </member>
+        <member name="M:IdentityService.Rpc.Protos.gUser.gUserClient.GetUserList(Google.Protobuf.WellKnownTypes.Empty,Grpc.Core.CallOptions)">
+             <summary>
+            获取yoghurt列表
+             </summary>
+             <param name="request">The request to send to the server.</param>
+             <param name="options">The options for the call.</param>
+             <returns>The response received from the server.</returns>
+        </member>
+        <member name="M:IdentityService.Rpc.Protos.gUser.gUserClient.GetUserListAsync(Google.Protobuf.WellKnownTypes.Empty,Grpc.Core.Metadata,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
+             <summary>
+            获取yoghurt列表
+             </summary>
+             <param name="request">The request to send to the server.</param>
+             <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
+             <param name="deadline">An optional deadline for the call. The call will be cancelled if deadline is hit.</param>
+             <param name="cancellationToken">An optional token for canceling the call.</param>
+             <returns>The call object.</returns>
+        </member>
+        <member name="M:IdentityService.Rpc.Protos.gUser.gUserClient.GetUserListAsync(Google.Protobuf.WellKnownTypes.Empty,Grpc.Core.CallOptions)">
+             <summary>
+            获取yoghurt列表
+             </summary>
+             <param name="request">The request to send to the server.</param>
+             <param name="options">The options for the call.</param>
+             <returns>The call object.</returns>
+        </member>
+        <member name="M:IdentityService.Rpc.Protos.gUser.gUserClient.NewInstance(Grpc.Core.ClientBase.ClientBaseConfiguration)">
+            <summary>Creates a new instance of client from given <c>ClientBaseConfiguration</c>.</summary>
+        </member>
+        <member name="T:IdentityService.Rpc.Protos.EndpointReflection">
+            <summary>Holder for reflection information generated from Rpc/Protos/endpoint.proto</summary>
+        </member>
+        <member name="P:IdentityService.Rpc.Protos.EndpointReflection.Descriptor">
+            <summary>File descriptor for Rpc/Protos/endpoint.proto</summary>
+        </member>
+        <member name="T:IdentityService.Rpc.Protos.Endpoints">
+             <summary>
+            节点列表
+             </summary>
+        </member>
+        <member name="F:IdentityService.Rpc.Protos.Endpoints.EndpointFieldNumber">
+            <summary>Field number for the "Endpoint" field.</summary>
+        </member>
+        <member name="T:IdentityService.Rpc.Protos.Endpoint">
+             <summary>
+            节点
+             </summary>
+        </member>
+        <member name="F:IdentityService.Rpc.Protos.Endpoint.ServiceFieldNumber">
+            <summary>Field number for the "Service" field.</summary>
+        </member>
+        <member name="F:IdentityService.Rpc.Protos.Endpoint.ControllerFieldNumber">
+            <summary>Field number for the "Controller" field.</summary>
+        </member>
+        <member name="F:IdentityService.Rpc.Protos.Endpoint.ActionFieldNumber">
+            <summary>Field number for the "Action" field.</summary>
+        </member>
+        <member name="F:IdentityService.Rpc.Protos.Endpoint.DescriptionFieldNumber">
+            <summary>Field number for the "Description" field.</summary>
+        </member>
+        <member name="F:IdentityService.Rpc.Protos.Endpoint.IsPublicFieldNumber">
+            <summary>Field number for the "IsPublic" field.</summary>
+        </member>
+        <member name="T:IdentityService.Rpc.Protos.gEndpoint">
+             <summary>
+            定义服务
+             </summary>
+        </member>
+        <member name="P:IdentityService.Rpc.Protos.gEndpoint.Descriptor">
+            <summary>Service descriptor</summary>
+        </member>
+        <member name="T:IdentityService.Rpc.Protos.gEndpoint.gEndpointBase">
+            <summary>Base class for server-side implementations of gEndpoint</summary>
+        </member>
+        <member name="M:IdentityService.Rpc.Protos.gEndpoint.gEndpointBase.RegisterEndpoint(IdentityService.Rpc.Protos.Endpoints,Grpc.Core.ServerCallContext)">
+             <summary>
+            注册节点列表
+             </summary>
+             <param name="request">The request received from the client.</param>
+             <param name="context">The context of the server-side call handler being invoked.</param>
+             <returns>The response to send back to the client (wrapped by a task).</returns>
+        </member>
+        <member name="M:IdentityService.Rpc.Protos.gEndpoint.gEndpointBase.GetPublicEndpoint(Google.Protobuf.WellKnownTypes.Empty,Grpc.Core.ServerCallContext)">
+             <summary>
+            获取公共节点
+             </summary>
+             <param name="request">The request received from the client.</param>
+             <param name="context">The context of the server-side call handler being invoked.</param>
+             <returns>The response to send back to the client (wrapped by a task).</returns>
+        </member>
+        <member name="M:IdentityService.Rpc.Protos.gEndpoint.BindService(IdentityService.Rpc.Protos.gEndpoint.gEndpointBase)">
+            <summary>Creates service definition that can be registered with a server</summary>
+            <param name="serviceImpl">An object implementing the server-side handling logic.</param>
+        </member>
+        <member name="M:IdentityService.Rpc.Protos.gEndpoint.BindService(Grpc.Core.ServiceBinderBase,IdentityService.Rpc.Protos.gEndpoint.gEndpointBase)">
+            <summary>Register service method with a service binder with or without implementation. Useful when customizing the service binding logic.
+            Note: this method is part of an experimental API that can change or be removed without any prior notice.</summary>
+            <param name="serviceBinder">Service methods will be bound by calling <c>AddMethod</c> on this object.</param>
+            <param name="serviceImpl">An object implementing the server-side handling logic.</param>
+        </member>
+        <member name="T:IdentityService.Rpc.Protos.RoleReflection">
+            <summary>Holder for reflection information generated from Rpc/Protos/role.proto</summary>
+        </member>
+        <member name="P:IdentityService.Rpc.Protos.RoleReflection.Descriptor">
+            <summary>File descriptor for Rpc/Protos/role.proto</summary>
+        </member>
+        <member name="F:IdentityService.Rpc.Protos.BindDefaultRequest.UidFieldNumber">
+            <summary>Field number for the "uid" field.</summary>
+        </member>
+        <member name="T:IdentityService.Rpc.Protos.gRole">
+             <summary>
+            角色绑定服务
+             </summary>
+        </member>
+        <member name="P:IdentityService.Rpc.Protos.gRole.Descriptor">
+            <summary>Service descriptor</summary>
+        </member>
+        <member name="T:IdentityService.Rpc.Protos.gRole.gRoleBase">
+            <summary>Base class for server-side implementations of gRole</summary>
+        </member>
+        <member name="M:IdentityService.Rpc.Protos.gRole.gRoleBase.BindDefaultRole(IdentityService.Rpc.Protos.BindDefaultRequest,Grpc.Core.ServerCallContext)">
+             <summary>
+            绑定默认角色
+             </summary>
+             <param name="request">The request received from the client.</param>
+             <param name="context">The context of the server-side call handler being invoked.</param>
+             <returns>The response to send back to the client (wrapped by a task).</returns>
+        </member>
+        <member name="M:IdentityService.Rpc.Protos.gRole.BindService(IdentityService.Rpc.Protos.gRole.gRoleBase)">
+            <summary>Creates service definition that can be registered with a server</summary>
+            <param name="serviceImpl">An object implementing the server-side handling logic.</param>
+        </member>
+        <member name="M:IdentityService.Rpc.Protos.gRole.BindService(Grpc.Core.ServiceBinderBase,IdentityService.Rpc.Protos.gRole.gRoleBase)">
+            <summary>Register service method with a service binder with or without implementation. Useful when customizing the service binding logic.
+            Note: this method is part of an experimental API that can change or be removed without any prior notice.</summary>
+            <param name="serviceBinder">Service methods will be bound by calling <c>AddMethod</c> on this object.</param>
+            <param name="serviceImpl">An object implementing the server-side handling logic.</param>
+        </member>
+        <member name="M:IdentityServer.Config.Clients">
+            <summary>
+            客户端资源
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:IdentityServer.Config.IdentityResources">
+            <summary>
+            认证资源
+            </summary>
+            <returns></returns>
+        </member>
+    </members>
+</doc>

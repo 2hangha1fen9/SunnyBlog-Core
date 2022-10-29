@@ -11,25 +11,17 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using StackExchange.Redis;
-using Microsoft.AspNetCore.Http;
 using System.Reflection;
 using ArticleService.Rpc.Service;
-using static ArticleService.Rpc.Protos.gUser;
 using ArticleService.Rpc.Protos;
 using Microsoft.Extensions.FileProviders;
-using ArticleService.Domain;
 using CommentService.Rpc.Protos;
-using System.Security.Cryptography.X509Certificates;
 using System.Net;
-using Microsoft.AspNetCore.Server.Kestrel.Core;
 
 var builder = WebApplication.CreateBuilder(args);
 var useApollo = builder.Configuration.GetValue<bool>("useApollo");
 var useSkywalking = builder.Configuration.GetValue<bool>("useSkywalking");
 var port = builder.Configuration.GetValue<int>("port");
-var httpsCertPath = builder.Configuration.GetValue<string>("httpsCertPath");
-var httpsCertPwd = builder.Configuration.GetValue<string>("httpsCertPwd");
-var isHttps = !string.IsNullOrWhiteSpace(httpsCertPath);
 
 if (useSkywalking)
 {
@@ -47,42 +39,8 @@ if (useApollo)
     });
 }
 
-//配置https证书
-if (isHttps)
-{
-    var cert = new X509Certificate2(httpsCertPath, httpsCertPwd);
-    builder.WebHost.UseKestrel(option =>
-    {
-        //Grpc专用通道
-        option.Listen(IPAddress.Any, port + 10000, option =>
-        {
-            option.Protocols = HttpProtocols.Http2;
-            option.UseHttps(option =>
-            {
-                option.ServerCertificate = cert;
-            });
-        });
-        option.Listen(IPAddress.Any, port, option =>
-        {
-            option.UseHttps(option =>
-            {
-                option.ServerCertificate = cert;
-            });
-        });
-    });
-}
-else
-{
-    builder.WebHost.UseKestrel(option =>
-    {
-        //Grpc专用通道
-        option.Listen(IPAddress.Any, port + 10000, option =>
-        {
-            option.Protocols = HttpProtocols.Http2;
-        });
-        option.Listen(IPAddress.Any, port);
-    });
-}
+//配置端口
+builder.WebHost.UseUrls($"https://*:{port}");
 
 
 builder.Services.AddControllers().AddNewtonsoftJson(option =>
@@ -131,12 +89,11 @@ builder.Services.AddAuthentication("Bearer")
 .AddJwtBearer("Bearer", options =>
 {
     options.Authority = ServiceUrl.GetServiceUrlByName("IdentityService",
-        builder.Configuration.GetSection("Consul").Get<ConsulServiceOptions>().ConsulAddress,false);
+        builder.Configuration.GetSection("Consul").Get<ConsulServiceOptions>().ConsulAddress);
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateAudience = false
     };
-    options.RequireHttpsMetadata = isHttps;
 });
 
 
@@ -161,10 +118,14 @@ var app = builder.Build();
 app.UseConsul(builder.Configuration.GetSection("Consul").Get<ConsulServiceOptions>());
 
 //节点注册
-app.Lifetime.ApplicationStarted.Register(async () =>
+if (builder.Environment.IsDevelopment())
 {
-    await app.UsePermissionRegistrar<Program>(builder.Configuration.GetSection("Consul").Get<ConsulServiceOptions>().ConsulAddress);
-});
+    app.Lifetime.ApplicationStarted.Register(async () =>
+    {
+        await app.UsePermissionRegistrar<Program>(builder.Configuration.GetSection("Consul").Get<ConsulServiceOptions>().ConsulAddress);
+    });
+}
+
 //rpc服务注册
 app.MapGrpcService<GArticleService>();
 app.MapGrpcService<GSettingService>();
@@ -177,16 +138,10 @@ app.UseStaticFiles(new StaticFileOptions()
 });
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 
-if (isHttps)
-{
-    app.UseHttpsRedirection();
-}
+app.UseHttpsRedirection();
 
 //启用授权鉴权
 app.UseAuthentication();

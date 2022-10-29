@@ -5,6 +5,7 @@ using Ocelot.DependencyInjection;
 using Ocelot.Middleware;
 using Ocelot.Provider.Consul;
 using Ocelot.Provider.Polly;
+using System.Net;
 using System.Security.Cryptography.X509Certificates;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,6 +17,7 @@ var port = builder.Configuration.GetValue<int>("port");
 var httpsCertPath = builder.Configuration.GetValue<string>("httpsCertPath");
 var httpsCertPwd = builder.Configuration.GetValue<string>("httpsCertPwd");
 var isHttps = !string.IsNullOrWhiteSpace(httpsCertPath);
+
 
 if (useSkywalking)
 {
@@ -45,26 +47,19 @@ builder.Services.AddEndpointsApiExplorer();
 
 //ÅäÖÃhttpsÖ¤Êé
 if (isHttps)
-{   
-    var cert = new X509Certificate2(httpsCertPath, httpsCertPwd);
+{
     builder.WebHost.UseKestrel(option =>
     {
-        option.ConfigureHttpsDefaults(c =>
+        option.Listen(IPAddress.Any, port, listenOption =>
         {
-            c.ServerCertificate = cert;
+            listenOption.UseHttps(httpsCertPath, httpsCertPwd);
         });
     });
-
-    using(var store = new X509Store())
-   
-
-    builder.WebHost.UseUrls($"https://*:{port}");
 }
 else
 {
     builder.WebHost.UseUrls($"http://*:{port}");
 }
-
 
 //ÅäÖÃÍø¹Ø¿çÓò
 builder.Services.AddCors(option =>
@@ -99,6 +94,5 @@ if (isHttps)
 {
     app.UseHttpsRedirection();
 }
-
 
 app.Run();

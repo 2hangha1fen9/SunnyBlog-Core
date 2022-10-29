@@ -29,11 +29,8 @@ namespace Infrastructure.Utils
             dbConn = conn;
             conn.Open();
             DbCommand cmd = conn.CreateCommand();
-            if (facade.IsSqlServer())
-            {
-                cmd.CommandText = sql;
-                CombineParams(ref cmd, parameters);
-            }
+            cmd.CommandText = sql;
+            CombineParams(ref cmd, parameters);
             return cmd;
         }
 

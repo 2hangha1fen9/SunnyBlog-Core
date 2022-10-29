@@ -6,7 +6,6 @@
       "DownstreamPathTemplate": "/api/{path}",
       "UpstreamPathTemplate": "/user-service/{path}",
       "UpstreamHttpMethod": [ "Get", "Post", "Delete", "Put" ],
-      "DangerousAcceptAnyServerCertificateValidator": true,
       "LoadBalancerOptions": {
         "Type": "NoLoadBalancer"
       },
@@ -21,7 +20,6 @@
       "DownstreamPathTemplate": "/api/{path}",
       "UpstreamPathTemplate": "/article-service/{path}",
       "UpstreamHttpMethod": [ "Get", "Post", "Delete", "Put" ],
-      "DangerousAcceptAnyServerCertificateValidator": true,
       "LoadBalancerOptions": {
         "Type": "NoLoadBalancer"
       },
@@ -36,7 +34,6 @@
       "DownstreamPathTemplate": "/api/{path}",
       "UpstreamPathTemplate": "/comment-service/{path}",
       "UpstreamHttpMethod": [ "Get", "Post", "Delete", "Put" ],
-      "DangerousAcceptAnyServerCertificateValidator": true,
       "LoadBalancerOptions": {
         "Type": "NoLoadBalancer"
       },
@@ -51,7 +48,6 @@
       "DownstreamPathTemplate": "/{path}",
       "UpstreamPathTemplate": "/identity-service/{path}",
       "UpstreamHttpMethod": [ "Get", "Post", "Delete", "Put" ],
-      "DangerousAcceptAnyServerCertificateValidator": true,
       "LoadBalancerOptions": {
         "Type": "NoLoadBalancer"
       },

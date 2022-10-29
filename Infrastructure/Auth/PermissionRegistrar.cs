@@ -23,13 +23,11 @@ namespace Infrastructure
         /// <returns></returns>
         public async static Task<IApplicationBuilder> UsePermissionRegistrar<T>(this IApplicationBuilder app, string consulAddress)
         {
-            var httpHandler = new HttpClientHandler();
-            httpHandler.ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
             //延迟5秒注册
             Thread.Sleep(5000);
             //获取认证服务地址
             var url = ServiceUrl.GetServiceUrlByName("IdentityService", consulAddress);            //创建频道
-            using var channel = GrpcChannel.ForAddress(url, new GrpcChannelOptions { HttpHandler = httpHandler });
+            using var channel = GrpcChannel.ForAddress(url);
             //创建客户端
             var client = new gEndpoint.gEndpointClient(channel);
             //获取当前程序集

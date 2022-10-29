@@ -1,0 +1,1611 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ArticleService</name>
+    </assembly>
+    <members>
+        <member name="M:ArticleService.App.ArticleApp.EditorArticle(ArticleService.Request.EditorArticleReq,System.Nullable{System.Int32})">
+            <summary>
+            编辑文章
+            </summary>
+            <param name="request"></param>
+            <param name="uid"></param>
+            <returns></returns>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:ArticleService.App.ArticleApp.GetArticle(System.Int32,System.Boolean)">
+            <summary>
+            获取文章详情
+            </summary>
+            <param name="id">文章ID</param>
+            <param name="allScope">查询全部</param>
+            <returns></returns>
+            <exception cref="T:System.NotImplementedException"></exception>
+        </member>
+        <member name="M:ArticleService.App.ArticleApp.GetArticleList(System.Collections.Generic.List{Infrastructure.SearchCondition},System.Linq.Expressions.Expression{System.Func{ArticleService.Domain.Article,System.Boolean}},System.Int32,System.Int32)">
+            <summary>
+            获取文章列表
+            </summary>
+        </member>
+        <member name="M:ArticleService.App.ArticleApp.GetUserLikeArticle(System.Int32,System.Boolean,System.Collections.Generic.List{Infrastructure.SearchCondition},System.Int32,System.Int32)">
+            <summary>
+            获取用户的点赞/收藏文章
+            </summary>
+            <param name="uid"></param>
+            <param name="isLike"></param>
+            <param name="condidtion"></param>
+            <param name="pageIndex"></param>
+            <param name="pageSize"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ArticleService.App.ArticleApp.PublishArticle(ArticleService.Request.PublishArticleReq,System.Int32)">
+            <summary>
+            发布文章
+            </summary>
+            <param name="request"></param>
+            <param name="uid"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ArticleService.App.ArticleApp.RemoveArticle(System.Collections.Generic.List{ArticleService.Request.DelArticleReq})">
+            <summary>
+            删除文章
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:ArticleService.App.ArticleApp.RemoveArticle(System.Collections.Generic.List{ArticleService.Request.DelArticleReq},System.Int32)">
+            <summary>
+            删除文章(需要用户ID)
+            </summary>
+            <param name="request"></param>
+            <param name="uid"></param>
+            <returns></returns>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:ArticleService.App.ArticleCategoryApp.UpdateCategory(ArticleService.Request.UpdateCategoryReq,System.Int32)">
+            <summary>
+            更新分类
+            </summary>
+            <param name="request"></param>
+            <param name="uid"></param>
+            <returns></returns>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:ArticleService.App.ArticleCategoryApp.CreateCategory(ArticleService.Request.AddCategoryReq,System.Int32)">
+            <summary>
+            添加分类
+            </summary>
+            <param name="request"></param>
+            <param name="uid"></param>
+        </member>
+        <member name="M:ArticleService.App.ArticleCategoryApp.DeleteCategory(System.Int32,System.Int32)">
+            <summary>
+            删除分类
+            </summary>
+            <param name="request"></param>
+            <param name="uid"></param>
+        </member>
+        <member name="M:ArticleService.App.ArticleCategoryApp.GetUserCategory(System.Int32)">
+            <summary>
+            根据用户ID查询分类信息
+            </summary>
+            <param name="uid"></param>
+            <returns></returns>
+            <exception cref="T:System.NotImplementedException"></exception>
+        </member>
+        <member name="M:ArticleService.App.ArticleRegionApp.CreateRegion(ArticleService.Request.AddRegionReq)">
+            <summary>
+            创建分区
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:ArticleService.App.ArticleRegionApp.DeletelRegion(System.Collections.Generic.List{ArticleService.Request.DelRegionReq})">
+            <summary>
+            删除分区
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:ArticleService.App.ArticleRegionApp.GetRegions(System.String,System.Boolean)">
+            <summary>
+            列出分区分区
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ArticleService.App.ArticleRegionApp.UpdateRegion(ArticleService.Request.UpdateRegionReq)">
+            <summary>
+            更新分区
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+            <exception cref="T:System.NotImplementedException"></exception>
+        </member>
+        <member name="M:ArticleService.App.ArticleRegionApp.RecursiveFilter(System.Collections.Generic.List{ArticleService.Domain.ArtRegion},System.Collections.Generic.List{ArticleService.Domain.ArtRegion},System.String,System.Boolean)">
+            <summary>
+            递归搜索所有分区
+            </summary>
+            <param name="regions">待搜索的关键字</param>
+            <param name="key">搜索关键字</param>
+            <param name="result">搜索结果</param>
+            <param name="findState">当前搜索状态</param>
+            <returns></returns>
+        </member>
+        <member name="M:ArticleService.App.ArticleTagApp.AddArticleTag(System.Int32,System.Collections.Generic.List{System.Int32})">
+            <summary>
+            添加文章标签
+            </summary>
+            <param name="articleId"></param>
+            <param name="tagId"></param>
+            <exception cref="T:System.NotImplementedException"></exception>
+        </member>
+        <member name="M:ArticleService.App.ArticleTagApp.CreateTag(ArticleService.Request.AddTagReq,System.Int32)">
+            <summary>
+            创建标签
+            </summary>
+            <param name="request"></param>
+            <param name="uid"></param>
+            <returns></returns>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:ArticleService.App.ArticleTagApp.DeletelTag(System.Collections.Generic.List{ArticleService.Request.DelTagReq},System.Int32)">
+            <summary>
+            删除标签
+            </summary>
+            <param name="request"></param>
+            <param name="uid"></param>
+            <returns></returns>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:ArticleService.App.ArticleTagApp.DeletelTag(System.Collections.Generic.List{ArticleService.Request.DelTagReq})">
+            <summary>
+            删除标签(需要用户ID)
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+            <exception cref="T:System.NotImplementedException"></exception>
+        </member>
+        <member name="M:ArticleService.App.ArticleTagApp.GetAllTags">
+            <summary>
+            获取所有标签
+            </summary>
+            <returns></returns>
+            <exception cref="T:System.NotImplementedException"></exception>
+        </member>
+        <member name="M:ArticleService.App.ArticleTagApp.GetPublicTags(System.Collections.Generic.List{Infrastructure.SearchCondition})">
+            <summary>
+            获取所有公共标签
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ArticleService.App.ArticleTagApp.GetUserTags(System.Int32)">
+            <summary>
+            获取用户标签
+            </summary>
+            <param name="uid"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ArticleService.App.ArticleTagApp.UpdateTag(ArticleService.Request.UpdateTagReq)">
+            <summary>
+            修改标签
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+            <exception cref="T:System.NotImplementedException"></exception>
+        </member>
+        <member name="M:ArticleService.App.ArticleTagApp.UpdateTag(ArticleService.Request.UpdateTagReq,System.Int32)">
+            <summary>
+            更新标签(需要用户ID)
+            </summary>
+            <param name="request"></param>
+            <param name="uid"></param>
+            <returns></returns>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:ArticleService.App.ArticleTagApp.UpdateArticleTag(System.Int32,System.Collections.Generic.List{System.Int32})">
+            <summary>
+            更新文章标签
+            </summary>
+            <param name="articleId"></param>
+            <param name="tagIds"></param>
+        </member>
+        <member name="F:ArticleService.App.DrawingBedApp.contextFactory">
+            <summary>
+            数据库上下文
+            </summary>
+        </member>
+        <member name="M:ArticleService.App.DrawingBedApp.UploadPicture(ArticleService.Request.UploadReq,System.Nullable{System.Int32},System.Nullable{System.Int32})">
+            <summary>
+            上传图片
+            </summary>
+            <param name="request"></param>
+            <param name="aid">文章ID如果为空则不会保存数据库记录</param>
+            <param name="uid">用户ID</param>
+            <returns></returns>
+            <exception cref="T:System.Exception"></exception>
+        </member>
+        <member name="M:ArticleService.App.SiteConfigApp.GetConfig(System.String)">
+            <summary>
+            获取网站脚注内容
+            </summary>
+            <returns></returns>
+            <exception cref="T:System.NotImplementedException"></exception>
+        </member>
+        <member name="M:ArticleService.App.SiteConfigApp.SetConfig(System.String,System.String)">
+            <summary>
+            设置网站配置
+            </summary>
+            <returns></returns>
+            <exception cref="T:System.NotImplementedException"></exception>
+        </member>
+        <member name="M:ArticleService.App.SiteConfigApp.DelConfig(System.String)">
+            <summary>
+            删除网站配置
+            </summary>
+            <returns></returns>
+            <exception cref="T:System.NotImplementedException"></exception>
+        </member>
+        <member name="M:ArticleService.App.StatisticsApp.GetArticleCount(System.Nullable{System.Int32})">
+            <summary>
+            统计文章数
+            </summary>
+            <returns></returns>
+            <exception cref="T:System.NotImplementedException"></exception>
+        </member>
+        <member name="M:ArticleService.App.StatisticsApp.GetArticleTrend(System.Nullable{System.Int32})">
+            <summary>
+            统计文章趋势
+            </summary>
+            <returns></returns>
+            <exception cref="T:System.NotImplementedException"></exception>
+        </member>
+        <member name="M:ArticleService.Controllers.ArticleController.List(System.String,System.Nullable{System.Int32},System.Nullable{System.Int32})">
+            <summary>
+            列出文章列表
+            </summary>
+            <param name="condidtion"></param>
+            <param name="pageIndex"></param>
+            <param name="pageSize"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ArticleService.Controllers.ArticleController.All(System.String,System.Nullable{System.Int32},System.Nullable{System.Int32})">
+            <summary>
+            列出所有文章列表
+            </summary>
+            <param name="condidtion"></param>
+            <param name="pageIndex"></param>
+            <param name="pageSize"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ArticleService.Controllers.ArticleController.User(System.Int32,System.String,System.Nullable{System.Int32},System.Nullable{System.Int32})">
+            <summary>
+            列出用户发布的文章列表
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ArticleService.Controllers.ArticleController.UserLike(System.Int32,System.Boolean,System.String,System.Nullable{System.Int32},System.Nullable{System.Int32})">
+            <summary>
+            列出用户点赞/收藏的文章
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ArticleService.Controllers.ArticleController.My(System.String,System.Nullable{System.Int32},System.Nullable{System.Int32})">
+            <summary>
+            列出我的文章列表
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ArticleService.Controllers.ArticleController.Detail(System.Int32)">
+            <summary>
+            浏览文章正文
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ArticleService.Controllers.ArticleController.DetailIgnoreStatus(System.Int32)">
+            <summary>
+            浏览文章正文,无视文章状态
+            </summary>
+            <param name="id"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ArticleService.Controllers.ArticleController.Editor(ArticleService.Request.EditorArticleReq)">
+            <summary>
+            编辑文章
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ArticleService.Controllers.ArticleController.Publish(ArticleService.Request.PublishArticleReq)">
+            <summary>
+            发布文章
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ArticleService.Controllers.ArticleController.Remove(System.Collections.Generic.List{ArticleService.Request.DelArticleReq})">
+            <summary>
+            删除文章
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ArticleService.Controllers.CategoryController.My">
+            <summary>
+            列出我的的分类
+            </summary>
+            <param name="uid"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ArticleService.Controllers.CategoryController.Update(ArticleService.Request.UpdateCategoryReq)">
+            <summary>
+            更新分类
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ArticleService.Controllers.CategoryController.Create(ArticleService.Request.AddCategoryReq)">
+            <summary>
+            创建分类
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ArticleService.Controllers.CategoryController.Delete(System.Int32)">
+            <summary>
+            删除分类
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ArticleService.Controllers.DrawingBedController.Upload(ArticleService.Request.UploadReq,System.Nullable{System.Int32},System.Nullable{System.Int32})">
+            <summary>
+            上传图片
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ArticleService.Controllers.HealthCheckController.Get">
+            <summary>
+            健康检查
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ArticleService.Controllers.ManagerController.RemoveArticle(System.Collections.Generic.List{ArticleService.Request.DelArticleReq})">
+            <summary>
+            删除文章(管理)
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ArticleService.Controllers.ManagerController.EditorArticle(ArticleService.Request.EditorArticleReq)">
+            <summary>
+            编辑文章(管理)
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ArticleService.Controllers.ManagerController.DeleteTag(System.Collections.Generic.List{ArticleService.Request.DelTagReq})">
+            <summary>
+            删除标签(管理)
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ArticleService.Controllers.ManagerController.ListTag">
+            <summary>
+            列出所有标签(管理)
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ArticleService.Controllers.ManagerController.ListUserTag(System.Int32)">
+            <summary>
+            获取某个用户的标签(管理)
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ArticleService.Controllers.ManagerController.UpdateTag(ArticleService.Request.UpdateTagReq)">
+            <summary>
+            更新标签(管理)
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ArticleService.Controllers.RegionController.List(System.String)">
+            <summary>
+            列出分区
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ArticleService.Controllers.RegionController.ListAll(System.String)">
+            <summary>
+            列出所有分区
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ArticleService.Controllers.RegionController.Update(ArticleService.Request.UpdateRegionReq)">
+            <summary>
+            更新分区
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ArticleService.Controllers.RegionController.Delete(System.Collections.Generic.List{ArticleService.Request.DelRegionReq})">
+            <summary>
+            删除分区
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ArticleService.Controllers.RegionController.Create(ArticleService.Request.AddRegionReq)">
+            <summary>
+            创建分区
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ArticleService.Controllers.SettingController.List">
+            <summary>
+            获取所有设置项
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ArticleService.Controllers.SettingController.Update(System.String,System.Int32)">
+            <summary>
+            更新值
+            </summary>
+            <param name="key"></param>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ArticleService.Controllers.SiteConfigController.GetValue(System.String)">
+            <summary>
+            获取网站配置
+            </summary>
+            <param name="key"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ArticleService.Controllers.SiteConfigController.SetValue(ArticleService.Request.SiteConfigReq)">
+            <summary>
+            设置网站配置
+            </summary>
+            <param name="key"></param>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ArticleService.Controllers.SiteConfigController.DelValue(System.String)">
+            <summary>
+            删除网站配置
+            </summary>
+            <param name="key"></param>
+            <param name="value"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ArticleService.Controllers.StatisticsController.Count">
+            <summary>
+            统计文章数
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ArticleService.Controllers.StatisticsController.UserCount">
+            <summary>
+            统计用户的文章数
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ArticleService.Controllers.StatisticsController.Trend">
+            <summary>
+            统计文章趋势
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ArticleService.Controllers.StatisticsController.UserTrend(System.Int32)">
+            <summary>
+            统计用户文章趋势
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ArticleService.Controllers.TagController.Public(System.String)">
+            <summary>
+            列出所有公共标签
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ArticleService.Controllers.TagController.My">
+            <summary>
+            列出用户个人标签
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ArticleService.Controllers.TagController.UserTag(System.Int32)">
+            <summary>
+            列出用户的标签
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ArticleService.Controllers.TagController.Create(ArticleService.Request.AddTagReq)">
+            <summary>
+            创建标签
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:ArticleService.Controllers.TagController.Delete(System.Collections.Generic.List{ArticleService.Request.DelTagReq})">
+            <summary>
+            删除标签
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="M:ArticleService.Controllers.TagController.Update(ArticleService.Request.UpdateTagReq)">
+            <summary>
+            更新标签
+            </summary>
+            <param name="request"></param>
+            <returns></returns>
+        </member>
+        <member name="P:ArticleService.Domain.Article.Status">
+            <summary>
+            -1待审核1已发布2私有3回收站4草稿
+            </summary>
+        </member>
+        <member name="P:ArticleService.Domain.Article.CommentStatus">
+            <summary>
+            -1不可以评论1可评论2需要审核评论
+            </summary>
+        </member>
+        <member name="P:ArticleService.Domain.Article.IsLock">
+            <summary>
+            1未锁定-1锁定
+            </summary>
+        </member>
+        <member name="P:ArticleService.Domain.ArtRegion.Status">
+            <summary>
+            1启用-1禁用
+            </summary>
+        </member>
+        <member name="P:ArticleService.Domain.Tag.IsPrivate">
+            <summary>
+            -1私有标签1公共标签
+            </summary>
+        </member>
+        <member name="P:ArticleService.Request.AddCategoryReq.Name">
+            <summary>
+            分类名
+            </summary>
+        </member>
+        <member name="P:ArticleService.Request.AddCategoryReq.ParentId">
+            <summary>
+            父级ID
+            </summary>
+        </member>
+        <member name="P:ArticleService.Request.AddRegionReq.Name">
+            <summary>
+            分区名
+            </summary>
+        </member>
+        <member name="P:ArticleService.Request.AddRegionReq.Description">
+            <summary>
+            描述
+            </summary>
+        </member>
+        <member name="P:ArticleService.Request.AddRegionReq.ParentId">
+            <summary>
+            父级ID
+            </summary>
+        </member>
+        <member name="P:ArticleService.Request.AddRegionReq.Status">
+            <summary>
+            状态1启用-1禁用
+            </summary>
+        </member>
+        <member name="P:ArticleService.Request.AddTagReq.Name">
+            <summary>
+            标签名称
+            </summary>
+        </member>
+        <member name="P:ArticleService.Request.AddTagReq.UserId">
+            <summary>
+            用户ID
+            </summary>
+        </member>
+        <member name="P:ArticleService.Request.AddTagReq.Color">
+            <summary>
+            标签颜色
+            </summary>
+        </member>
+        <member name="P:ArticleService.Request.AddTagReq.IsPrivate">
+            <summary>
+            是否为私有标签 0公共1私有
+            </summary>
+        </member>
+        <member name="P:ArticleService.Request.DelArticleReq.Id">
+            <summary>
+            待删除的ID
+            </summary>
+        </member>
+        <member name="P:ArticleService.Request.DelRegionReq.Id">
+            <summary>
+            待删除的区域ID
+            </summary>
+        </member>
+        <member name="P:ArticleService.Request.DelTagReq.Id">
+            <summary>
+            标签ID
+            </summary>
+        </member>
+        <member name="T:ArticleService.Request.EditorArticleReq">
+            <summary>
+            编辑文章请求
+            </summary>
+        </member>
+        <member name="P:ArticleService.Request.EditorArticleReq.Id">
+            <summary>
+            文章ID
+            </summary>
+        </member>
+        <member name="P:ArticleService.Request.EditorArticleReq.Title">
+            <summary>
+            文章标题
+            </summary>
+        </member>
+        <member name="P:ArticleService.Request.EditorArticleReq.Summary">
+            <summary>
+            文章简介
+            </summary>
+        </member>
+        <member name="P:ArticleService.Request.EditorArticleReq.Content">
+            <summary>
+            文章内容
+            </summary>
+        </member>
+        <member name="P:ArticleService.Request.EditorArticleReq.CodeStyle">
+            <summary>
+            代码块主题
+            </summary>
+        </member>
+        <member name="P:ArticleService.Request.EditorArticleReq.ContentStyle">
+            <summary>
+            内容主题
+            </summary>
+        </member>
+        <member name="P:ArticleService.Request.EditorArticleReq.Photo">
+            <summary>
+            文章封面
+            </summary>
+        </member>
+        <member name="P:ArticleService.Request.EditorArticleReq.Tags">
+            <summary>
+            文章标签
+            </summary>
+        </member>
+        <member name="P:ArticleService.Request.EditorArticleReq.RegionId">
+            <summary>
+            文章分区
+            </summary>
+        </member>
+        <member name="P:ArticleService.Request.EditorArticleReq.CategoryId">
+            <summary>
+            文章分类Id
+            </summary>
+        </member>
+        <member name="P:ArticleService.Request.EditorArticleReq.Status">
+            <summary>
+            文章状态-1待审核1已发布2私有3回收站
+            </summary>
+        </member>
+        <member name="P:ArticleService.Request.EditorArticleReq.CommentStatus">
+            <summary>
+            评论状态-1不可以评论1可评论2需要审核评论
+            </summary>
+        </member>
+        <member name="P:ArticleService.Request.EditorArticleReq.isLock">
+            <summary>
+            是否被锁定1未锁定-1锁定
+            </summary>
+        </member>
+        <member name="T:ArticleService.Request.PublishArticleReq">
+            <summary>
+            发布文章请求
+            </summary>
+        </member>
+        <member name="P:ArticleService.Request.PublishArticleReq.Title">
+            <summary>
+            文章标题
+            </summary>
+        </member>
+        <member name="P:ArticleService.Request.PublishArticleReq.Content">
+            <summary>
+            文章内容摘要
+            </summary>
+        </member>
+        <member name="P:ArticleService.Request.PublishArticleReq.CodeStyle">
+            <summary>
+            代码块主题
+            </summary>
+        </member>
+        <member name="P:ArticleService.Request.PublishArticleReq.ContentStyle">
+            <summary>
+            内容主题
+            </summary>
+        </member>
+        <member name="P:ArticleService.Request.PublishArticleReq.Photo">
+            <summary>
+            文章封面
+            </summary>
+        </member>
+        <member name="P:ArticleService.Request.PublishArticleReq.Tags">
+            <summary>
+            文章标签
+            </summary>
+        </member>
+        <member name="P:ArticleService.Request.PublishArticleReq.RegionId">
+            <summary>
+            文章分区
+            </summary>
+        </member>
+        <member name="P:ArticleService.Request.PublishArticleReq.CategoryId">
+            <summary>
+            文章分类
+            </summary>
+        </member>
+        <member name="P:ArticleService.Request.PublishArticleReq.Status">
+            <summary>
+            文章状态-1待审核1已发布2私有3回收站
+            </summary>
+        </member>
+        <member name="P:ArticleService.Request.PublishArticleReq.CommentStatus">
+            <summary>
+            评论状态-1不可以评论1可评论2需要审核评论
+            </summary>
+        </member>
+        <member name="P:ArticleService.Request.UpdateCategoryReq.Id">
+            <summary>
+            分类ID
+            </summary>
+        </member>
+        <member name="P:ArticleService.Request.UpdateCategoryReq.Name">
+            <summary>
+            分类名
+            </summary>
+        </member>
+        <member name="P:ArticleService.Request.UpdateCategoryReq.ParentId">
+            <summary>
+            父级ID
+            </summary>
+        </member>
+        <member name="P:ArticleService.Request.UpdateRegionReq.Id">
+            <summary>
+            分区ID
+            </summary>
+        </member>
+        <member name="P:ArticleService.Request.UpdateRegionReq.Name">
+            <summary>
+            分区名称
+            </summary>
+        </member>
+        <member name="P:ArticleService.Request.UpdateRegionReq.Description">
+            <summary>
+            分区描述
+            </summary>
+        </member>
+        <member name="P:ArticleService.Request.UpdateRegionReq.ParentId">
+            <summary>
+            父级ID
+            </summary>
+        </member>
+        <member name="P:ArticleService.Request.UpdateRegionReq.Status">
+            <summary>
+            状态
+            </summary>
+        </member>
+        <member name="P:ArticleService.Request.UpdateTagReq.Id">
+            <summary>
+            标签ID
+            </summary>
+        </member>
+        <member name="P:ArticleService.Request.UpdateTagReq.Name">
+            <summary>
+            标签名
+            </summary>
+        </member>
+        <member name="P:ArticleService.Request.UpdateTagReq.Color">
+            <summary>
+            颜色
+            </summary>
+        </member>
+        <member name="P:ArticleService.Request.UpdateTagReq.UserId">
+            <summary>
+            用户ID
+            </summary>
+        </member>
+        <member name="P:ArticleService.Request.UpdateTagReq.IsPrivate">
+            <summary>
+            是否为私有标签
+            </summary>
+        </member>
+        <member name="P:ArticleService.Request.UploadReq.Data">
+            <summary>
+            图片数据
+            </summary>
+        </member>
+        <member name="P:ArticleService.Response.ArticleCountStatistics.ArticleCount">
+            <summary>
+            文章总数
+            </summary>
+        </member>
+        <member name="P:ArticleService.Response.ArticleCountStatistics.TagCount">
+            <summary>
+            标签数
+            </summary>
+        </member>
+        <member name="P:ArticleService.Response.ArticleCountStatistics.ShowArticleCount">
+            <summary>
+            展示文章总数
+            </summary>
+        </member>
+        <member name="P:ArticleService.Response.ArticleCountStatistics.PenddingArticleCount">
+            <summary>
+            待审核文章数
+            </summary>
+        </member>
+        <member name="P:ArticleService.Response.ArticleCountStatistics.LockArticleCount">
+            <summary>
+            锁定的文章数
+            </summary>
+        </member>
+        <member name="P:ArticleService.Response.ArticleCountStatistics.RecycleArticleCount">
+            <summary>
+            回收站的文章数
+            </summary>
+        </member>
+        <member name="P:ArticleService.Response.ArticleCountStatistics.TodayPublish">
+            <summary>
+            今日发布
+            </summary>
+        </member>
+        <member name="P:ArticleService.Response.ArticleCountStatistics.YesterdayPublish">
+            <summary>
+            昨天发布文章数
+            </summary>
+        </member>
+        <member name="P:ArticleService.Response.ArticleCountStatistics.WeekPublish">
+            <summary>
+            本周发布文章数
+            </summary>
+        </member>
+        <member name="P:ArticleService.Response.ArticleCountStatistics.MonthPublish">
+            <summary>
+            本月发布文章数
+            </summary>
+        </member>
+        <member name="T:ArticleService.Response.ArticleListView">
+            <summary>
+            文章列表展示视图
+            </summary>
+        </member>
+        <member name="P:ArticleService.Response.ArticleListView.Id">
+            <summary>
+            文章ID
+            </summary>
+        </member>
+        <member name="P:ArticleService.Response.ArticleListView.UserId">
+            <summary>
+            用户ID
+            </summary>
+        </member>
+        <member name="P:ArticleService.Response.ArticleListView.Nick">
+            <summary>
+            用户昵称
+            </summary>
+        </member>
+        <member name="P:ArticleService.Response.ArticleListView.Username">
+            <summary>
+            用户名
+            </summary>
+        </member>
+        <member name="P:ArticleService.Response.ArticleListView.Title">
+            <summary>
+            文章标题
+            </summary>
+        </member>
+        <member name="P:ArticleService.Response.ArticleListView.Summary">
+            <summary>
+            文章简介
+            </summary>
+        </member>
+        <member name="P:ArticleService.Response.ArticleListView.Photo">
+            <summary>
+            文章封面
+            </summary>
+        </member>
+        <member name="P:ArticleService.Response.ArticleListView.RegionName">
+            <summary>
+            分区名称
+            </summary>
+        </member>
+        <member name="P:ArticleService.Response.ArticleListView.RegionId">
+            <summary>
+            分区ID
+            </summary>
+        </member>
+        <member name="P:ArticleService.Response.ArticleListView.Tags">
+            <summary>
+            文章标签
+            </summary>
+        </member>
+        <member name="P:ArticleService.Response.ArticleListView.CategoryId">
+            <summary>
+            文章分类
+            </summary>
+        </member>
+        <member name="P:ArticleService.Response.ArticleListView.CategoryName">
+            <summary>
+            文章分类
+            </summary>
+        </member>
+        <member name="P:ArticleService.Response.ArticleListView.Status">
+            <summary>
+            文章状态
+            </summary>
+        </member>
+        <member name="P:ArticleService.Response.ArticleListView.IsLock">
+            <summary>
+            是否被锁定
+            </summary>
+        </member>
+        <member name="P:ArticleService.Response.ArticleListView.CommentStatus">
+            <summary>
+            评论状态
+            </summary>
+        </member>
+        <member name="P:ArticleService.Response.ArticleListView.CreateTime">
+            <summary>
+            发布时间
+            </summary>
+        </member>
+        <member name="P:ArticleService.Response.ArticleListView.UpdateTime">
+            <summary>
+            更新时间
+            </summary>
+        </member>
+        <member name="P:ArticleService.Response.ArticleTrendStatistics.Date">
+            <summary>
+            日期
+            </summary>
+        </member>
+        <member name="P:ArticleService.Response.ArticleTrendStatistics.ArticleCount">
+            <summary>
+            文章数
+            </summary>
+        </member>
+        <member name="T:ArticleService.Response.ArticleView">
+            <summary>
+            文章详情展示视图
+            </summary>
+        </member>
+        <member name="P:ArticleService.Response.ArticleView.Id">
+            <summary>
+            文章ID
+            </summary>
+        </member>
+        <member name="P:ArticleService.Response.ArticleView.UserId">
+            <summary>
+            用户ID
+            </summary>
+        </member>
+        <member name="P:ArticleService.Response.ArticleView.Title">
+            <summary>
+            文章标题
+            </summary>
+        </member>
+        <member name="P:ArticleService.Response.ArticleView.Summary">
+            <summary>
+            文章简介
+            </summary>
+        </member>
+        <member name="P:ArticleService.Response.ArticleView.Content">
+            <summary>
+            文章内容摘要
+            </summary>
+        </member>
+        <member name="P:ArticleService.Response.ArticleView.CodeStyle">
+            <summary>
+            代码块主题
+            </summary>
+        </member>
+        <member name="P:ArticleService.Response.ArticleView.ContentStyle">
+            <summary>
+            内容主题
+            </summary>
+        </member>
+        <member name="P:ArticleService.Response.ArticleView.Photo">
+            <summary>
+            文章封面
+            </summary>
+        </member>
+        <member name="P:ArticleService.Response.ArticleView.RegionName">
+            <summary>
+            文章分区名
+            </summary>
+        </member>
+        <member name="P:ArticleService.Response.ArticleView.RegionId">
+            <summary>
+            文章分区Id
+            </summary>
+        </member>
+        <member name="P:ArticleService.Response.ArticleView.Tags">
+            <summary>
+            文章标签
+            </summary>
+        </member>
+        <member name="P:ArticleService.Response.ArticleView.CategoryId">
+            <summary>
+            文章分类
+            </summary>
+        </member>
+        <member name="P:ArticleService.Response.ArticleView.CategoryName">
+            <summary>
+            文章分类
+            </summary>
+        </member>
+        <member name="P:ArticleService.Response.ArticleView.Status">
+            <summary>
+            文章状态
+            </summary>
+        </member>
+        <member name="P:ArticleService.Response.ArticleView.CommentStatus">
+            <summary>
+            评论状态
+            </summary>
+        </member>
+        <member name="P:ArticleService.Response.ArticleView.CreateTime">
+            <summary>
+            发布时间
+            </summary>
+        </member>
+        <member name="P:ArticleService.Response.ArticleView.UpdateTime">
+            <summary>
+            更新时间
+            </summary>
+        </member>
+        <member name="P:ArticleService.Response.CategoryView.Id">
+            <summary>
+            分类ID
+            </summary>
+        </member>
+        <member name="P:ArticleService.Response.CategoryView.Name">
+            <summary>
+            分类名称
+            </summary>
+        </member>
+        <member name="P:ArticleService.Response.CategoryView.UserId">
+            <summary>
+            用户ID
+            </summary>
+        </member>
+        <member name="P:ArticleService.Response.CategoryView.ParentId">
+            <summary>
+            父级分类ID
+            </summary>
+        </member>
+        <member name="P:ArticleService.Response.CategoryView.InverseParent">
+            <summary>
+            子级分类
+            </summary>
+        </member>
+        <member name="T:ArticleService.Response.RegionView">
+            <summary>
+            分区视图
+            </summary>
+        </member>
+        <member name="P:ArticleService.Response.RegionView.Id">
+            <summary>
+            分区ID
+            </summary>
+        </member>
+        <member name="P:ArticleService.Response.RegionView.Name">
+            <summary>
+            分区名
+            </summary>
+        </member>
+        <member name="P:ArticleService.Response.RegionView.Description">
+            <summary>
+            分区描述
+            </summary>
+        </member>
+        <member name="P:ArticleService.Response.RegionView.Status">
+            <summary>
+            分区状态
+            </summary>
+        </member>
+        <member name="P:ArticleService.Response.RegionView.ParentId">
+            <summary>
+            父级ID
+            </summary>
+        </member>
+        <member name="P:ArticleService.Response.RegionView.InverseParent">
+            <summary>
+            子级分类
+            </summary>
+        </member>
+        <member name="P:ArticleService.Response.TagView.Id">
+            <summary>
+            标签ID
+            </summary>
+        </member>
+        <member name="P:ArticleService.Response.TagView.UserId">
+            <summary>
+            用户ID
+            </summary>
+        </member>
+        <member name="P:ArticleService.Response.TagView.Name">
+            <summary>
+            用户名
+            </summary>
+        </member>
+        <member name="P:ArticleService.Response.TagView.Color">
+            <summary>
+            标签颜色
+            </summary>
+        </member>
+        <member name="P:ArticleService.Response.TagView.IsPrivate">
+            <summary>
+            是否为私有标签
+            </summary>
+        </member>
+        <member name="P:ArticleService.Response.TagView.ArticleCount">
+            <summary>
+            当前标签引用的文章数
+            </summary>
+        </member>
+        <member name="P:ArticleService.Response.UploadResult.Path">
+            <summary>
+            文件路径
+            </summary>
+        </member>
+        <member name="M:ArticleService.Rpc.Service.GArticleService.GetArticleInfo(ArticleService.Rpc.Protos.ArticleId,Grpc.Core.ServerCallContext)">
+            <summary>
+            获取文章状态
+            </summary>
+            <param name="request"></param>
+            <param name="context"></param>
+            <returns></returns>
+        </member>
+        <member name="T:ArticleService.Rpc.Protos.UserReflection">
+            <summary>Holder for reflection information generated from Rpc/Protos/user.proto</summary>
+        </member>
+        <member name="P:ArticleService.Rpc.Protos.UserReflection.Descriptor">
+            <summary>File descriptor for Rpc/Protos/user.proto</summary>
+        </member>
+        <member name="T:ArticleService.Rpc.Protos.UserRequest">
+             <summary>
+            定义请求对象
+             </summary>
+        </member>
+        <member name="F:ArticleService.Rpc.Protos.UserRequest.UsernameFieldNumber">
+            <summary>Field number for the "Username" field.</summary>
+        </member>
+        <member name="F:ArticleService.Rpc.Protos.UserRequest.PasswordFieldNumber">
+            <summary>Field number for the "Password" field.</summary>
+        </member>
+        <member name="T:ArticleService.Rpc.Protos.UserNameRequest">
+             <summary>
+            定义请求对象
+             </summary>
+        </member>
+        <member name="F:ArticleService.Rpc.Protos.UserNameRequest.UsernameFieldNumber">
+            <summary>Field number for the "Username" field.</summary>
+        </member>
+        <member name="F:ArticleService.Rpc.Protos.UserInfoRequest.IdFieldNumber">
+            <summary>Field number for the "Id" field.</summary>
+        </member>
+        <member name="F:ArticleService.Rpc.Protos.UserInfoResponse.IdFieldNumber">
+            <summary>Field number for the "Id" field.</summary>
+        </member>
+        <member name="F:ArticleService.Rpc.Protos.UserInfoResponse.UsernameFieldNumber">
+            <summary>Field number for the "Username" field.</summary>
+        </member>
+        <member name="F:ArticleService.Rpc.Protos.UserInfoResponse.NickFieldNumber">
+            <summary>Field number for the "Nick" field.</summary>
+        </member>
+        <member name="F:ArticleService.Rpc.Protos.UserInfoResponse.PhotoFieldNumber">
+            <summary>Field number for the "Photo" field.</summary>
+        </member>
+        <member name="F:ArticleService.Rpc.Protos.UserInfoListReqponse.UserInfoFieldNumber">
+            <summary>Field number for the "UserInfo" field.</summary>
+        </member>
+        <member name="T:ArticleService.Rpc.Protos.gUser">
+             <summary>
+            定义服务
+             </summary>
+        </member>
+        <member name="P:ArticleService.Rpc.Protos.gUser.Descriptor">
+            <summary>Service descriptor</summary>
+        </member>
+        <member name="T:ArticleService.Rpc.Protos.gUser.gUserClient">
+            <summary>Client for gUser</summary>
+        </member>
+        <member name="M:ArticleService.Rpc.Protos.gUser.gUserClient.#ctor(Grpc.Core.ChannelBase)">
+            <summary>Creates a new client for gUser</summary>
+            <param name="channel">The channel to use to make remote calls.</param>
+        </member>
+        <member name="M:ArticleService.Rpc.Protos.gUser.gUserClient.#ctor(Grpc.Core.CallInvoker)">
+            <summary>Creates a new client for gUser that uses a custom <c>CallInvoker</c>.</summary>
+            <param name="callInvoker">The callInvoker to use to make remote calls.</param>
+        </member>
+        <member name="M:ArticleService.Rpc.Protos.gUser.gUserClient.#ctor">
+            <summary>Protected parameterless constructor to allow creation of test doubles.</summary>
+        </member>
+        <member name="M:ArticleService.Rpc.Protos.gUser.gUserClient.#ctor(Grpc.Core.ClientBase.ClientBaseConfiguration)">
+            <summary>Protected constructor to allow creation of configured clients.</summary>
+            <param name="configuration">The client configuration.</param>
+        </member>
+        <member name="M:ArticleService.Rpc.Protos.gUser.gUserClient.GetUserByPassword(ArticleService.Rpc.Protos.UserRequest,Grpc.Core.Metadata,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
+             <summary>
+            根据账号密码查询用户
+             </summary>
+             <param name="request">The request to send to the server.</param>
+             <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
+             <param name="deadline">An optional deadline for the call. The call will be cancelled if deadline is hit.</param>
+             <param name="cancellationToken">An optional token for canceling the call.</param>
+             <returns>The response received from the server.</returns>
+        </member>
+        <member name="M:ArticleService.Rpc.Protos.gUser.gUserClient.GetUserByPassword(ArticleService.Rpc.Protos.UserRequest,Grpc.Core.CallOptions)">
+             <summary>
+            根据账号密码查询用户
+             </summary>
+             <param name="request">The request to send to the server.</param>
+             <param name="options">The options for the call.</param>
+             <returns>The response received from the server.</returns>
+        </member>
+        <member name="M:ArticleService.Rpc.Protos.gUser.gUserClient.GetUserByPasswordAsync(ArticleService.Rpc.Protos.UserRequest,Grpc.Core.Metadata,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
+             <summary>
+            根据账号密码查询用户
+             </summary>
+             <param name="request">The request to send to the server.</param>
+             <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
+             <param name="deadline">An optional deadline for the call. The call will be cancelled if deadline is hit.</param>
+             <param name="cancellationToken">An optional token for canceling the call.</param>
+             <returns>The call object.</returns>
+        </member>
+        <member name="M:ArticleService.Rpc.Protos.gUser.gUserClient.GetUserByPasswordAsync(ArticleService.Rpc.Protos.UserRequest,Grpc.Core.CallOptions)">
+             <summary>
+            根据账号密码查询用户
+             </summary>
+             <param name="request">The request to send to the server.</param>
+             <param name="options">The options for the call.</param>
+             <returns>The call object.</returns>
+        </member>
+        <member name="M:ArticleService.Rpc.Protos.gUser.gUserClient.GetUserByUsername(ArticleService.Rpc.Protos.UserNameRequest,Grpc.Core.Metadata,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
+             <summary>
+            根据账号查询用户
+             </summary>
+             <param name="request">The request to send to the server.</param>
+             <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
+             <param name="deadline">An optional deadline for the call. The call will be cancelled if deadline is hit.</param>
+             <param name="cancellationToken">An optional token for canceling the call.</param>
+             <returns>The response received from the server.</returns>
+        </member>
+        <member name="M:ArticleService.Rpc.Protos.gUser.gUserClient.GetUserByUsername(ArticleService.Rpc.Protos.UserNameRequest,Grpc.Core.CallOptions)">
+             <summary>
+            根据账号查询用户
+             </summary>
+             <param name="request">The request to send to the server.</param>
+             <param name="options">The options for the call.</param>
+             <returns>The response received from the server.</returns>
+        </member>
+        <member name="M:ArticleService.Rpc.Protos.gUser.gUserClient.GetUserByUsernameAsync(ArticleService.Rpc.Protos.UserNameRequest,Grpc.Core.Metadata,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
+             <summary>
+            根据账号查询用户
+             </summary>
+             <param name="request">The request to send to the server.</param>
+             <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
+             <param name="deadline">An optional deadline for the call. The call will be cancelled if deadline is hit.</param>
+             <param name="cancellationToken">An optional token for canceling the call.</param>
+             <returns>The call object.</returns>
+        </member>
+        <member name="M:ArticleService.Rpc.Protos.gUser.gUserClient.GetUserByUsernameAsync(ArticleService.Rpc.Protos.UserNameRequest,Grpc.Core.CallOptions)">
+             <summary>
+            根据账号查询用户
+             </summary>
+             <param name="request">The request to send to the server.</param>
+             <param name="options">The options for the call.</param>
+             <returns>The call object.</returns>
+        </member>
+        <member name="M:ArticleService.Rpc.Protos.gUser.gUserClient.GetUserByID(ArticleService.Rpc.Protos.UserInfoRequest,Grpc.Core.Metadata,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
+             <summary>
+            根据ID查询用户信息
+             </summary>
+             <param name="request">The request to send to the server.</param>
+             <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
+             <param name="deadline">An optional deadline for the call. The call will be cancelled if deadline is hit.</param>
+             <param name="cancellationToken">An optional token for canceling the call.</param>
+             <returns>The response received from the server.</returns>
+        </member>
+        <member name="M:ArticleService.Rpc.Protos.gUser.gUserClient.GetUserByID(ArticleService.Rpc.Protos.UserInfoRequest,Grpc.Core.CallOptions)">
+             <summary>
+            根据ID查询用户信息
+             </summary>
+             <param name="request">The request to send to the server.</param>
+             <param name="options">The options for the call.</param>
+             <returns>The response received from the server.</returns>
+        </member>
+        <member name="M:ArticleService.Rpc.Protos.gUser.gUserClient.GetUserByIDAsync(ArticleService.Rpc.Protos.UserInfoRequest,Grpc.Core.Metadata,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
+             <summary>
+            根据ID查询用户信息
+             </summary>
+             <param name="request">The request to send to the server.</param>
+             <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
+             <param name="deadline">An optional deadline for the call. The call will be cancelled if deadline is hit.</param>
+             <param name="cancellationToken">An optional token for canceling the call.</param>
+             <returns>The call object.</returns>
+        </member>
+        <member name="M:ArticleService.Rpc.Protos.gUser.gUserClient.GetUserByIDAsync(ArticleService.Rpc.Protos.UserInfoRequest,Grpc.Core.CallOptions)">
+             <summary>
+            根据ID查询用户信息
+             </summary>
+             <param name="request">The request to send to the server.</param>
+             <param name="options">The options for the call.</param>
+             <returns>The call object.</returns>
+        </member>
+        <member name="M:ArticleService.Rpc.Protos.gUser.gUserClient.GetUserList(Google.Protobuf.WellKnownTypes.Empty,Grpc.Core.Metadata,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
+             <summary>
+            获取yoghurt列表
+             </summary>
+             <param name="request">The request to send to the server.</param>
+             <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
+             <param name="deadline">An optional deadline for the call. The call will be cancelled if deadline is hit.</param>
+             <param name="cancellationToken">An optional token for canceling the call.</param>
+             <returns>The response received from the server.</returns>
+        </member>
+        <member name="M:ArticleService.Rpc.Protos.gUser.gUserClient.GetUserList(Google.Protobuf.WellKnownTypes.Empty,Grpc.Core.CallOptions)">
+             <summary>
+            获取yoghurt列表
+             </summary>
+             <param name="request">The request to send to the server.</param>
+             <param name="options">The options for the call.</param>
+             <returns>The response received from the server.</returns>
+        </member>
+        <member name="M:ArticleService.Rpc.Protos.gUser.gUserClient.GetUserListAsync(Google.Protobuf.WellKnownTypes.Empty,Grpc.Core.Metadata,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
+             <summary>
+            获取yoghurt列表
+             </summary>
+             <param name="request">The request to send to the server.</param>
+             <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
+             <param name="deadline">An optional deadline for the call. The call will be cancelled if deadline is hit.</param>
+             <param name="cancellationToken">An optional token for canceling the call.</param>
+             <returns>The call object.</returns>
+        </member>
+        <member name="M:ArticleService.Rpc.Protos.gUser.gUserClient.GetUserListAsync(Google.Protobuf.WellKnownTypes.Empty,Grpc.Core.CallOptions)">
+             <summary>
+            获取yoghurt列表
+             </summary>
+             <param name="request">The request to send to the server.</param>
+             <param name="options">The options for the call.</param>
+             <returns>The call object.</returns>
+        </member>
+        <member name="M:ArticleService.Rpc.Protos.gUser.gUserClient.NewInstance(Grpc.Core.ClientBase.ClientBaseConfiguration)">
+            <summary>Creates a new instance of client from given <c>ClientBaseConfiguration</c>.</summary>
+        </member>
+        <member name="T:ArticleService.Rpc.Protos.ArticleReflection">
+            <summary>Holder for reflection information generated from Rpc/Protos/article.proto</summary>
+        </member>
+        <member name="P:ArticleService.Rpc.Protos.ArticleReflection.Descriptor">
+            <summary>File descriptor for Rpc/Protos/article.proto</summary>
+        </member>
+        <member name="F:ArticleService.Rpc.Protos.ArticleId.IdFieldNumber">
+            <summary>Field number for the "Id" field.</summary>
+        </member>
+        <member name="F:ArticleService.Rpc.Protos.ArticleInfo.IdFieldNumber">
+            <summary>Field number for the "Id" field.</summary>
+        </member>
+        <member name="F:ArticleService.Rpc.Protos.ArticleInfo.TitleFieldNumber">
+            <summary>Field number for the "Title" field.</summary>
+        </member>
+        <member name="F:ArticleService.Rpc.Protos.ArticleInfo.StatusFieldNumber">
+            <summary>Field number for the "Status" field.</summary>
+        </member>
+        <member name="F:ArticleService.Rpc.Protos.ArticleInfo.CommentStatusFieldNumber">
+            <summary>Field number for the "CommentStatus" field.</summary>
+        </member>
+        <member name="F:ArticleService.Rpc.Protos.ArticleInfo.IsLockFieldNumber">
+            <summary>Field number for the "IsLock" field.</summary>
+        </member>
+        <member name="F:ArticleService.Rpc.Protos.ArticleInfo.UserIdFieldNumber">
+            <summary>Field number for the "UserId" field.</summary>
+        </member>
+        <member name="F:ArticleService.Rpc.Protos.ArticleInfoList.InfosFieldNumber">
+            <summary>Field number for the "infos" field.</summary>
+        </member>
+        <member name="P:ArticleService.Rpc.Protos.gArticle.Descriptor">
+            <summary>Service descriptor</summary>
+        </member>
+        <member name="T:ArticleService.Rpc.Protos.gArticle.gArticleBase">
+            <summary>Base class for server-side implementations of gArticle</summary>
+        </member>
+        <member name="M:ArticleService.Rpc.Protos.gArticle.gArticleBase.GetArticleInfo(ArticleService.Rpc.Protos.ArticleId,Grpc.Core.ServerCallContext)">
+             <summary>
+            根据ID获取文章信息
+             </summary>
+             <param name="request">The request received from the client.</param>
+             <param name="context">The context of the server-side call handler being invoked.</param>
+             <returns>The response to send back to the client (wrapped by a task).</returns>
+        </member>
+        <member name="M:ArticleService.Rpc.Protos.gArticle.gArticleBase.GetArticleList(Google.Protobuf.WellKnownTypes.Empty,Grpc.Core.ServerCallContext)">
+             <summary>
+            获取文章列表
+             </summary>
+             <param name="request">The request received from the client.</param>
+             <param name="context">The context of the server-side call handler being invoked.</param>
+             <returns>The response to send back to the client (wrapped by a task).</returns>
+        </member>
+        <member name="M:ArticleService.Rpc.Protos.gArticle.BindService(ArticleService.Rpc.Protos.gArticle.gArticleBase)">
+            <summary>Creates service definition that can be registered with a server</summary>
+            <param name="serviceImpl">An object implementing the server-side handling logic.</param>
+        </member>
+        <member name="M:ArticleService.Rpc.Protos.gArticle.BindService(Grpc.Core.ServiceBinderBase,ArticleService.Rpc.Protos.gArticle.gArticleBase)">
+            <summary>Register service method with a service binder with or without implementation. Useful when customizing the service binding logic.
+            Note: this method is part of an experimental API that can change or be removed without any prior notice.</summary>
+            <param name="serviceBinder">Service methods will be bound by calling <c>AddMethod</c> on this object.</param>
+            <param name="serviceImpl">An object implementing the server-side handling logic.</param>
+        </member>
+        <member name="T:ArticleService.Rpc.Protos.SettingReflection">
+            <summary>Holder for reflection information generated from Rpc/Protos/setting.proto</summary>
+        </member>
+        <member name="P:ArticleService.Rpc.Protos.SettingReflection.Descriptor">
+            <summary>File descriptor for Rpc/Protos/setting.proto</summary>
+        </member>
+        <member name="F:ArticleService.Rpc.Protos.Setting.IdFieldNumber">
+            <summary>Field number for the "id" field.</summary>
+        </member>
+        <member name="F:ArticleService.Rpc.Protos.Setting.OptionFieldNumber">
+            <summary>Field number for the "option" field.</summary>
+        </member>
+        <member name="F:ArticleService.Rpc.Protos.Setting.ValueFieldNumber">
+            <summary>Field number for the "value" field.</summary>
+        </member>
+        <member name="F:ArticleService.Rpc.Protos.SettingList.SettingsFieldNumber">
+            <summary>Field number for the "settings" field.</summary>
+        </member>
+        <member name="P:ArticleService.Rpc.Protos.gSetting.Descriptor">
+            <summary>Service descriptor</summary>
+        </member>
+        <member name="T:ArticleService.Rpc.Protos.gSetting.gSettingBase">
+            <summary>Base class for server-side implementations of gSetting</summary>
+        </member>
+        <member name="M:ArticleService.Rpc.Protos.gSetting.gSettingBase.GetGlobalSetting(Google.Protobuf.WellKnownTypes.Empty,Grpc.Core.ServerCallContext)">
+             <summary>
+            获取所有设置项
+             </summary>
+             <param name="request">The request received from the client.</param>
+             <param name="context">The context of the server-side call handler being invoked.</param>
+             <returns>The response to send back to the client (wrapped by a task).</returns>
+        </member>
+        <member name="M:ArticleService.Rpc.Protos.gSetting.BindService(ArticleService.Rpc.Protos.gSetting.gSettingBase)">
+            <summary>Creates service definition that can be registered with a server</summary>
+            <param name="serviceImpl">An object implementing the server-side handling logic.</param>
+        </member>
+        <member name="M:ArticleService.Rpc.Protos.gSetting.BindService(Grpc.Core.ServiceBinderBase,ArticleService.Rpc.Protos.gSetting.gSettingBase)">
+            <summary>Register service method with a service binder with or without implementation. Useful when customizing the service binding logic.
+            Note: this method is part of an experimental API that can change or be removed without any prior notice.</summary>
+            <param name="serviceBinder">Service methods will be bound by calling <c>AddMethod</c> on this object.</param>
+            <param name="serviceImpl">An object implementing the server-side handling logic.</param>
+        </member>
+        <member name="T:CommentService.Rpc.Protos.MarkReflection">
+            <summary>Holder for reflection information generated from Rpc/Protos/mark.proto</summary>
+        </member>
+        <member name="P:CommentService.Rpc.Protos.MarkReflection.Descriptor">
+            <summary>File descriptor for Rpc/Protos/mark.proto</summary>
+        </member>
+        <member name="F:CommentService.Rpc.Protos.RequestInfo.UidFieldNumber">
+            <summary>Field number for the "uid" field.</summary>
+        </member>
+        <member name="F:CommentService.Rpc.Protos.RequestInfo.TypeFieldNumber">
+            <summary>Field number for the "type" field.</summary>
+        </member>
+        <member name="F:CommentService.Rpc.Protos.ArticleIdList.IdsFieldNumber">
+            <summary>Field number for the "ids" field.</summary>
+        </member>
+        <member name="P:CommentService.Rpc.Protos.gMark.Descriptor">
+            <summary>Service descriptor</summary>
+        </member>
+        <member name="T:CommentService.Rpc.Protos.gMark.gMarkClient">
+            <summary>Client for gMark</summary>
+        </member>
+        <member name="M:CommentService.Rpc.Protos.gMark.gMarkClient.#ctor(Grpc.Core.ChannelBase)">
+            <summary>Creates a new client for gMark</summary>
+            <param name="channel">The channel to use to make remote calls.</param>
+        </member>
+        <member name="M:CommentService.Rpc.Protos.gMark.gMarkClient.#ctor(Grpc.Core.CallInvoker)">
+            <summary>Creates a new client for gMark that uses a custom <c>CallInvoker</c>.</summary>
+            <param name="callInvoker">The callInvoker to use to make remote calls.</param>
+        </member>
+        <member name="M:CommentService.Rpc.Protos.gMark.gMarkClient.#ctor">
+            <summary>Protected parameterless constructor to allow creation of test doubles.</summary>
+        </member>
+        <member name="M:CommentService.Rpc.Protos.gMark.gMarkClient.#ctor(Grpc.Core.ClientBase.ClientBaseConfiguration)">
+            <summary>Protected constructor to allow creation of configured clients.</summary>
+            <param name="configuration">The client configuration.</param>
+        </member>
+        <member name="M:CommentService.Rpc.Protos.gMark.gMarkClient.NewInstance(Grpc.Core.ClientBase.ClientBaseConfiguration)">
+            <summary>Creates a new instance of client from given <c>ClientBaseConfiguration</c>.</summary>
+        </member>
+        <member name="T:CommentService.Rpc.Protos.RankReflection">
+            <summary>Holder for reflection information generated from Rpc/Protos/rank.proto</summary>
+        </member>
+        <member name="P:CommentService.Rpc.Protos.RankReflection.Descriptor">
+            <summary>File descriptor for Rpc/Protos/rank.proto</summary>
+        </member>
+        <member name="F:CommentService.Rpc.Protos.RankCondidtion.KeyFieldNumber">
+            <summary>Field number for the "key" field.</summary>
+        </member>
+        <member name="F:CommentService.Rpc.Protos.RankCondidtion.OrderFieldNumber">
+            <summary>Field number for the "order" field.</summary>
+        </member>
+        <member name="F:CommentService.Rpc.Protos.RankList.RanksFieldNumber">
+            <summary>Field number for the "ranks" field.</summary>
+        </member>
+        <member name="P:CommentService.Rpc.Protos.gRank.Descriptor">
+            <summary>Service descriptor</summary>
+        </member>
+        <member name="T:CommentService.Rpc.Protos.gRank.gRankClient">
+            <summary>Client for gRank</summary>
+        </member>
+        <member name="M:CommentService.Rpc.Protos.gRank.gRankClient.#ctor(Grpc.Core.ChannelBase)">
+            <summary>Creates a new client for gRank</summary>
+            <param name="channel">The channel to use to make remote calls.</param>
+        </member>
+        <member name="M:CommentService.Rpc.Protos.gRank.gRankClient.#ctor(Grpc.Core.CallInvoker)">
+            <summary>Creates a new client for gRank that uses a custom <c>CallInvoker</c>.</summary>
+            <param name="callInvoker">The callInvoker to use to make remote calls.</param>
+        </member>
+        <member name="M:CommentService.Rpc.Protos.gRank.gRankClient.#ctor">
+            <summary>Protected parameterless constructor to allow creation of test doubles.</summary>
+        </member>
+        <member name="M:CommentService.Rpc.Protos.gRank.gRankClient.#ctor(Grpc.Core.ClientBase.ClientBaseConfiguration)">
+            <summary>Protected constructor to allow creation of configured clients.</summary>
+            <param name="configuration">The client configuration.</param>
+        </member>
+        <member name="M:CommentService.Rpc.Protos.gRank.gRankClient.GetArticleRank(CommentService.Rpc.Protos.RankCondidtion,Grpc.Core.Metadata,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
+             <summary>
+            获取文章排行数据
+             </summary>
+             <param name="request">The request to send to the server.</param>
+             <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
+             <param name="deadline">An optional deadline for the call. The call will be cancelled if deadline is hit.</param>
+             <param name="cancellationToken">An optional token for canceling the call.</param>
+             <returns>The response received from the server.</returns>
+        </member>
+        <member name="M:CommentService.Rpc.Protos.gRank.gRankClient.GetArticleRank(CommentService.Rpc.Protos.RankCondidtion,Grpc.Core.CallOptions)">
+             <summary>
+            获取文章排行数据
+             </summary>
+             <param name="request">The request to send to the server.</param>
+             <param name="options">The options for the call.</param>
+             <returns>The response received from the server.</returns>
+        </member>
+        <member name="M:CommentService.Rpc.Protos.gRank.gRankClient.GetArticleRankAsync(CommentService.Rpc.Protos.RankCondidtion,Grpc.Core.Metadata,System.Nullable{System.DateTime},System.Threading.CancellationToken)">
+             <summary>
+            获取文章排行数据
+             </summary>
+             <param name="request">The request to send to the server.</param>
+             <param name="headers">The initial metadata to send with the call. This parameter is optional.</param>
+             <param name="deadline">An optional deadline for the call. The call will be cancelled if deadline is hit.</param>
+             <param name="cancellationToken">An optional token for canceling the call.</param>
+             <returns>The call object.</returns>
+        </member>
+        <member name="M:CommentService.Rpc.Protos.gRank.gRankClient.GetArticleRankAsync(CommentService.Rpc.Protos.RankCondidtion,Grpc.Core.CallOptions)">
+             <summary>
+            获取文章排行数据
+             </summary>
+             <param name="request">The request to send to the server.</param>
+             <param name="options">The options for the call.</param>
+             <returns>The call object.</returns>
+        </member>
+        <member name="M:CommentService.Rpc.Protos.gRank.gRankClient.NewInstance(Grpc.Core.ClientBase.ClientBaseConfiguration)">
+            <summary>Creates a new instance of client from given <c>ClientBaseConfiguration</c>.</summary>
+        </member>
+    </members>
+</doc>
