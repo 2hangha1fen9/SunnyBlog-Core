@@ -218,7 +218,7 @@ namespace UserService.App
         {
             using (var dbContext = contextFactory.CreateDbContext())
             {
-                var a = await dbContext.Users.FirstOrDefaultAsync(u => u.Username == request.Username || u.Phone == request.Phone || u.Email == request.Email);
+                var a = await dbContext.Users.FirstOrDefaultAsync(u => u.Username == request.Username.Trim() || u.Phone == request.Phone.Trim() || u.Email == request.Email.Trim());
                 //查询用户是否存在
                 if (a != null)
                 {
@@ -231,6 +231,9 @@ namespace UserService.App
                 {
                     //验证有效性
                     User user = request.MapTo<User>();
+                    user.Username = user.Email.Trim();
+                    user.Email = string.IsNullOrEmpty(user.Email.Trim()) ?  user.Email.Trim() : null;
+                    user.Phone = string.IsNullOrEmpty(user.Phone.Trim()) ? user.Phone.Trim() : null;
                     //密码加密
                     user.Password = user.Password.ShaEncrypt();
                     await dbContext.AddAsync(user);
